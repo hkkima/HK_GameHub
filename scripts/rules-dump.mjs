@@ -16,49 +16,12 @@
 // 규칙을 숨겨서 하는 것이 아니다.
 
 import crypto from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { getAccessToken } from './gcp-auth.mjs';
 
-const keyPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const project = process.env.PROJECT_ID;
-
-if (!keyPath || !project) {
-  console.error('GOOGLE_APPLICATION_CREDENTIALS 와 PROJECT_ID 환경변수가 필요합니다.');
+if (!project) {
+  console.error('PROJECT_ID 환경변수가 필요합니다.');
   process.exit(1);
-}
-
-const sa = JSON.parse(readFileSync(keyPath, 'utf8'));
-const b64url = (v) => Buffer.from(v).toString('base64url');
-
-async function getAccessToken(scope) {
-  const now = Math.floor(Date.now() / 1000);
-  const header = b64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
-  const claim = b64url(JSON.stringify({
-    iss: sa.client_email,
-    scope,
-    aud: sa.token_uri,
-    iat: now,
-    exp: now + 3600,
-  }));
-
-  const signer = crypto.createSign('RSA-SHA256');
-  signer.update(`${header}.${claim}`);
-  const jwt = `${header}.${claim}.${b64url(signer.sign(sa.private_key))}`;
-
-  const res = await fetch(sa.token_uri, {
-    method: 'POST',
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      assertion: jwt,
-    }),
-  });
-
-  const body = await res.text();
-  if (!res.ok) {
-    console.error(`토큰 발급 실패 ${res.status}\n${body}`);
-    process.exit(1);
-  }
-  return JSON.parse(body).access_token;
 }
 
 const token = await getAccessToken('https://www.googleapis.com/auth/cloud-platform');
