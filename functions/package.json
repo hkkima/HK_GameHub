@@ -1,0 +1,14 @@
+{
+  "name": "hk-gamehub-functions",
+  "private": true,
+  "type": "module",
+  "description": "HK GameHub 전용 Cloud Functions (codebase: gamehub)",
+  "engines": {
+    "node": "22"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^13.0.1",
+    "firebase-functions": "^6.1.1"
+  }
+}

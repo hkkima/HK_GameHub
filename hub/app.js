@@ -1,5 +1,8 @@
 import { firebaseConfig, GAMES_ORIGIN, SITE } from './config.js';
-import { loginWithPin, loadSession, saveSession, clearSession, LoginError } from './auth.js';
+import {
+  loginWithPin, loadSession, saveSession, clearSession, LoginError, FUNCTIONS_REGION,
+} from './auth.js';
+import { createAdminPanel } from './admin.js';
 
 const FIREBASE_VERSION = '10.14.1';
 const CDN = `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}`;
@@ -71,6 +74,7 @@ const el = {
   playerLikeCount: $('#player-like-count'),
   newtab: $('#btn-newtab'),
   toast: $('#toast'),
+  adminPanel: $('#admin-panel'),
 };
 
 // ---------------------------------------------------------------------------
@@ -143,15 +147,16 @@ async function initFirebase() {
     return null;
   }
 
-  let appMod, authMod, fsMod;
+  let appMod, authMod, fsMod, fnsMod;
   try {
     // 방화벽이나 DNS 블랙홀 뒤에서는 요청이 거부되지 않고 그대로 매달린다.
     // 타임아웃이 없으면 로그인 버튼이 영원히 활성 상태로 남는다.
-    [appMod, authMod, fsMod] = await Promise.race([
+    [appMod, authMod, fsMod, fnsMod] = await Promise.race([
       Promise.all([
         import(`${CDN}/firebase-app.js`),
         import(`${CDN}/firebase-auth.js`),
         import(`${CDN}/firebase-firestore.js`),
+        import(`${CDN}/firebase-functions.js`),
       ]),
       new Promise((_, reject) => setTimeout(
         () => reject(new Error(`Firebase SDK 로드가 ${SDK_TIMEOUT_MS}ms 안에 끝나지 않았습니다`)),
@@ -168,8 +173,10 @@ async function initFirebase() {
     return {
       auth: authMod.getAuth(app),
       db: fsMod.getFirestore(app),
+      functions: fnsMod.getFunctions(app, FUNCTIONS_REGION),
       auths: authMod,
       fs: fsMod,
+      fns: fnsMod,
     };
   } catch (err) {
     console.error('[HK GameHub] Firebase 초기화에 실패했습니다.', err);
@@ -368,9 +375,11 @@ async function toggleLike(slug) {
   const likeRef = doc(fb.db, GAMES_COL, slug, 'likes', userId);
   const userRef = doc(fb.db, USERS_COL, userId);
 
-  batch.set(gameRef, { likeCount: increment(delta), lastBy: userId }, { merge: true });
+  batch.set(gameRef, { likeCount: increment(delta) }, { merge: true });
   if (liked) batch.delete(likeRef);
-  else batch.set(likeRef, { createdAt: serverTimestamp() });
+  // paidIn 은 지급 회차 ID. 아직 미지급이라 null 로 두고, gamehubPayout 이 채운다.
+  // 이 필드가 있어야 함수가 미지급 좋아요만 골라낼 수 있다.
+  else batch.set(likeRef, { createdAt: serverTimestamp(), paidIn: null });
   batch.set(userRef, { liked: liked ? arrayRemove(slug) : arrayUnion(slug) }, { merge: true });
 
   try {
@@ -470,12 +479,95 @@ async function submitLogin(event) {
   }
 }
 
-function logout() {
+async function logout() {
   clearSession();
   state.user = null;
   state.myLikes = new Set();
   paintAuth();
   paintAllLikes();
+  if (fb) { try { await fb.auths.signOut(fb.auth); } catch { /* 무시 */ } }
+}
+
+// ---------------------------------------------------------------------------
+// 운영자
+//
+// 강사만 Google 로 로그인한다. 수강생 로그인(커스텀 토큰)과 같은 Firebase Auth 를
+// 쓰므로 둘은 공존할 수 없다. 운영자로 들어오면 수강생 세션은 정리한다.
+// ---------------------------------------------------------------------------
+
+let adminPanel = null;
+
+async function adminLogin() {
+  if (!await ensureFirebase()) { toast('지금은 사용할 수 없습니다.'); return; }
+  try {
+    await fb.auths.signInWithPopup(fb.auth, new fb.auths.GoogleAuthProvider());
+  } catch (err) {
+    if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') return;
+    console.error('[HK GameHub] 운영자 로그인 실패', err);
+    toast(err?.code === 'auth/unauthorized-domain'
+      ? 'Firebase 승인된 도메인에 이 주소를 추가해야 합니다.'
+      : '운영자 로그인에 실패했습니다.');
+  }
+}
+
+async function adminLogout() {
+  if (fb) { try { await fb.auths.signOut(fb.auth); } catch { /* 무시 */ } }
+  showAdmin(false);
+}
+
+function showAdmin(on) {
+  el.adminPanel.hidden = !on;
+  $('#btn-admin').hidden = on;
+  $('#btn-admin-out').hidden = !on;
+}
+
+// 수강생(커스텀 토큰)과 운영자(Google)가 같은 Firebase Auth 를 공유하므로
+// 관찰자 하나로 둘 다 처리한다. 새로고침 시 세션 복원도 여기서 일어난다 —
+// Firebase 가 로그인 상태를 유지하므로 PIN 을 다시 묻지 않는다.
+function watchAuth() {
+  fb.auths.onAuthStateChanged(fb.auth, async (user) => {
+    const isGoogle = !!user?.providerData?.some((p) => p.providerId === 'google.com');
+
+    if (isGoogle) {
+      // 운영자로 들어왔으면 수강생 세션은 정리한다
+      clearSession();
+      state.user = null;
+      state.myLikes = new Set();
+      paintAuth();
+      paintAllLikes();
+
+      showAdmin(true);
+      if (!adminPanel) {
+        adminPanel = createAdminPanel({ fb, root: el.adminPanel, onToast: toast });
+      }
+      adminPanel.refresh();
+      return;
+    }
+
+    showAdmin(false);
+
+    if (!user) {
+      state.user = null;
+      state.myLikes = new Set();
+      paintAuth();
+      paintAllLikes();
+      return;
+    }
+
+    // 커스텀 토큰이라 uid 가 곧 참가자 ID 다. 표시할 이름은 세션에서 가져온다.
+    if (state.user?.userId !== user.uid) {
+      const saved = loadSession();
+      state.user = saved?.userId === user.uid ? saved : { userId: user.uid, name: user.uid };
+      paintAuth();
+    }
+
+    try {
+      await loadMyLikes(user.uid);
+    } catch (err) {
+      console.warn('[HK GameHub] 좋아요 목록을 불러오지 못했습니다', err);
+    }
+    paintAllLikes();
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -542,6 +634,8 @@ el.loginBtn.addEventListener('click', openLogin);
 el.loginForm.addEventListener('submit', submitLogin);
 $('#login-cancel').addEventListener('click', () => el.dialog.close());
 $('#btn-logout').addEventListener('click', logout);
+$('#btn-admin').addEventListener('click', adminLogin);
+$('#btn-admin-out').addEventListener('click', adminLogout);
 
 // ---------------------------------------------------------------------------
 // 시작
@@ -575,19 +669,7 @@ document.title = SITE.title;
     return;
   }
 
-  // 저장된 세션이 있으면 익명 로그인만 다시 붙여 좋아요를 쓸 수 있게 한다.
-  // PIN 은 다시 묻지 않는다. 기존 학급 앱과 같은 동작이다.
-  const session = loadSession();
-  if (session) {
-    state.user = session;
-    paintAuth();
-    try {
-      await fb.auths.signInAnonymously(fb.auth);
-      await loadMyLikes(session.userId);
-    } catch (err) {
-      console.warn('[HK GameHub] 세션 복원에 실패했습니다', err);
-    }
-  }
+  watchAuth();
 
   try {
     await loadLikeCounts();

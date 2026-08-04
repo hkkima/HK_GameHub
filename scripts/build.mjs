@@ -70,10 +70,22 @@ function validateManifest(slug, raw) {
     return null;
   }
 
+  // authorId 는 좋아요 포인트를 받을 학급 계정(users 문서 ID)이다.
+  // 실제로 존재하는 참가자인지는 지급 함수가 확인한다. 여기서는 형식만 본다.
+  // 없으면 갤러리에는 올라가되 포인트 지급 대상에서 빠지므로 경고만 낸다.
+  const authorId = typeof m.authorId === 'string' ? m.authorId.trim().toLowerCase() : '';
+  if (!authorId) {
+    log(`경고: ${slug} 에 authorId 가 없어 좋아요 포인트를 받을 수 없습니다.`);
+  } else if (/\s/.test(authorId)) {
+    fail(slug, 'authorId 에는 공백을 쓸 수 없습니다. 이름의 공백은 _ 로 바꾸세요.');
+    return null;
+  }
+
   return {
     slug,
     title: m.title.trim(),
     author: m.author.trim(),
+    authorId,
     cohort: typeof m.cohort === 'string' ? m.cohort.trim() : '',
     description: typeof m.description === 'string' ? m.description.trim() : '',
     tags: (m.tags || []).map((t) => String(t).trim()).filter(Boolean),

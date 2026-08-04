@@ -1,8 +1,12 @@
 {
   "title": "반응속도 테스트",
   "author": "HK GameHub",
+  "authorId": "",
   "cohort": "샘플",
   "description": "화면이 초록색으로 바뀌는 순간 클릭하세요. 파이프라인이 잘 도는지 확인하는 샘플 게임입니다.",
-  "tags": ["캐주얼", "샘플"],
+  "tags": [
+    "캐주얼",
+    "샘플"
+  ],
   "spa": false
 }
