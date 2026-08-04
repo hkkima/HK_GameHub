@@ -86,7 +86,7 @@ jobs:
       # 꺼져 있으면 배포가 그 지점에서 멈춘다. 활성화는 멱등적이라 매번 돌려도 된다.
       - name: 필요한 API 활성화
         if: inputs.action == 'deploy-functions' || inputs.action == 'deploy-all'
-        run: node scripts/enable-apis.mjs cloudbilling.googleapis.com
+        run: node scripts/enable-apis.mjs cloudbilling.googleapis.com secretmanager.googleapis.com
 
       # firebase-tools 는 배포 전에 functions/index.js 를 로컬에서 파싱해
       # 어떤 트리거를 배포할지 알아낸다. 그래서 실행 자체는 클라우드에서 하더라도
