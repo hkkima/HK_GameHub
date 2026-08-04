@@ -47,11 +47,30 @@ function assertAdmin(req) {
   return email;
 }
 
-async function loadGames() {
+// 정식 배포(Cloudflare) 게임 목록.
+async function loadCloudflareGames() {
   const res = await fetch(GAMES_JSON, { cache: 'no-store' });
   if (!res.ok) throw new HttpsError('unavailable', `games.json 을 불러오지 못했습니다 (${res.status}).`);
   const data = await res.json();
   return Array.isArray(data) ? data : (data.games || []);
+}
+
+// 즉시 게시 게임 목록(Firestore). 좋아요는 두 경로가 같은 gamehub_games/{slug} 에
+// 쌓이므로, 지급도 두 목록을 합쳐서 순회해야 즉시 게시 게임이 누락되지 않는다.
+async function loadInstantGames() {
+  const snap = await db.collection('gamehub_instant').get();
+  return snap.docs.map((d) => ({
+    slug: d.id,
+    title: d.data().title || d.id,
+    authorId: d.data().authorId || '',
+  }));
+}
+
+// 두 소스를 합친다. 같은 slug 면 한 번만(정식 배포 우선).
+async function loadAllGames() {
+  const [cf, instant] = await Promise.all([loadCloudflareGames(), loadInstantGames()]);
+  const seen = new Set(cf.map((g) => g.slug));
+  return [...cf, ...instant.filter((g) => !seen.has(g.slug))];
 }
 
 // 아직 지급되지 않은 좋아요를 게임별로 모은다.
@@ -87,7 +106,7 @@ export const gamehubPayout = onCall({ region: REGION, cors: true }, async (req) 
     throw new HttpsError('invalid-argument', '1 좋아요당 포인트가 올바르지 않습니다.');
   }
 
-  const games = await loadGames();
+  const games = await loadAllGames();
   const pending = await collectUnpaid(games);
 
   // 제작자별 합산. manifest 에 authorId 가 없거나 참가자가 실재하지 않으면 건너뛴다.
@@ -96,7 +115,7 @@ export const gamehubPayout = onCall({ region: REGION, cors: true }, async (req) 
 
   for (const g of pending) {
     if (!g.authorId) {
-      problems.push(`${g.slug}: manifest.json 에 authorId 가 없어 지급 대상에서 제외했습니다.`);
+      problems.push(`${g.title}: 제작자(authorId)가 없어 지급 대상에서 제외했습니다.`);
       continue;
     }
     const author = await db.collection('users').doc(g.authorId).get();
