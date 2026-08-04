@@ -935,7 +935,9 @@ $('#btn-admin').addEventListener('click', adminLogin);
 $('#btn-admin-out').addEventListener('click', adminLogout);
 
 // 업로드
-el.uploadBtn.addEventListener('click', openUpload);
+// 화살표로 감싼다. 직접 넘기면 클릭 이벤트 객체가 openUpload(game) 의 game 으로
+// 들어가(truthy) 신규인데도 수정 모드로 열린다.
+el.uploadBtn.addEventListener('click', () => openUpload());
 el.uploadForm.addEventListener('submit', submitUpload);
 $('#upload-cancel').addEventListener('click', () => el.uploadDialog.close());
 el.dropzone.addEventListener('click', () => el.upFiles.click());
