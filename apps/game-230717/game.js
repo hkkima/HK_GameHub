@@ -1,0 +1,1 @@
+document.body.style.cssText="margin:0;display:grid;place-items:center;height:100vh;background:#12141a;color:#fff;font-family:sans-serif";document.body.innerHTML="<h1>멀티파일 테스트 OK</h1>";
