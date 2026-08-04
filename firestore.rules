@@ -299,5 +299,46 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false;
     }
+
+    // ── 즉시 게시 (단일 HTML) ─────────────────────────────────
+    //   수강생이 자체완결 index.html 하나를 올리면 검토·빌드 없이 바로 갤러리에
+    //   뜬다. HTML 원문은 content 서브문서에 담고, 갤러리 목록은 메타 문서만 읽어
+    //   가볍게 유지한다. 플레이어는 그 HTML 을 iframe srcdoc + sandbox(allow-scripts,
+    //   same-origin 없음)로 렌더한다 — 오리진이 없는 샌드박스라 허브와 완전히 격리된다.
+    //
+    //   본인 확인은 익명 uid(by)로 한다. 같은 브라우저에서만 수정·삭제할 수 있고,
+    //   운영자는 언제나 가능하다. 좋아요=포인트라 부적절한 게임은 운영자가 지운다.
+    function gh_instantMetaShape() {
+      return request.resource.data.keys().hasOnly(
+               ['title', 'author', 'authorId', 'cohort', 'description', 'tags', 'by', 'createdAt'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 80
+        && request.resource.data.author is string
+        && request.resource.data.by == request.auth.uid
+        && gh_isParticipant(request.resource.data.authorId);
+    }
+
+    match /gamehub_instant/{slug} {
+      allow read: if true;
+
+      allow create: if signedIn() && gh_instantMetaShape();
+      // 올린 본인(같은 익명 uid) 또는 운영자만
+      allow update: if signedIn() && gh_instantMetaShape()
+                    && resource.data.by == request.auth.uid;
+      allow delete: if isAdmin() || (signedIn() && resource.data.by == request.auth.uid);
+
+      // HTML 원문. 플레이할 때만 읽으므로 갤러리 로드에는 포함되지 않는다.
+      // 부모 메타 문서와 같은 배치로 생성되므로, getAfter() 로 배치가 끝난 뒤의
+      // 부모 by 를 확인한다(get 은 배치 이전 상태라 아직 없는 부모를 못 본다).
+      match /content/{doc} {
+        allow read: if true;
+        allow write: if signedIn()
+          && request.resource.data.keys().hasOnly(['html'])
+          && request.resource.data.html is string
+          && request.resource.data.html.size() < 900000
+          && getAfter(/databases/$(database)/documents/gamehub_instant/$(slug)).data.by == request.auth.uid;
+      }
+    }
   }
 }
