@@ -4,17 +4,19 @@
 // Firebase 웹 config 는 비밀키가 아니며, 실제 접근 통제는 firestore.rules 가 한다.
 
 // ---------------------------------------------------------------------------
-// 1. Firebase (hk_hub 프로젝트)
+// 1. Firebase
+//
+//    수강생 계정이 들어 있는 기존 프로젝트를 그대로 쓴다. 프로젝트 표시 이름과
+//    무관하게 ID 는 hk-chess-betting 이다 (Firebase 프로젝트 ID 는 변경 불가).
 //    콘솔 > 프로젝트 설정 > 일반 > 내 앱 > SDK 설정 및 구성 > 구성
-//    에서 복사한 값으로 아래를 교체할 것.
 // ---------------------------------------------------------------------------
 export const firebaseConfig = {
-  apiKey: 'TODO_REPLACE_ME',
-  authDomain: 'TODO_REPLACE_ME.firebaseapp.com',
-  projectId: 'TODO_REPLACE_ME',
-  storageBucket: 'TODO_REPLACE_ME.appspot.com',
-  messagingSenderId: 'TODO_REPLACE_ME',
-  appId: 'TODO_REPLACE_ME',
+  apiKey: 'AIzaSyDdYMFtR4jKdC6svQjEzzas-jDh_sO17DE',
+  authDomain: 'hk-chess-betting.firebaseapp.com',
+  projectId: 'hk-chess-betting',
+  storageBucket: 'hk-chess-betting.firebasestorage.app',
+  messagingSenderId: '523827960214',
+  appId: '1:523827960214:web:a157a99ce681434c21a5b7',
 };
 
 // ---------------------------------------------------------------------------

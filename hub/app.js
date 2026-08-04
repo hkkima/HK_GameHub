@@ -2,6 +2,7 @@ import { firebaseConfig, GAMES_ORIGIN, SITE } from './config.js';
 
 const FIREBASE_VERSION = '10.14.1';
 const CDN = `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}`;
+const SDK_TIMEOUT_MS = 12000;
 
 // ---------------------------------------------------------------------------
 // 상태
@@ -116,10 +117,18 @@ async function initFirebase() {
 
   let appMod, authMod, fsMod;
   try {
-    [appMod, authMod, fsMod] = await Promise.all([
-      import(`${CDN}/firebase-app.js`),
-      import(`${CDN}/firebase-auth.js`),
-      import(`${CDN}/firebase-firestore.js`),
+    // 방화벽이나 DNS 블랙홀 뒤에서는 요청이 거부되지 않고 그대로 매달린다.
+    // 타임아웃이 없으면 로그인 버튼이 영원히 활성 상태로 남는다.
+    [appMod, authMod, fsMod] = await Promise.race([
+      Promise.all([
+        import(`${CDN}/firebase-app.js`),
+        import(`${CDN}/firebase-auth.js`),
+        import(`${CDN}/firebase-firestore.js`),
+      ]),
+      new Promise((_, reject) => setTimeout(
+        () => reject(new Error(`Firebase SDK 로드가 ${SDK_TIMEOUT_MS}ms 안에 끝나지 않았습니다`)),
+        SDK_TIMEOUT_MS,
+      )),
     ]);
   } catch (err) {
     console.error('[HK GameHub] Firebase SDK 를 불러오지 못했습니다. 로그인과 좋아요만 비활성화되고 나머지는 정상 동작합니다.', err);

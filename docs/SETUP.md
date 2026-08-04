@@ -4,27 +4,16 @@
 
 <br>
 
-## 1. Firebase (hk_hub)
+## 1. Firebase
 
-### 1-1. 웹 앱 config 가져오기
+사용하는 프로젝트는 **`hk-chess-betting`** 입니다. 수강생 계정이 이미 들어 있는
+프로젝트라 그대로 재사용합니다. (Firebase 프로젝트 ID 는 변경할 수 없어서
+표시 이름과 용도가 달라 보여도 ID 는 그대로입니다.)
 
-1. [Firebase 콘솔](https://console.firebase.google.com) → **hk_hub** 프로젝트
-2. 왼쪽 위 **톱니바퀴 → 프로젝트 설정**
-3. **일반** 탭 맨 아래 **내 앱** 섹션
-   - 웹 앱(`</>`)이 이미 있으면 → **SDK 설정 및 구성** → **구성** 선택
-   - 없으면 `</>` 로 새로 추가 (닉네임 `HK GameHub`, Firebase Hosting 설정은 **체크 해제**)
-4. 나온 값을 [`hub/config.js`](../hub/config.js) 의 `firebaseConfig` 에 그대로 붙여넣습니다.
+### 1-1. 웹 앱 config
 
-```js
-export const firebaseConfig = {
-  apiKey: 'AIza...',
-  authDomain: 'hk-hub-xxxx.firebaseapp.com',
-  projectId: 'hk-hub-xxxx',
-  storageBucket: 'hk-hub-xxxx.appspot.com',
-  messagingSenderId: '1234567890',
-  appId: '1:1234567890:web:abcdef',
-};
-```
+[`hub/config.js`](../hub/config.js) 에 이미 반영되어 있습니다. 값이 바뀌면
+**프로젝트 설정 → 일반 → 내 앱 → SDK 설정 및 구성 → 구성** 에서 다시 가져오세요.
 
 > 이 값들은 **공개되어도 되는 식별자**입니다. 비밀키가 아니며 레포에 커밋해도 됩니다.
 > 실제 접근 통제는 `firestore.rules` 가 담당합니다.
@@ -45,12 +34,21 @@ hk-gamehub.pages.dev
 
 ### 1-4. Firestore 생성
 
+이 프로젝트에는 이미 **Realtime Database** 가 있습니다(`asia-southeast1`).
+Firestore 는 그와 **별개의 서비스**라 같은 프로젝트에 추가해도 기존 RTDB 데이터에는
+아무 영향이 없고, 둘 다 무료 한도가 따로 적용됩니다.
+
 **Firestore Database → 데이터베이스 만들기**
 
 | 항목 | 값 |
 |---|---|
 | 모드 | **프로덕션 모드에서 시작** (테스트 모드는 30일 뒤 전부 잠깁니다) |
 | 위치 | **asia-northeast3 (서울)** — 한 번 정하면 변경 불가 |
+
+> 좋아요를 RTDB 로 처리하지 않고 Firestore 를 쓰는 이유는 두 가지입니다.
+> 하나는 카운터 조작 방지에 쓰는 `getAfter()` 가 Firestore 규칙에만 있다는 점,
+> 다른 하나는 RTDB 무료 한도의 **동시 접속 100 제한** 입니다. 발표일처럼 한꺼번에
+> 몰리는 상황에서 Firestore 는 이 제한이 없습니다.
 
 ### 1-5. 보안 규칙 배포
 
