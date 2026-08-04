@@ -96,6 +96,24 @@ jobs:
         working-directory: functions
         run: npm ci --no-audit --no-fund
 
+      # 멀티파일 제출용 GitHub 토큰을 Secret Manager 에 넣는다(gamehubSubmit 이 읽는다).
+      # GitHub Secret GH_SUBMIT_TOKEN 이 있을 때만 반영하고, 없으면 건너뛴다
+      # (그 경우 배포는 되지만 gamehubSubmit 호출이 failed-precondition 으로 막힌다).
+      # secrets 컨텍스트는 if: 에서 못 읽으므로 env 로 받아 run 안에서 검사한다.
+      - name: 제출 토큰을 Secret Manager 에 반영
+        if: inputs.action == 'deploy-functions' || inputs.action == 'deploy-all'
+        env:
+          GH_SUBMIT_TOKEN: ${{ secrets.GH_SUBMIT_TOKEN }}
+        run: |
+          if [ -z "$GH_SUBMIT_TOKEN" ]; then
+            echo "GH_SUBMIT_TOKEN 시크릿이 없어 제출 토큰 반영을 건너뜁니다."
+            echo "(멀티파일 업로드를 쓰려면 GitHub Secret 에 GH_SUBMIT_TOKEN 을 넣으세요.)"
+            exit 0
+          fi
+          printf '%s' "$GH_SUBMIT_TOKEN" | \
+            npx --yes firebase-tools@13 functions:secrets:set GH_SUBMIT_TOKEN \
+              --project "$PROJECT_ID" --data-file - --force
+
       # ★ --only functions:gamehub — codebase 를 반드시 지정한다 ★
       #   필터 없이 `--only functions` 로 배포하면 이 레포에 없는 다른 앱의 함수를
       #   삭제 대상으로 잡는다.

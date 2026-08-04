@@ -137,12 +137,27 @@ Workers & Pages 화면 오른쪽 사이드바에 **Account ID** 가 있습니다
 > (`<프로젝트번호>-compute@developer.gserviceaccount.com`)에 `Service Account
 > Token Creator` 역할이 추가로 필요합니다. 현재 구성(익명 로그인)에서는 불필요합니다.
 
-### 1-7. 함수 배포
+### 1-7. 멀티파일 업로드 (선택) — GitHub 토큰
+
+수강생이 여러 파일(React 등) 게임을 허브에서 바로 올리게 하려면, 함수가 대신
+GitHub 에 PR 을 만들 수 있어야 합니다.
+
+1. [Fine-grained PAT 발급](https://github.com/settings/personal-access-tokens/new)
+   - Resource owner: `hkkima`, Repository: `HK_GameHub` 만
+   - Permissions: **Contents** = Read and write, **Pull requests** = Read and write
+2. 레포 **Settings → Secrets and variables → Actions** 에 `GH_SUBMIT_TOKEN` 으로 등록
+3. 서비스 계정 `github-firestore-rules` 에 **`Secret Manager 관리자`** 역할 추가
+   (워크플로가 이 토큰을 Secret Manager 에 넣고 함수에 바인딩합니다)
+
+이 셋을 하지 않으면 단일 HTML 즉시 게시는 그대로 되고, 멀티파일 업로드만
+비활성화됩니다(함수가 `failed-precondition` 을 반환).
+
+### 1-8. 함수 배포
 
 **Actions → Firebase 배포 → Run workflow → `deploy-functions`**
 
-`gamehubPayout`(주간 지급) 함수가 올라갑니다. 로그인은 함수를 쓰지 않으므로
-(수강생은 익명 로그인 + 클라이언트 PIN 대조) 이 함수 하나면 됩니다.
+`gamehubPayout`(주간 지급)과 `gamehubSubmit`(멀티파일 제출) 함수가 올라갑니다.
+로그인은 함수를 쓰지 않습니다(수강생은 익명 로그인 + 클라이언트 PIN 대조).
 
 > 함수는 `firebase.json` 에서 **codebase `gamehub`** 로 분리되어 있고, 배포도
 > `--only functions:gamehub` 로 그 codebase 만 대상으로 합니다. 베팅·홀덤 등
