@@ -4,6 +4,14 @@ const FIREBASE_VERSION = '10.14.1';
 const CDN = `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}`;
 const SDK_TIMEOUT_MS = 12000;
 
+// Firestore 컬렉션 이름.
+//
+// 이 Firebase 프로젝트는 다른 앱과 공유한다. 접두사 없이 users 를 쓰면 그쪽
+// 사용자 문서에 좋아요 목록을 덮어쓰게 되므로, 반드시 gamehub_ 를 유지할 것.
+// firestore.rules 의 경로와 짝을 이룬다.
+const GAMES_COL = 'gamehub_games';
+const USERS_COL = 'gamehub_users';
+
 // ---------------------------------------------------------------------------
 // 상태
 // ---------------------------------------------------------------------------
@@ -270,7 +278,7 @@ async function loadGames() {
 async function loadLikeCounts() {
   if (!fb) return;
   const { collection, getDocs } = fb.fs;
-  const snap = await getDocs(collection(fb.db, 'games'));
+  const snap = await getDocs(collection(fb.db, GAMES_COL));
   const counts = {};
   snap.forEach((d) => { counts[d.id] = d.data().likeCount || 0; });
   state.likeCounts = counts;
@@ -280,7 +288,7 @@ async function loadLikeCounts() {
 async function loadMyLikes(uid) {
   if (!fb || !uid) { state.myLikes = new Set(); return; }
   const { doc, getDoc } = fb.fs;
-  const snap = await getDoc(doc(fb.db, 'users', uid));
+  const snap = await getDoc(doc(fb.db, USERS_COL, uid));
   state.myLikes = new Set(snap.exists() ? (snap.data().liked || []) : []);
 }
 
@@ -317,9 +325,9 @@ async function toggleLike(slug) {
   }
 
   const batch = writeBatch(fb.db);
-  const gameRef = doc(fb.db, 'games', slug);
-  const likeRef = doc(fb.db, 'games', slug, 'likes', uid);
-  const userRef = doc(fb.db, 'users', uid);
+  const gameRef = doc(fb.db, GAMES_COL, slug);
+  const likeRef = doc(fb.db, GAMES_COL, slug, 'likes', uid);
+  const userRef = doc(fb.db, USERS_COL, uid);
 
   batch.set(gameRef, { likeCount: increment(delta) }, { merge: true });
   if (liked) batch.delete(likeRef);

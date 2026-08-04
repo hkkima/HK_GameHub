@@ -50,10 +50,26 @@ Firestore 는 그와 **별개의 서비스**라 같은 프로젝트에 추가해
 > 다른 하나는 RTDB 무료 한도의 **동시 접속 100 제한** 입니다. 발표일처럼 한꺼번에
 > 몰리는 상황에서 Firestore 는 이 제한이 없습니다.
 
-### 1-5. 보안 규칙 배포
+### 1-5. 보안 규칙 추가 (통째로 교체하지 말 것)
 
-**Firestore Database → 규칙** 탭에 [`firestore.rules`](../firestore.rules) 의 내용을
-통째로 붙여넣고 **게시**합니다.
+이 프로젝트의 Firestore 에는 **이미 다른 앱이 쓰는 데이터와 규칙**이 있습니다.
+[`firestore.rules`](../firestore.rules) 를 통째로 붙여넣으면 그 앱의 접근 통제가
+사라집니다.
+
+**Firestore Database → 규칙** 탭을 열고, `firestore.rules` 안에서
+`▼▼▼ 여기서부터` 와 `▲▲▲ 여기까지` 사이의 블록만 복사해서, 기존 규칙의
+
+```
+match /databases/{database}/documents {
+```
+
+바로 안쪽에 **붙여넣고 게시**합니다. 기존 규칙은 지우지 않습니다.
+
+허브가 쓰는 컬렉션은 `gamehub_games`, `gamehub_users` 두 개뿐이고 접두사가
+붙어 있어, 기존 컬렉션과 이름이 겹치지 않습니다.
+
+> 기존 규칙에 `match /{document=**}` 같은 catch-all 이 있어도 그대로 두면 됩니다.
+> Firestore 규칙은 OR 로 평가되므로 추가한 블록이 허용하는 것을 막지 않습니다.
 
 <br>
 

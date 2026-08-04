@@ -23,7 +23,7 @@
    갤러리 · 로그인 · 좋아요        ◀iframe▶   수강생 게임 정적 파일
               │
               ▼
-   Firebase (hk_hub)
+   Firebase (hk-chess-betting)
    Auth (Google) + Firestore (좋아요)
 ```
 
@@ -40,9 +40,14 @@
 
 ### 왜 Firestore 인가
 
-인증을 기존 hk_hub Firebase 로 하기 때문입니다. 같은 프로젝트의 Firestore 를 쓰면
+인증을 기존 Firebase 프로젝트로 하기 때문입니다. 같은 프로젝트의 Firestore 를 쓰면
 보안 규칙에서 `request.auth.uid` 를 바로 쓸 수 있어 **서버가 아예 필요 없습니다.**
 다른 DB 를 쓰면 Firebase ID 토큰을 검증해 교환하는 백엔드를 따로 띄워야 합니다.
+
+이 프로젝트는 다른 앱과 공유하므로, 허브가 쓰는 컬렉션에는 `gamehub_` 접두사를
+붙였습니다(`gamehub_games`, `gamehub_users`). 기존 `users` 컬렉션과 이름이 겹치면
+남의 사용자 문서를 덮어쓰게 되기 때문입니다. 보안 규칙도 통째로 교체하지 않고
+해당 블록만 기존 규칙에 추가합니다.
 
 <br>
 

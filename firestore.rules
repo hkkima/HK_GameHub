@@ -1,60 +1,76 @@
-rules_version = '2';
-
 // HK GameHub - Firestore 보안 규칙
 //
+// ┌──────────────────────────────────────────────────────────────────────────┐
+// │ 주의: 이 파일을 콘솔에 통째로 붙여넣지 말 것.                              │
+// │                                                                          │
+// │ hk-chess-betting 프로젝트에는 이미 다른 앱이 쓰는 Firestore 규칙과        │
+// │ 데이터가 있다. 통째로 교체하면 그 앱의 접근 통제가 사라진다.              │
+// │ 아래 match 블록만 기존 규칙의 `match /databases/{database}/documents {`    │
+// │ 안쪽에 추가할 것.                                                         │
+// └──────────────────────────────────────────────────────────────────────────┘
+//
+// 컬렉션 이름에 gamehub_ 접두사를 붙인 이유도 같다. 기존 프로젝트에 이미
+// users 컬렉션이 있어서, 접두사 없이 쓰면 남의 사용자 문서에 좋아요 목록을
+// 덮어쓰게 된다.
+//
 // 설계 요약
-//   games/{slug}              : { likeCount: number }  - 좋아요 집계
-//   games/{slug}/likes/{uid}  : { createdAt }          - 문서 존재 = 그 유저가 좋아요 누름
+//   gamehub_games/{slug}              : { likeCount: number }  - 좋아요 집계
+//   gamehub_games/{slug}/likes/{uid}  : { createdAt }          - 문서 존재 = 좋아요 누름
+//   gamehub_users/{uid}               : { liked: [slug, ...] } - 갤러리용 캐시
 //
 // 좋아요 수는 서버(Cloud Functions) 없이 클라이언트가 직접 올리지만,
 // getAfter() 로 "좋아요 문서가 실제로 생겼을 때만 +1" 을 강제하므로 조작할 수 없다.
-// 클라이언트는 반드시 writeBatch 로 두 문서를 함께 써야 한다.
+// 클라이언트는 반드시 writeBatch 로 세 문서를 함께 써야 한다.
+
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function myLikeRef(slug) {
-      return /databases/$(database)/documents/games/$(slug)/likes/$(request.auth.uid);
+    // ▼▼▼ 여기서부터 기존 규칙에 추가 ▼▼▼
+
+    function gh_myLikeRef(slug) {
+      return /databases/$(database)/documents/gamehub_games/$(slug)/likes/$(request.auth.uid);
     }
 
     // 이번 쓰기가 끝난 뒤에도 내 좋아요 문서가 존재하는가
-    function likedAfter(slug) {
-      return getAfter(myLikeRef(slug)) != null;
+    function gh_likedAfter(slug) {
+      return getAfter(gh_myLikeRef(slug)) != null;
     }
 
     // 이번 쓰기 전에 내 좋아요 문서가 존재했는가
-    function likedBefore(slug) {
-      return exists(myLikeRef(slug));
+    function gh_likedBefore(slug) {
+      return exists(gh_myLikeRef(slug));
     }
 
-    function onlyLikeCount() {
+    function gh_onlyLikeCount() {
       return request.resource.data.keys().hasOnly(['likeCount'])
              && request.resource.data.likeCount is int;
     }
 
-    match /games/{slug} {
+    match /gamehub_games/{slug} {
       // 좋아요 수는 비로그인 방문자도 본다
       allow read: if true;
 
       // 첫 좋아요: 게임 문서가 아직 없던 상태에서 likeCount = 1 로 생성
       allow create: if request.auth != null
-                    && onlyLikeCount()
+                    && gh_onlyLikeCount()
                     && request.resource.data.likeCount == 1
-                    && !likedBefore(slug)
-                    && likedAfter(slug);
+                    && !gh_likedBefore(slug)
+                    && gh_likedAfter(slug);
 
       allow update: if request.auth != null
-                    && onlyLikeCount()
+                    && gh_onlyLikeCount()
                     && (
                       // 좋아요 누름: 없던 내 좋아요가 생기면서 +1
                       (request.resource.data.likeCount == resource.data.likeCount + 1
-                       && !likedBefore(slug)
-                       && likedAfter(slug))
+                       && !gh_likedBefore(slug)
+                       && gh_likedAfter(slug))
                       ||
                       // 좋아요 취소: 있던 내 좋아요가 사라지면서 -1
                       (request.resource.data.likeCount == resource.data.likeCount - 1
-                       && likedBefore(slug)
-                       && !likedAfter(slug))
+                       && gh_likedBefore(slug)
+                       && !gh_likedAfter(slug))
                     );
 
       // 집계 문서는 지우지 않는다
@@ -78,15 +94,15 @@ service cloud.firestore {
 
     // 내가 좋아요한 게임 목록 캐시.
     // 갤러리를 열 때 좋아요 상태를 게임 수만큼 읽지 않고 문서 1개로 끝내기 위한 것.
-    // 좋아요의 정본은 games/{slug}/likes/{uid} 이고 이 문서는 UI 용 사본이라,
+    // 좋아요의 정본은 gamehub_games/{slug}/likes/{uid} 이고 이 문서는 UI 용 사본이라,
     // 위 좋아요 배치 쓰기에 항상 함께 묶어서 갱신한다.
-    match /users/{uid} {
+    match /gamehub_users/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
 
-    // 그 외 모든 경로 차단
-    match /{document=**} {
-      allow read, write: if false;
-    }
+    // ▲▲▲ 여기까지 기존 규칙에 추가 ▲▲▲
+    //
+    // 기존 규칙에 catch-all(match /{document=**})이 있다면 그대로 두면 된다.
+    // Firestore 규칙은 OR 로 평가되므로, 위 블록이 허용하는 것을 막지 않는다.
   }
 }
