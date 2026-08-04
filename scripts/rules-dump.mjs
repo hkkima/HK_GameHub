@@ -87,8 +87,18 @@ console.log(`# ruleset     : ${release.rulesetName}`);
 console.log(`# createTime  : ${ruleset.createTime}`);
 console.log('');
 
+// 규칙 본문은 base64 로 내보낸다.
+//
+// GitHub Actions 는 여러 줄 시크릿을 줄 단위로도 마스킹한다. 서비스 계정 JSON 의
+// 첫 줄과 끝 줄이 각각 "{" 와 "}" 이므로, 로그에 찍히는 모든 중괄호가 *** 로 가려진다.
+// 규칙은 중괄호가 구조 그 자체라 그대로 출력하면 쓸모가 없어진다.
+// base64 에는 중괄호가 없으므로 원문이 온전히 남는다.
 for (const f of ruleset.source?.files || []) {
-  console.log(`===== ${f.name} =====`);
-  console.log(f.content);
-  console.log(`===== end ${f.name} =====`);
+  const b64 = Buffer.from(f.content, 'utf8').toString('base64');
+  console.log(`===== BASE64 ${f.name} =====`);
+  // 한 줄이 너무 길면 로그에서 잘리므로 100자씩 끊는다
+  for (let i = 0; i < b64.length; i += 100) console.log(b64.slice(i, i + 100));
+  console.log(`===== END ${f.name} =====`);
+  console.log('');
+  console.log(`# ${f.name}: ${f.content.length} bytes, sha256=${crypto.createHash('sha256').update(f.content).digest('hex').slice(0, 16)}`);
 }
