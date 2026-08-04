@@ -159,6 +159,75 @@ button { font: inherit; cursor: pointer; }
 
 .login-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 
+/* -------------------------------------------------------- upload dialog */
+
+.upload-dialog {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg-card);
+  color: var(--ink);
+  padding: 0;
+  width: min(460px, calc(100vw - 32px));
+  box-shadow: var(--shadow);
+}
+.upload-dialog::backdrop { background: rgba(6, 8, 12, .68); }
+.upload-dialog form { padding: 24px; display: flex; flex-direction: column; }
+.upload-dialog h2 { margin: 0 0 4px; font-size: 18px; letter-spacing: -.01em; }
+.upload-who { margin: 0 0 18px; font-size: 12.5px; color: var(--ink-faint); }
+
+.upload-dialog label { font-size: 12.5px; font-weight: 600; color: var(--ink-dim); margin-bottom: 6px; }
+.upload-dialog label .dim { font-weight: 500; color: var(--ink-faint); }
+.upload-dialog input[type="text"] {
+  padding: 10px 13px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+}
+.upload-dialog input[type="text"]:focus { border-color: #3d4a63; }
+
+.dropzone {
+  border: 1.5px dashed #38415a;
+  border-radius: 12px;
+  padding: 22px 16px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--bg-soft);
+  transition: border-color .15s, background .15s;
+  outline: none;
+}
+.dropzone:hover, .dropzone:focus-visible { border-color: var(--accent); }
+.dropzone.drag { border-color: var(--accent); background: rgba(110, 168, 254, .07); }
+.dropzone-inner { display: flex; flex-direction: column; gap: 5px; pointer-events: none; }
+.dropzone-inner strong { font-size: 13.5px; }
+.dropzone-inner span { font-size: 12px; color: var(--ink-faint); line-height: 1.5; }
+
+.up-picked {
+  margin: 12px 0 0;
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: #1c2230;
+  font-size: 12.5px;
+  color: var(--ink-dim);
+}
+.up-picked.instant { border-left: 3px solid #1f9d55; }
+.up-picked.bundle { border-left: 3px solid var(--accent); }
+
+.upload-msg {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: rgba(255, 93, 122, .1);
+  border: 1px solid rgba(255, 93, 122, .28);
+  color: #ff8ea3;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.upload-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+
 /* --------------------------------------------------------------- layout */
 
 .wrap {

@@ -3,6 +3,7 @@ import {
   loginWithPin, loadSession, saveSession, clearSession, LoginError,
 } from './auth.js';
 import { createAdminPanel } from './admin.js';
+import { classify, toSlug, publishInstant, SubmitError } from './submit.js';
 
 // 지급 함수(gamehubPayout)가 있는 리전. 로그인은 이제 함수를 쓰지 않지만
 // 운영자 지급 호출에는 여전히 필요하다.
@@ -79,6 +80,18 @@ const el = {
   newtab: $('#btn-newtab'),
   toast: $('#toast'),
   adminPanel: $('#admin-panel'),
+  uploadBtn: $('#btn-upload'),
+  uploadDialog: $('#upload-dialog'),
+  uploadForm: $('#upload-form'),
+  uploadWho: $('#upload-who'),
+  upTitle: $('#up-title'),
+  upTags: $('#up-tags'),
+  upDesc: $('#up-desc'),
+  upFiles: $('#up-files'),
+  dropzone: $('#dropzone'),
+  upPicked: $('#up-picked'),
+  uploadMsg: $('#upload-msg'),
+  uploadSubmit: $('#upload-submit'),
 };
 
 // ---------------------------------------------------------------------------
@@ -108,6 +121,19 @@ const SANDBOX = [
   'allow-pointer-lock',
   'allow-modals',
   ...(isolated ? ['allow-same-origin'] : []),
+].join(' ');
+
+// 즉시 게시 게임은 srcdoc 으로 렌더한다. srcdoc 은 부모(허브) 오리진을 물려받으므로
+// allow-same-origin 을 절대 주면 안 된다 — 주는 순간 게임이 허브 오리진에서 돌며
+// 로그인 정보에 접근할 수 있다. same-origin 없이 두면 오리진이 없는 샌드박스라
+// 완전히 격리되고, 대신 localStorage 같은 저장 기능은 쓸 수 없다.
+const SANDBOX_SRCDOC = [
+  'allow-scripts',
+  'allow-forms',
+  'allow-popups',
+  'allow-popups-to-escape-sandbox',
+  'allow-pointer-lock',
+  'allow-modals',
 ].join(' ');
 
 // ---------------------------------------------------------------------------
@@ -297,6 +323,7 @@ function paintAuth() {
   const u = state.user;
   el.authAnon.hidden = !!u;
   el.authUser.hidden = !u;
+  el.uploadBtn.hidden = !u; // 로그인해야 게임을 올릴 수 있다
   if (u) {
     el.userName.textContent = u.name;
     el.userBadge.textContent = [...u.name][0] || '?';
@@ -307,11 +334,48 @@ function paintAuth() {
 // 데이터 로드
 // ---------------------------------------------------------------------------
 
+// 갤러리는 두 소스를 합친다.
+//   - games.json      : PR·빌드를 거쳐 Cloudflare 에 올라간 게임(멀티파일 포함)
+//   - gamehub_instant : 수강생이 바로 올린 단일 HTML(검토·빌드 없음)
+// slug 는 두 소스에 걸쳐 유일하다. instant 게임은 instant:true 로 표시한다.
+let cloudflareGames = [];
+
 async function loadGames() {
   const res = await fetch('./games.json', { cache: 'no-cache' });
   if (!res.ok) throw new Error(`games.json ${res.status}`);
   const data = await res.json();
-  state.games = Array.isArray(data) ? data : (data.games || []);
+  cloudflareGames = Array.isArray(data) ? data : (data.games || []);
+  mergeGames([]);
+}
+
+function mergeGames(instant) {
+  // instant 가 같은 slug 를 가지면 games.json 쪽을 우선한다(정식 배포가 이김).
+  const seen = new Set(cloudflareGames.map((g) => g.slug));
+  const extra = instant.filter((g) => !seen.has(g.slug));
+  state.games = [...cloudflareGames, ...extra];
+}
+
+// 즉시 게시 게임의 메타만 읽는다(HTML 은 플레이할 때 별도로 읽는다).
+async function loadInstant() {
+  if (!fb) return;
+  const { collection, getDocs } = fb.fs;
+  const snap = await getDocs(collection(fb.db, 'gamehub_instant'));
+  const list = [];
+  snap.forEach((d) => {
+    const m = d.data();
+    list.push({
+      slug: d.id,
+      title: m.title,
+      author: m.author,
+      authorId: m.authorId || '',
+      cohort: m.cohort || '',
+      description: m.description || '',
+      tags: m.tags || [],
+      addedAt: m.createdAt?.toDate?.().toISOString?.() || '',
+      instant: true,
+    });
+  });
+  mergeGames(list);
 }
 
 // 게임 문서 전체를 한 번에 읽는다. 좋아요가 한 번도 없는 게임은 문서가 없어서
@@ -406,17 +470,38 @@ async function toggleLike(slug) {
 // 플레이어
 // ---------------------------------------------------------------------------
 
-function openGame(slug) {
+async function openGame(slug) {
   const g = state.games.find((x) => x.slug === slug);
   if (!g) return;
 
   el.player.dataset.slug = slug;
   el.playerTitle.textContent = g.title;
   el.playerAuthor.textContent = [g.author, g.cohort].filter(Boolean).join(' · ');
-  el.newtab.href = gameUrl(slug);
 
-  el.frame.setAttribute('sandbox', SANDBOX);
-  el.frame.src = gameUrl(slug);
+  if (g.instant) {
+    // 즉시 게시 게임: HTML 을 읽어 srcdoc 으로 렌더한다(오리진 없는 샌드박스).
+    el.newtab.href = '';
+    el.newtab.style.display = 'none';
+    el.frame.removeAttribute('src');
+    el.frame.setAttribute('sandbox', SANDBOX_SRCDOC);
+    el.frame.srcdoc = '<!doctype html><body style="margin:0;background:#000">';
+    try {
+      const { doc, getDoc } = fb.fs;
+      const snap = await getDoc(doc(fb.db, 'gamehub_instant', slug, 'content', 'html'));
+      // 그 사이 다른 게임을 열었으면 무시
+      if (el.player.dataset.slug !== slug) return;
+      el.frame.srcdoc = snap.exists() ? (snap.data().html || '') : '<!doctype html><p>게임을 불러오지 못했습니다.';
+    } catch (err) {
+      console.error('[HK GameHub] 즉시 게시 게임 로드 실패', err);
+      el.frame.srcdoc = '<!doctype html><p style="font-family:sans-serif;padding:20px">게임을 불러오지 못했습니다.';
+    }
+  } else {
+    el.newtab.href = gameUrl(slug);
+    el.newtab.style.display = '';
+    el.frame.removeAttribute('srcdoc');
+    el.frame.setAttribute('sandbox', SANDBOX);
+    el.frame.src = gameUrl(slug);
+  }
 
   el.player.hidden = false;
   document.body.style.overflow = 'hidden';
@@ -428,7 +513,8 @@ function openGame(slug) {
 function closeGame({ back = true } = {}) {
   if (el.player.hidden) return;
   el.player.hidden = true;
-  el.frame.removeAttribute('src'); // 게임 즉시 정지
+  el.frame.removeAttribute('src');    // 게임 즉시 정지
+  el.frame.removeAttribute('srcdoc');
   delete el.player.dataset.slug;
   document.body.style.overflow = '';
   if (back && location.hash.startsWith('#play/')) history.pushState({}, '', location.pathname);
@@ -482,6 +568,105 @@ async function submitLogin(event) {
   } finally {
     el.loginSubmit.disabled = false;
     el.loginSubmit.textContent = '로그인';
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 게임 올리기
+// ---------------------------------------------------------------------------
+
+let picked = null; // classify() 결과
+
+function resetUpload() {
+  el.uploadForm.reset();
+  picked = null;
+  el.upPicked.hidden = true;
+  el.upPicked.className = 'up-picked';
+  el.uploadMsg.hidden = true;
+  el.dropzone.classList.remove('drag');
+}
+
+function openUpload() {
+  if (!state.user) { openLogin(); return; }
+  resetUpload();
+  el.uploadWho.textContent = `${state.user.name} 님의 게임으로 올라갑니다.`;
+  el.uploadDialog.showModal();
+  el.upTitle.focus();
+}
+
+async function handleFiles(fileList) {
+  el.uploadMsg.hidden = true;
+  picked = null;
+  el.upPicked.className = 'up-picked';
+  try {
+    picked = await classify(fileList);
+    if (picked.kind === 'instant') {
+      el.upPicked.textContent = '단일 HTML — 게시하면 바로 갤러리에 올라갑니다.';
+      el.upPicked.classList.add('instant');
+    } else {
+      el.upPicked.textContent = `여러 파일(${picked.files.length}개) — 빌드를 거쳐 잠시 뒤 올라갑니다.`;
+      el.upPicked.classList.add('bundle');
+    }
+    el.upPicked.hidden = false;
+  } catch (err) {
+    if (err instanceof SubmitError) {
+      el.uploadMsg.textContent = err.message;
+      el.uploadMsg.hidden = false;
+    } else {
+      console.error('[HK GameHub] 파일 분류 실패', err);
+      el.uploadMsg.textContent = '파일을 읽지 못했습니다.';
+      el.uploadMsg.hidden = false;
+    }
+    el.upPicked.hidden = true;
+  }
+}
+
+async function submitUpload(event) {
+  event.preventDefault();
+  el.uploadMsg.hidden = true;
+
+  const title = el.upTitle.value.trim();
+  if (!title) { el.uploadMsg.textContent = '제목을 입력하세요.'; el.uploadMsg.hidden = false; return; }
+  if (!picked) { el.uploadMsg.textContent = '게임 파일을 선택하세요.'; el.uploadMsg.hidden = false; return; }
+  if (!state.user) { openLogin(); return; }
+
+  const meta = {
+    title,
+    author: state.user.name,
+    authorId: state.user.userId,
+    cohort: '',
+    description: el.upDesc.value.trim(),
+    tags: el.upTags.value.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 6),
+  };
+  const slug = toSlug(title, state.user.userId);
+
+  el.uploadSubmit.disabled = true;
+  el.uploadSubmit.textContent = '게시 중…';
+
+  try {
+    if (!await ensureFirebase()) throw new SubmitError('지금은 게시할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+
+    if (picked.kind === 'instant') {
+      await publishInstant(fb, { slug, meta, html: picked.html, uid: fb.auth.currentUser.uid });
+      el.uploadDialog.close();
+      toast('게시되었습니다. 갤러리에 올라갔어요.');
+      await loadInstant();
+      renderTagbar();
+      render();
+    } else {
+      // 멀티파일 경로는 gamehubSubmit 함수가 필요하다. 아직 배포 전이면 안내한다.
+      el.uploadMsg.textContent = '여러 파일 게임은 아직 준비 중입니다. 지금은 단일 index.html 만 올릴 수 있어요. (여러 파일은 GitHub 제출 문서를 참고하세요.)';
+      el.uploadMsg.hidden = false;
+    }
+  } catch (err) {
+    el.uploadMsg.textContent = err instanceof SubmitError
+      ? err.message
+      : '게시하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+    el.uploadMsg.hidden = false;
+    if (!(err instanceof SubmitError)) console.error('[HK GameHub] 게시 실패', err);
+  } finally {
+    el.uploadSubmit.disabled = false;
+    el.uploadSubmit.textContent = '게시';
   }
 }
 
@@ -640,6 +825,26 @@ $('#btn-logout').addEventListener('click', logout);
 $('#btn-admin').addEventListener('click', adminLogin);
 $('#btn-admin-out').addEventListener('click', adminLogout);
 
+// 업로드
+el.uploadBtn.addEventListener('click', openUpload);
+el.uploadForm.addEventListener('submit', submitUpload);
+$('#upload-cancel').addEventListener('click', () => el.uploadDialog.close());
+el.dropzone.addEventListener('click', () => el.upFiles.click());
+el.dropzone.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.upFiles.click(); }
+});
+el.upFiles.addEventListener('change', () => { if (el.upFiles.files.length) handleFiles(el.upFiles.files); });
+['dragenter', 'dragover'].forEach((ev) => el.dropzone.addEventListener(ev, (e) => {
+  e.preventDefault(); el.dropzone.classList.add('drag');
+}));
+['dragleave', 'drop'].forEach((ev) => el.dropzone.addEventListener(ev, (e) => {
+  e.preventDefault(); el.dropzone.classList.remove('drag');
+}));
+el.dropzone.addEventListener('drop', (e) => {
+  const files = e.dataTransfer?.files;
+  if (files && files.length) handleFiles(files);
+});
+
 // ---------------------------------------------------------------------------
 // 시작
 //
@@ -673,6 +878,16 @@ document.title = SITE.title;
   }
 
   watchAuth();
+
+  // 즉시 게시 게임을 갤러리에 합친다.
+  try {
+    await loadInstant();
+    renderTagbar();
+    render();
+    syncFromHash();
+  } catch (err) {
+    console.warn('[HK GameHub] 즉시 게시 게임을 불러오지 못했습니다', err);
+  }
 
   try {
     await loadLikeCounts();

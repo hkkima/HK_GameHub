@@ -66,6 +66,7 @@
       <button class="chip" data-sort="likes">인기순</button>
       <button class="chip" data-sort="title">이름순</button>
     </div>
+    <button id="btn-upload" class="btn btn-primary" hidden>＋ 게임 올리기</button>
   </section>
 
   <section id="tagbar" class="tagbar" aria-label="태그 필터"></section>
@@ -110,6 +111,40 @@
     <iframe id="game-frame" title="게임" allow="fullscreen; gamepad; autoplay; clipboard-write"></iframe>
   </div>
 </div>
+
+<dialog id="upload-dialog" class="upload-dialog">
+  <form id="upload-form" method="dialog">
+    <h2>게임 올리기</h2>
+    <p class="upload-who" id="upload-who"></p>
+
+    <label for="up-title">제목</label>
+    <input id="up-title" name="title" type="text" maxlength="80" required autocomplete="off">
+
+    <label for="up-tags">태그 <span class="dim">(쉼표로 구분, 선택)</span></label>
+    <input id="up-tags" name="tags" type="text" placeholder="예: 액션, 퍼즐" autocomplete="off">
+
+    <label for="up-desc">한 줄 소개 <span class="dim">(선택)</span></label>
+    <input id="up-desc" name="description" type="text" maxlength="120" autocomplete="off">
+
+    <label>게임 파일</label>
+    <div id="dropzone" class="dropzone" tabindex="0" role="button"
+         aria-label="파일을 끌어다 놓거나 선택">
+      <input id="up-files" type="file" accept=".html,.htm,.js,.css,.png,.jpg,.jpeg,.gif,.webp,.svg,.json,.mp3,.ogg,.wav" multiple hidden>
+      <div class="dropzone-inner">
+        <strong>index.html 을 끌어다 놓으세요</strong>
+        <span>단일 HTML 은 바로 게시됩니다. 여러 파일이면 폴더째 선택하세요.</span>
+      </div>
+    </div>
+    <p id="up-picked" class="up-picked" hidden></p>
+
+    <p id="upload-msg" class="upload-msg" role="alert" hidden></p>
+
+    <div class="upload-actions">
+      <button type="button" id="upload-cancel" class="btn btn-ghost">취소</button>
+      <button type="submit" id="upload-submit" class="btn btn-primary">게시</button>
+    </div>
+  </form>
+</dialog>
 
 <div id="toast" class="toast" hidden></div>
 
