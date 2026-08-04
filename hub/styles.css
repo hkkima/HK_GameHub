@@ -226,6 +226,14 @@ button { font: inherit; cursor: pointer; }
   font-size: 12.5px;
   line-height: 1.55;
 }
+.thumb-row { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.thumb-preview {
+  width: 64px; height: 40px;
+  object-fit: cover;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+}
+
 .upload-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
 
 /* --------------------------------------------------------------- layout */

@@ -3,7 +3,7 @@ import {
   loginWithPin, loadSession, saveSession, clearSession, LoginError,
 } from './auth.js';
 import { createAdminPanel } from './admin.js';
-import { classify, toSlug, publishInstant, SubmitError } from './submit.js';
+import { classify, toSlug, publishInstant, makeThumb, SubmitError } from './submit.js';
 
 // 지급 함수(gamehubPayout)가 있는 리전. 로그인은 이제 함수를 쓰지 않지만
 // 운영자 지급 호출에는 여전히 필요하다.
@@ -90,6 +90,10 @@ const el = {
   upFiles: $('#up-files'),
   dropzone: $('#dropzone'),
   upPicked: $('#up-picked'),
+  upThumb: $('#up-thumb'),
+  upThumbBtn: $('#up-thumb-btn'),
+  upThumbPreview: $('#up-thumb-preview'),
+  upThumbClear: $('#up-thumb-clear'),
   uploadMsg: $('#upload-msg'),
   uploadSubmit: $('#upload-submit'),
 };
@@ -249,8 +253,11 @@ function visibleGames() {
 function cardHtml(g) {
   const count = state.likeCounts[g.slug] || 0;
   const liked = state.myLikes.has(g.slug);
-  const thumb = g.thumb
-    ? `<img src="${esc(gameUrl(g.slug) + g.thumb)}" alt="" loading="lazy">`
+  // 즉시 게시 게임의 thumb 는 data URI(그대로 쓴다). Cloudflare 게임은 게임 폴더
+  // 안의 파일 경로라 게임 오리진 URL 을 앞에 붙인다.
+  const thumbSrc = g.thumb ? (g.instant ? g.thumb : gameUrl(g.slug) + g.thumb) : null;
+  const thumb = thumbSrc
+    ? `<img src="${esc(thumbSrc)}" alt="" loading="lazy">`
     : fallbackThumb(g);
 
   const tags = (g.tags || []).slice(0, 3)
@@ -371,6 +378,7 @@ async function loadInstant() {
       cohort: m.cohort || '',
       description: m.description || '',
       tags: m.tags || [],
+      thumb: m.thumb || '',
       addedAt: m.createdAt?.toDate?.().toISOString?.() || '',
       instant: true,
     });
@@ -575,15 +583,42 @@ async function submitLogin(event) {
 // 게임 올리기
 // ---------------------------------------------------------------------------
 
-let picked = null; // classify() 결과
+let picked = null;    // classify() 결과
+let thumbUri = null;  // makeThumb() 결과 data URI
 
 function resetUpload() {
   el.uploadForm.reset();
   picked = null;
+  thumbUri = null;
   el.upPicked.hidden = true;
   el.upPicked.className = 'up-picked';
+  el.upThumbPreview.hidden = true;
+  el.upThumbPreview.removeAttribute('src');
+  el.upThumbClear.hidden = true;
   el.uploadMsg.hidden = true;
   el.dropzone.classList.remove('drag');
+}
+
+async function handleThumb(file) {
+  el.uploadMsg.hidden = true;
+  try {
+    thumbUri = await makeThumb(file);
+    el.upThumbPreview.src = thumbUri;
+    el.upThumbPreview.hidden = false;
+    el.upThumbClear.hidden = false;
+  } catch (err) {
+    thumbUri = null;
+    el.uploadMsg.textContent = err instanceof SubmitError ? err.message : '썸네일을 처리하지 못했습니다.';
+    el.uploadMsg.hidden = false;
+  }
+}
+
+function clearThumb() {
+  thumbUri = null;
+  el.upThumb.value = '';
+  el.upThumbPreview.hidden = true;
+  el.upThumbPreview.removeAttribute('src');
+  el.upThumbClear.hidden = true;
 }
 
 function openUpload() {
@@ -637,6 +672,7 @@ async function submitUpload(event) {
     cohort: '',
     description: el.upDesc.value.trim(),
     tags: el.upTags.value.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 6),
+    thumb: thumbUri || '',
   };
   const slug = toSlug(title, state.user.userId);
 
@@ -834,6 +870,9 @@ el.dropzone.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.upFiles.click(); }
 });
 el.upFiles.addEventListener('change', () => { if (el.upFiles.files.length) handleFiles(el.upFiles.files); });
+el.upThumbBtn.addEventListener('click', () => el.upThumb.click());
+el.upThumb.addEventListener('change', () => { if (el.upThumb.files[0]) handleThumb(el.upThumb.files[0]); });
+el.upThumbClear.addEventListener('click', clearThumb);
 ['dragenter', 'dragover'].forEach((ev) => el.dropzone.addEventListener(ev, (e) => {
   e.preventDefault(); el.dropzone.classList.add('drag');
 }));

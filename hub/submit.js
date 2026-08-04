@@ -28,6 +28,38 @@ export function toSlug(title, authorId) {
 }
 
 const readText = (file) => file.text();
+
+// 썸네일 이미지를 작은 JPEG data URI 로 줄인다. 갤러리 메타 문서에 함께 담기므로
+// 작아야 한다(규칙 상한 80KB). 긴 변을 max 로 맞추고 품질을 낮춰 재시도한다.
+export async function makeThumb(file, max = 320) {
+  if (!/^image\//.test(file.type)) throw new SubmitError('이미지 파일을 선택하세요.');
+
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new SubmitError('이미지를 읽지 못했습니다.'));
+      i.src = url;
+    });
+
+    const scale = Math.min(1, max / Math.max(img.width, img.height));
+    const w = Math.max(1, Math.round(img.width * scale));
+    const h = Math.max(1, Math.round(img.height * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+    for (const q of [0.72, 0.6, 0.45, 0.3]) {
+      const uri = canvas.toDataURL('image/jpeg', q);
+      if (uri.length < 78000) return uri;
+    }
+    throw new SubmitError('썸네일 이미지가 너무 큽니다. 더 작은 이미지를 써 주세요.');
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
 const readDataUrl = (file) => new Promise((resolve, reject) => {
   const r = new FileReader();
   r.onload = () => resolve(r.result);
@@ -36,12 +68,26 @@ const readDataUrl = (file) => new Promise((resolve, reject) => {
 });
 
 // 단일 HTML 이 자체완결인지 본다. 로컬 파일을 가리키는 src/href 가 있으면 아니다.
-// (http(s):, data:, #, mailto:, // 는 외부/인라인이라 괜찮다)
+//
+// 오탐 주의: 게임 JS 안에 `<img src="${x}">` 같은 템플릿 문자열이 흔하다. 그건
+// 런타임에 data URI 등을 채우는 코드지 실제 파일 참조가 아니다. 그래서
+//   1) <script>...</script> 안은 통째로 제외하고
+//   2) 남은 마크업에서만 태그 속성을 보고
+//   3) 값에 ${ 나 <%= 같은 템플릿 표현식이 있으면 정적 참조가 아니므로 건너뛴다.
 function isSelfContained(html) {
-  const refs = [...html.matchAll(/\b(?:src|href)\s*=\s*["']([^"']+)["']/gi)].map((m) => m[1]);
-  return !refs.some((ref) => {
+  // 스크립트 "본문" 만 지운다. 여는 태그(<script src=...>)는 남겨서 외부 스크립트
+  // 참조는 여전히 검사되게 한다. 본문 안의 `<img src="${x}">` 같은 문자열만 사라진다.
+  const markup = html.replace(/(<script\b[^>]*>)[\s\S]*?<\/script\s*>/gi, '$1');
+
+  // 태그 안의 src/href 속성만 본다
+  const attrs = [...markup.matchAll(
+    /<[a-z][^>]*?\b(?:src|href)\s*=\s*["']([^"']*)["'][^>]*>/gi,
+  )].map((m) => m[1]);
+
+  return !attrs.some((ref) => {
     const v = ref.trim();
     if (!v) return false;
+    if (/[$#{}]|<%/.test(v)) return false;            // 템플릿 표현식은 정적 참조가 아니다
     return !/^(https?:|data:|blob:|mailto:|tel:|#|\/\/)/i.test(v);
   });
 }
@@ -102,8 +148,7 @@ export async function publishInstant(fb, { slug, meta, html, uid }) {
     throw new SubmitError('같은 이름의 게임이 이미 있습니다. 제목을 조금 바꿔 주세요.');
   }
 
-  const batch = writeBatch(fb.db);
-  batch.set(metaRef, {
+  const metaDoc = {
     title: meta.title,
     author: meta.author,
     authorId: meta.authorId,
@@ -112,7 +157,11 @@ export async function publishInstant(fb, { slug, meta, html, uid }) {
     tags: meta.tags || [],
     by: uid,
     createdAt: serverTimestamp(),
-  });
+  };
+  if (meta.thumb) metaDoc.thumb = meta.thumb;
+
+  const batch = writeBatch(fb.db);
+  batch.set(metaRef, metaDoc);
   batch.set(doc(fb.db, 'gamehub_instant', slug, 'content', 'html'), { html });
   await batch.commit();
 }
