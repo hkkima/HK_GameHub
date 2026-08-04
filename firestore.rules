@@ -1,108 +1,263 @@
-// HK GameHub - Firestore 보안 규칙
-//
-// ┌──────────────────────────────────────────────────────────────────────────┐
-// │ 주의: 이 파일을 콘솔에 통째로 붙여넣지 말 것.                              │
-// │                                                                          │
-// │ hk-chess-betting 프로젝트에는 이미 다른 앱이 쓰는 Firestore 규칙과        │
-// │ 데이터가 있다. 통째로 교체하면 그 앱의 접근 통제가 사라진다.              │
-// │ 아래 match 블록만 기존 규칙의 `match /databases/{database}/documents {`    │
-// │ 안쪽에 추가할 것.                                                         │
-// └──────────────────────────────────────────────────────────────────────────┘
-//
-// 컬렉션 이름에 gamehub_ 접두사를 붙인 이유도 같다. 기존 프로젝트에 이미
-// users 컬렉션이 있어서, 접두사 없이 쓰면 남의 사용자 문서에 좋아요 목록을
-// 덮어쓰게 된다.
-//
-// 설계 요약
-//   gamehub_games/{slug}              : { likeCount: number }  - 좋아요 집계
-//   gamehub_games/{slug}/likes/{uid}  : { createdAt }          - 문서 존재 = 좋아요 누름
-//   gamehub_users/{uid}               : { liked: [slug, ...] } - 갤러리용 캐시
-//
-// 좋아요 수는 서버(Cloud Functions) 없이 클라이언트가 직접 올리지만,
-// getAfter() 로 "좋아요 문서가 실제로 생겼을 때만 +1" 을 강제하므로 조작할 수 없다.
-// 클라이언트는 반드시 writeBatch 로 세 문서를 함께 써야 한다.
-
 rules_version = '2';
+
+// ★★★ 베팅판 + 주식판 + 게임허브 통합 보안 규칙 ★★★
+//   여러 앱이 같은 Firebase 프로젝트(같은 Firestore)를 공유한다. 프로젝트당 규칙은 하나뿐이므로
+//   이 파일이 '권위 있는' 통합본이다. 배포 시 이 파일을 쓰면 모든 앱이 함께 동작한다.
+//   (HK_Betting/firestore.rules 와 동기화 필요. 이 파일이 그 상위 집합)
+//
+// ⚠ 다른 레포에서 규칙을 배포하기 전에 이 파일의 HK GameHub 블록을 그쪽에도 옮길 것.
+//   옮기지 않으면 배포하는 순간 게임허브의 좋아요가 동작을 멈춘다.
+//
+// 핵심 불변식: "포인트(users.balance)는 검증된 경로로만 증가한다(인플레 차단)".
+//   - 베팅: 참가자는 balance 감소만(베팅), 증가(정산)는 운영자만.
+//   - 주식: 모든 거래/배당/시세조정은 Cloud Functions(Admin SDK)가 실행 → 규칙을 우회한다.
+//           따라서 클라이언트는 stocks/holdings/ledger/meta(stockBoard) 를 '읽기만' 가능.
+//           balance 증가(매도·배당)는 오직 함수만 할 수 있다(클라이언트 직접 증가는 아래서 차단).
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ▼▼▼ 여기서부터 기존 규칙에 추가 ▼▼▼
+    function signedIn() { return request.auth != null; }
 
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email != null
+        && request.auth.token.email in [
+          'jetsomk22@gmail.com'
+          // 'another-admin@gmail.com'
+        ];
+    }
+
+    // ── 공유: 참가자 계정 (이름 + PIN, balance) ──────────────
+    match /users/{userId} {
+      allow read: if true;                  // 명단/리더보드 공개
+      allow delete: if isAdmin();
+      // 자체 가입: 본인이 만들되 시작 balance 는 반드시 0.
+      allow create: if isAdmin()
+        || (signedIn()
+            && request.resource.data.balance == 0
+            && request.resource.data.keys().hasOnly(['name', 'pinHash', 'balance']));
+      // 운영자는 자유롭게. 참가자(클라이언트)는 balance 만, '감소'만 허용(베팅용).
+      //   주식 매도/배당의 balance 증가는 Cloud Functions(Admin SDK)가 처리 → 규칙 우회.
+      allow update: if isAdmin()
+        || (signedIn()
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['balance'])
+            && request.resource.data.balance is int
+            && request.resource.data.balance >= 0
+            && request.resource.data.balance < resource.data.balance);
+    }
+
+    // ── 베팅: meta(board 등) + markets + bets ───────────────
+    match /meta/{docId} {
+      // stockBoard 포함 모든 meta 는 공개 읽기. 쓰기는 운영자/함수만.
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /markets/{marketId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin()
+        || (signedIn()
+            && resource.data.status == 'open'
+            && request.resource.data.status == 'open'
+            && request.resource.data.result == resource.data.result);
+
+      match /bets/{betUserId} {
+        allow read: if true;
+        allow create: if signedIn()
+          && request.resource.data.stake is int
+          && request.resource.data.stake > 0
+          && get(/databases/$(database)/documents/markets/$(marketId)).data.status == 'open'
+          && getAfter(/databases/$(database)/documents/users/$(betUserId)).data.balance
+             == get(/databases/$(database)/documents/users/$(betUserId)).data.balance - request.resource.data.stake;
+        allow update, delete: if isAdmin();
+      }
+    }
+
+    // ── 주식: 전부 읽기 전용. 쓰기는 Cloud Functions(Admin SDK)만 ─
+    //   (Admin SDK 는 규칙을 우회하므로 클라이언트 쓰기를 전면 차단해도 함수는 동작)
+    match /stocks/{stockId} {
+      allow read: if true;
+      allow write: if false;
+      // 분봉(series)·일봉(candles) 등 하위 시세 이력도 공개 읽기, 쓰기는 함수만.
+      match /{sub=**} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+    match /holdings/{holdingId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    // 종목 특성(비공개 태그) — 운영자만 읽기. 뉴스 타겟용이라 학생에겐 숨김. 쓰기는 함수만.
+    match /stockTraits/{stockId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    // 예약 뉴스 큐 — 운영자만 읽기(게시 전까지 학생에게 숨김). 쓰기는 함수(Admin SDK)만.
+    match /scheduledNews/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /trades/{tradeId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /ledger/{entryId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ── DP 교환소: 전부 읽기 전용, 쓰기는 Cloud Functions(Admin SDK)만 ─
+    //   DP는 게임 포인트(users.balance)와 별개 통화. meta/dpExchange 는 위 meta 규칙으로 커버.
+    match /dpAccounts/{userId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /dpGoods/{goodsId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /dpRedemptions/{redId} {
+      allow read: if true;   // 학급 투명성. 민감하면 본인+운영자로 좁힐 수 있음.
+      allow write: if false;
+    }
+
+    // ── 코딩 문제판 (HK_Judge) ───────────────────────────────
+    //   문제 메타/예제는 공개 읽기(학습자가 봄). 채점용 전체 테스트케이스(정답)는
+    //   운영자만 읽기(problemTests). 문제 쓰기·제출·보상은 전부 Cloud Functions(Admin SDK).
+    //   ★ 이 블록은 HK_Judge/firestore.rules 와 동일해야 함 ★
+    match /problems/{problemId} {
+      allow read: if true;      // 제목·설명·템플릿·공개 예제
+      allow write: if false;    // upsertProblem / deleteProblem 함수만
+    }
+    match /problemTests/{problemId} {
+      allow read: if isAdmin();  // 정답이 담긴 채점 케이스 — 학습자에게 숨김
+      allow write: if false;
+    }
+    match /submissions/{subId} {
+      allow read: if true;       // 제출 이력(감사·본인 확인). 쓰기는 함수만.
+      allow write: if false;
+    }
+    // 최초 정답 표식(중복 보상 방지) — 함수만 생성.
+    match /solved/{solvedId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ── 외주 게시판 (HK_Board) ───────────────────────────────
+    //   외주(gigs)·봉사(helpRequests) 모두 공개 읽기(학급 투명성).
+    //   ★모든 쓰기(등록·지원·계약·에스크로 정산·봉사 지급)는 Cloud Functions(Admin SDK)만★.
+    //   에스크로는 gigs/{id}.escrow 필드에 보관 → 클라 직접 쓰기 차단으로 무결성 보장.
+    match /gigs/{gigId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /helpRequests/{helpId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    // 작업자 프로필(자기소개·스킬) — 공개 읽기, 쓰기는 setProfile 함수만(PIN 검증).
+    match /profiles/{userId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    // 테스터 모집(다수 인원) — 공개 읽기, 쓰기는 함수만. 에스크로는 recruits/{id}.escrow.
+    match /recruits/{recruitId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ── 팀 경제(팀 포인트) — ★팀 = 주식★ ─────────────────────────
+    //   팀 금고는 stocks/{id}.corpBalance (별도 companies 컬렉션 없음. 상장=팀 생성, 상폐=팀 해산).
+    //   stocks 는 위에서 이미 공개읽기·쓰기금지. 원장/주문만 여기서 연다.
+    //   전부 공개 읽기(학급 투명성 — CEO 지출을 전원이 감시). 쓰기는 Cloud Functions(Admin SDK)만.
+    match /teamLedger/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /corpOrders/{orderId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ── 홀덤 리그 (holdem-league) ────────────────────────────
+    //   게임 상태(좌석·핸드·베팅)는 같은 프로젝트의 Realtime Database 에 있고,
+    //   여기 있는 건 '돈' 뿐이다 — 바이인 에스크로(holdemGames/{gid}.escrow)와
+    //   개설 시점에 고정된 정산 파라미터(buyIn·payouts).
+    //   ★쓰기는 Cloud Functions(holdemCreate/Join/Refund/Settle/Revert/Cancel)만★.
+    //   클라가 여기를 못 쓰기 때문에, RTDB 게임 상태를 조작해도 배분 비율과
+    //   '누가 실제로 냈는지'는 바꿀 수 없다 → 포인트를 만들어 낼 수 없다.
+    match /holdemGames/{gid} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ── 게임 허브 (HK_GameHub) ───────────────────────────────
+    //   레포: https://github.com/hkkima/HK_GameHub
+    //
+    //   수강생이 만든 웹게임을 전시하고 좋아요를 받는 갤러리. 게임 파일 자체는
+    //   Cloudflare Pages 에 있고, Firestore 에는 좋아요만 저장한다.
+    //
+    //   컬렉션에 gamehub_ 접두사를 붙인 이유는 이 Firestore 를 여러 앱이 공유하기
+    //   때문이다. 접두사가 없으면 위 users(참가자 계정)에 좋아요 목록을 덮어쓴다.
+    //
+    //     gamehub_games/{slug}              : { likeCount }
+    //     gamehub_games/{slug}/likes/{uid}  : { createdAt }   문서 존재 = 좋아요 누름
+    //     gamehub_users/{uid}               : { liked: [...] } 갤러리용 캐시
+    //
+    //   좋아요 수는 여기서만 Cloud Functions 없이 클라이언트가 직접 올린다.
+    //   대신 getAfter() 로 '내 좋아요 문서가 실제로 생겼을 때만 +1' 을 강제하므로
+    //   숫자만 임의로 부풀릴 수 없다. 클라이언트는 세 문서를 batch 로 함께 쓴다.
+    //   포인트(users.balance)와 무관한 값이라 인플레 불변식에도 영향이 없다.
     function gh_myLikeRef(slug) {
       return /databases/$(database)/documents/gamehub_games/$(slug)/likes/$(request.auth.uid);
     }
-
-    // 이번 쓰기가 끝난 뒤에도 내 좋아요 문서가 존재하는가
-    function gh_likedAfter(slug) {
-      return getAfter(gh_myLikeRef(slug)) != null;
-    }
-
-    // 이번 쓰기 전에 내 좋아요 문서가 존재했는가
-    function gh_likedBefore(slug) {
-      return exists(gh_myLikeRef(slug));
-    }
-
+    function gh_likedAfter(slug)  { return getAfter(gh_myLikeRef(slug)) != null; }
+    function gh_likedBefore(slug) { return exists(gh_myLikeRef(slug)); }
     function gh_onlyLikeCount() {
       return request.resource.data.keys().hasOnly(['likeCount'])
-             && request.resource.data.likeCount is int;
+        && request.resource.data.likeCount is int;
     }
 
     match /gamehub_games/{slug} {
-      // 좋아요 수는 비로그인 방문자도 본다
-      allow read: if true;
+      allow read: if true;                       // 좋아요 수는 비로그인도 본다
 
-      // 첫 좋아요: 게임 문서가 아직 없던 상태에서 likeCount = 1 로 생성
-      allow create: if request.auth != null
-                    && gh_onlyLikeCount()
-                    && request.resource.data.likeCount == 1
-                    && !gh_likedBefore(slug)
-                    && gh_likedAfter(slug);
+      // 첫 좋아요: 문서가 없던 게임에 likeCount = 1 로 생성
+      allow create: if signedIn()
+        && gh_onlyLikeCount()
+        && request.resource.data.likeCount == 1
+        && !gh_likedBefore(slug)
+        && gh_likedAfter(slug);
 
-      allow update: if request.auth != null
-                    && gh_onlyLikeCount()
-                    && (
-                      // 좋아요 누름: 없던 내 좋아요가 생기면서 +1
-                      (request.resource.data.likeCount == resource.data.likeCount + 1
-                       && !gh_likedBefore(slug)
-                       && gh_likedAfter(slug))
-                      ||
-                      // 좋아요 취소: 있던 내 좋아요가 사라지면서 -1
-                      (request.resource.data.likeCount == resource.data.likeCount - 1
-                       && gh_likedBefore(slug)
-                       && !gh_likedAfter(slug))
-                    );
+      allow update: if signedIn()
+        && gh_onlyLikeCount()
+        && (
+          // 좋아요 누름: 없던 내 좋아요가 생기면서 +1
+          (request.resource.data.likeCount == resource.data.likeCount + 1
+           && !gh_likedBefore(slug) && gh_likedAfter(slug))
+          ||
+          // 좋아요 취소: 있던 내 좋아요가 사라지면서 -1
+          (request.resource.data.likeCount == resource.data.likeCount - 1
+           && gh_likedBefore(slug) && !gh_likedAfter(slug))
+        );
 
-      // 집계 문서는 지우지 않는다
-      allow delete: if false;
+      allow delete: if isAdmin();
 
       match /likes/{uid} {
-        // 누가 좋아요를 눌렀는지는 공개 (좋아요 누른 사람 목록 표시용)
         allow read: if true;
-
-        allow create: if request.auth != null
-                      && request.auth.uid == uid
-                      && request.resource.data.keys().hasOnly(['createdAt']);
-
-        allow delete: if request.auth != null
-                      && request.auth.uid == uid;
-
-        // 좋아요는 켜고 끄는 것뿐, 수정 개념이 없다
+        allow create: if signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['createdAt']);
+        allow delete: if signedIn() && request.auth.uid == uid;
         allow update: if false;
       }
     }
 
-    // 내가 좋아요한 게임 목록 캐시.
-    // 갤러리를 열 때 좋아요 상태를 게임 수만큼 읽지 않고 문서 1개로 끝내기 위한 것.
-    // 좋아요의 정본은 gamehub_games/{slug}/likes/{uid} 이고 이 문서는 UI 용 사본이라,
-    // 위 좋아요 배치 쓰기에 항상 함께 묶어서 갱신한다.
+    // 내가 좋아요한 게임 목록 캐시. 갤러리를 열 때 게임 수만큼 읽지 않고
+    // 문서 1개로 끝내기 위한 것. 정본은 gamehub_games/{slug}/likes/{uid} 다.
     match /gamehub_users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read, write: if signedIn() && request.auth.uid == uid;
     }
-
-    // ▲▲▲ 여기까지 기존 규칙에 추가 ▲▲▲
-    //
-    // 기존 규칙에 catch-all(match /{document=**})이 있다면 그대로 두면 된다.
-    // Firestore 규칙은 OR 로 평가되므로, 위 블록이 허용하는 것을 막지 않는다.
   }
 }
