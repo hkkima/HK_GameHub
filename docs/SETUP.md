@@ -109,6 +109,38 @@ Firestore 는 **프로젝트당 규칙이 하나뿐**이라, 규칙을 배포하
 
 Workers & Pages 화면 오른쪽 사이드바에 **Account ID** 가 있습니다.
 
+### 1-6. 서비스 계정 권한 (함수 배포용)
+
+좋아요 포인트 기능부터는 Cloud Functions 를 배포해야 해서, `github-firestore-rules`
+서비스 계정에 권한을 더 줘야 합니다. [IAM 페이지](https://console.cloud.google.com/iam-admin/iam?project=hk-chess-betting)
+에서 다음을 추가하세요.
+
+| 역할 | 용도 |
+|---|---|
+| `Firebase Rules 관리자` | 기존 — 보안 규칙 |
+| `Cloud Functions 관리자` | 함수 생성·갱신 |
+| `서비스 계정 사용자` | 함수 실행 계정 지정 |
+| `Cloud Run 관리자` | 2세대 함수는 Cloud Run 위에서 돈다 |
+| `Artifact Registry 관리자` | 함수 이미지 저장 |
+| `Cloud Build 편집자` | 함수 빌드 |
+
+> ⚠ **규칙만 다룰 때보다 훨씬 넓은 권한입니다.** 이 계정으로 코드를 배포할 수 있게
+> 됩니다. 함수를 자주 고칠 일이 없다면, 배포가 끝난 뒤 추가 역할만 회수하고
+> `Firebase Rules 관리자` 만 남겨두셔도 됩니다.
+
+### 1-7. 함수 배포
+
+**Actions → Firebase 배포 → Run workflow → `deploy-functions`**
+
+`gamehubLogin`(PIN 검증·커스텀 토큰)과 `gamehubPayout`(주간 지급) 두 개가 올라갑니다.
+
+> 함수는 `firebase.json` 에서 **codebase `gamehub`** 로 분리되어 있고, 배포도
+> `--only functions:gamehub` 로 그 codebase 만 대상으로 합니다. 베팅·홀덤 등
+> 다른 앱의 함수는 이 워크플로가 건드리지 않습니다.
+>
+> **직접 배포하실 때도 반드시 codebase 필터를 붙이세요.** 필터 없이
+> `firebase deploy --only functions` 를 돌리면 이 레포에 없는 함수들이 삭제 대상이 됩니다.
+
 ### 2-3. API 토큰 발급
 
 1. 오른쪽 위 프로필 → **My Profile** → **API Tokens** → **Create Token**

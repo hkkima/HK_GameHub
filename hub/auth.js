@@ -1,18 +1,18 @@
 // 수강생 인증
 //
-// 기존 학급 앱(HK_Betting 등)과 똑같은 방식을 쓴다. 허브만 다른 규칙을 쓰면
-// 같은 이름·PIN 으로 로그인이 안 되는 상황이 생기기 때문이다.
+// 이름·PIN 은 gamehubLogin Cloud Function 이 서버에서 검증하고, uid 가 참가자 ID 인
+// 커스텀 토큰을 돌려준다. 클라이언트는 그 토큰으로 로그인한다.
 //
-//   문서 ID  : 이름을 trim → 소문자 → 공백을 _ 로
-//   PIN 해시 : "pin_" + djb2(pin) 을 16진수로
-//   Firebase : signInAnonymously (익명). 학급 신원은 Firestore 의 users 문서다.
+// 서버 검증이 필요한 이유는 좋아요 1건이 포인트로 환산되기 때문이다. 클라이언트에서
+// pinHash 를 대조하는 방식(기존 학급 앱)으로는 request.auth.uid 가 익명 uid 라
+// 보안 규칙이 본인 확인을 할 수 없고, 남의 이름으로 좋아요를 눌러 포인트를 만들어
+// 낼 수 있다. 커스텀 토큰이면 uid == 참가자 ID 라 규칙이 이를 막는다.
 //
-// 주의: PIN 해시는 암호학적 해시가 아니고 users 컬렉션은 공개 읽기라, PIN 은
-// 마음먹으면 알아낼 수 있다. 기존 시스템의 설계를 그대로 따른 것이고 허브가
-// 이를 더 약하게 만들지는 않는다. 허브가 다루는 값은 좋아요뿐이라 포인트에는
-// 영향이 없다.
+// 슬러그·해시 함수는 서버(functions/index.js)에도 같은 구현이 있다. 기존 학급 앱과
+// 결과가 완전히 같아야 같은 이름·PIN 으로 로그인된다.
 
 const SESSION_KEY = 'hkgamehub.session';
+export const FUNCTIONS_REGION = 'asia-northeast3';
 
 // 기존 앱의 $i() 와 동일해야 한다
 export function participantId(name) {
@@ -52,26 +52,6 @@ export function clearSession() {
   } catch { /* 무시 */ }
 }
 
-// 이름으로 참가자 문서를 찾는다.
-// 문서 ID 로 먼저 보고(읽기 1회), 없으면 name 필드로 조회한다.
-// 기존 앱이 이름을 그대로 문서 ID 로 만든 경우와 나중에 이름만 바꾼 경우를 모두 잡기 위함.
-async function findParticipant(fb, name) {
-  const { doc, getDoc, collection, query, where, limit, getDocs } = fb.fs;
-
-  const id = participantId(name);
-  const byId = await getDoc(doc(fb.db, 'users', id));
-  if (byId.exists()) return { id: byId.id, ...byId.data() };
-
-  const snap = await getDocs(query(
-    collection(fb.db, 'users'),
-    where('name', '==', String(name).trim()),
-    limit(1),
-  ));
-  if (!snap.empty) return { id: snap.docs[0].id, ...snap.docs[0].data() };
-
-  return null;
-}
-
 export class LoginError extends Error {}
 
 // 이름 + PIN 으로 로그인한다. 성공하면 { userId, name } 을 돌려준다.
@@ -79,17 +59,23 @@ export async function loginWithPin(fb, name, pin) {
   if (!String(name).trim()) throw new LoginError('이름을 입력하세요.');
   if (!String(pin).trim()) throw new LoginError('PIN 을 입력하세요.');
 
-  const participant = await findParticipant(fb, name);
-  if (!participant) {
-    throw new LoginError('등록되지 않은 참가자입니다. 이름을 다시 확인해 주세요.');
-  }
-  if (participant.pinHash !== hashPin(pin)) {
-    throw new LoginError('PIN 이 일치하지 않습니다.');
+  let result;
+  try {
+    const login = fb.fns.httpsCallable(fb.functions, 'gamehubLogin');
+    result = await login({ name: String(name).trim(), pin: String(pin) });
+  } catch (err) {
+    // 함수가 던진 HttpsError 는 사용자에게 그대로 보여줘도 되는 문구다
+    if (err?.code === 'functions/not-found' || err?.code === 'functions/permission-denied'
+        || err?.code === 'functions/invalid-argument') {
+      throw new LoginError(err.message);
+    }
+    throw err;
   }
 
-  // Firestore 보안 규칙이 signedIn() 을 요구하므로 익명 로그인이 필요하다.
-  // 이 익명 uid 는 학급 신원과 무관하며, 좋아요는 participant.id 로 기록된다.
-  await fb.auths.signInAnonymously(fb.auth);
+  const { token, userId, name: displayName } = result.data || {};
+  if (!token) throw new LoginError('로그인 응답이 올바르지 않습니다.');
 
-  return { userId: participant.id, name: participant.name || String(name).trim() };
+  await fb.auths.signInWithCustomToken(fb.auth, token);
+
+  return { userId, name: displayName || String(name).trim() };
 }

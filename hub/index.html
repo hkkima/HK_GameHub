@@ -54,6 +54,8 @@
 
 <main class="wrap">
 
+  <section id="admin-panel" class="admin" hidden></section>
+
   <section class="controls">
     <div class="search-box">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
@@ -81,7 +83,11 @@
 
 <footer class="foot">
   <span id="count-line"></span>
-  <a href="https://github.com/hkkima/HK_GameHub#readme" target="_blank" rel="noopener">내 게임 올리는 법</a>
+  <span class="foot-right">
+    <a href="https://github.com/hkkima/HK_GameHub/blob/main/docs/SUBMISSION.md" target="_blank" rel="noopener">내 게임 올리는 법</a>
+    <button id="btn-admin" class="linkish" type="button">운영자</button>
+    <button id="btn-admin-out" class="linkish" type="button" hidden>운영자 로그아웃</button>
+  </span>
 </footer>
 
 <!-- 플레이 오버레이 -->
