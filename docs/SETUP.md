@@ -113,26 +113,36 @@ Workers & Pages 화면 오른쪽 사이드바에 **Account ID** 가 있습니다
 
 좋아요 포인트 기능부터는 Cloud Functions 를 배포해야 해서, `github-firestore-rules`
 서비스 계정에 권한을 더 줘야 합니다. [IAM 페이지](https://console.cloud.google.com/iam-admin/iam?project=hk-chess-betting)
-에서 다음을 추가하세요.
+에서 다음을 추가하세요. (아래는 실제 배포에서 하나씩 막히며 확정한 목록입니다.)
 
 | 역할 | 용도 |
 |---|---|
 | `Firebase Rules 관리자` | 기존 — 보안 규칙 |
+| `Firebase 관리자` | Firebase 프로젝트 조회·함수·확장 관리 (여러 하위 API 를 한 번에 커버) |
 | `Cloud Functions 관리자` | 함수 생성·갱신 |
 | `서비스 계정 사용자` | 함수 실행 계정 지정 |
 | `Cloud Run 관리자` | 2세대 함수는 Cloud Run 위에서 돈다 |
 | `Artifact Registry 관리자` | 함수 이미지 저장 |
 | `Cloud Build 편집자` | 함수 빌드 |
 
+그리고 [Cloud Billing API](https://console.cloud.google.com/apis/library/cloudbilling.googleapis.com?project=hk-chess-betting)
+를 콘솔에서 **한 번 켜 주세요**. 서비스 계정 권한으로는 켤 수 없고, `firebase-tools`
+가 2세대 함수 배포 전 요금제 확인에 씁니다. (요금 부과 방식과는 무관한 조회용 API 입니다.)
+
 > ⚠ **규칙만 다룰 때보다 훨씬 넓은 권한입니다.** 이 계정으로 코드를 배포할 수 있게
 > 됩니다. 함수를 자주 고칠 일이 없다면, 배포가 끝난 뒤 추가 역할만 회수하고
 > `Firebase Rules 관리자` 만 남겨두셔도 됩니다.
+>
+> 로그인용 커스텀 토큰 함수를 다시 붙이는 경우에만, 함수 **런타임** 서비스 계정
+> (`<프로젝트번호>-compute@developer.gserviceaccount.com`)에 `Service Account
+> Token Creator` 역할이 추가로 필요합니다. 현재 구성(익명 로그인)에서는 불필요합니다.
 
 ### 1-7. 함수 배포
 
 **Actions → Firebase 배포 → Run workflow → `deploy-functions`**
 
-`gamehubLogin`(PIN 검증·커스텀 토큰)과 `gamehubPayout`(주간 지급) 두 개가 올라갑니다.
+`gamehubPayout`(주간 지급) 함수가 올라갑니다. 로그인은 함수를 쓰지 않으므로
+(수강생은 익명 로그인 + 클라이언트 PIN 대조) 이 함수 하나면 됩니다.
 
 > 함수는 `firebase.json` 에서 **codebase `gamehub`** 로 분리되어 있고, 배포도
 > `--only functions:gamehub` 로 그 codebase 만 대상으로 합니다. 베팅·홀덤 등

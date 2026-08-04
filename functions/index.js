@@ -6,19 +6,17 @@
 //   건드리지 않는다. 절대 codebase 필터 없이 배포하지 말 것.
 //
 // 하는 일
-//   gamehubLogin  이름·PIN 을 서버에서 검증하고 커스텀 토큰을 발급한다.
-//                 클라이언트가 이 토큰으로 로그인하면 request.auth.uid 가
-//                 참가자 ID 와 같아져서, 보안 규칙이 본인 확인을 할 수 있다.
-//                 좋아요에 포인트가 걸리는 이상 이게 없으면 남의 이름으로
-//                 좋아요를 눌러 포인트를 만들어 낼 수 있다.
-//
 //   gamehubPayout 운영자가 주간 승인 시 호출한다. 아직 지급되지 않은 좋아요를
 //                 모아 게임 제작자에게 포인트를 준다. 좋아요 문서에 회차를
 //                 표시해 두므로 두 번 눌러도 중복 지급되지 않는다.
+//
+// 로그인은 함수를 쓰지 않는다. 수강생은 다른 학급 앱과 같이 클라이언트에서
+// 이름·PIN 을 대조하고 익명 로그인만 한다(hub/auth.js). 잔액을 실제로 늘리는
+// 것은 여기 gamehubPayout 뿐이므로, 로그인 신원과 무관하게 포인트 무결성은
+// 이 함수가 지킨다.
 
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { initializeApp } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
 initializeApp();
@@ -36,69 +34,6 @@ const GAMES_JSON = 'https://hk-gamehub.pages.dev/games.json';
 
 const DEFAULT_POINTS_PER_LIKE = 500;
 const BATCH_LIMIT = 450; // Firestore 배치 상한 500 에서 여유를 둔다
-
-// ---------------------------------------------------------------------------
-// 기존 학급 앱(HK_Betting)과 동일해야 하는 함수들.
-// 하나라도 다르면 같은 이름·PIN 으로 로그인이 되지 않는다.
-// hub/auth.js 에도 같은 구현이 있다.
-// ---------------------------------------------------------------------------
-
-function participantId(name) {
-  return String(name || '').trim().toLowerCase().replace(/\s+/g, '_');
-}
-
-function hashPin(pin) {
-  const s = String(pin);
-  let h = 5381;
-  for (let i = 0; i < s.length; i += 1) h = (h * 33) ^ s.charCodeAt(i);
-  return 'pin_' + (h >>> 0).toString(16);
-}
-
-// ---------------------------------------------------------------------------
-// 로그인
-// ---------------------------------------------------------------------------
-
-async function findParticipant(name) {
-  const id = participantId(name);
-
-  const byId = await db.collection('users').doc(id).get();
-  if (byId.exists) return { id: byId.id, ...byId.data() };
-
-  const byName = await db.collection('users')
-    .where('name', '==', String(name).trim())
-    .limit(1)
-    .get();
-  if (!byName.empty) return { id: byName.docs[0].id, ...byName.docs[0].data() };
-
-  return null;
-}
-
-export const gamehubLogin = onCall({ region: REGION, cors: true }, async (req) => {
-  const name = String(req.data?.name ?? '').trim();
-  const pin = String(req.data?.pin ?? '');
-
-  if (!name) throw new HttpsError('invalid-argument', '이름을 입력하세요.');
-  if (!pin) throw new HttpsError('invalid-argument', 'PIN 을 입력하세요.');
-
-  const participant = await findParticipant(name);
-  if (!participant) {
-    throw new HttpsError('not-found', '등록되지 않은 참가자입니다. 이름을 다시 확인해 주세요.');
-  }
-  if (!participant.pinHash || participant.pinHash !== hashPin(pin)) {
-    // 이름이 있는지 없는지까지 구분해 알려주지는 않는다
-    throw new HttpsError('permission-denied', 'PIN 이 일치하지 않습니다.');
-  }
-
-  // uid 를 참가자 ID 로 못박는다. 이 토큰으로 로그인하면 보안 규칙에서
-  // request.auth.uid == 참가자 ID 가 성립한다.
-  const token = await getAuth().createCustomToken(participant.id, { participant: true });
-
-  return {
-    token,
-    userId: participant.id,
-    name: participant.name || name,
-  };
-});
 
 // ---------------------------------------------------------------------------
 // 주간 지급

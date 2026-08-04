@@ -1,8 +1,12 @@
 import { firebaseConfig, GAMES_ORIGIN, SITE } from './config.js';
 import {
-  loginWithPin, loadSession, saveSession, clearSession, LoginError, FUNCTIONS_REGION,
+  loginWithPin, loadSession, saveSession, clearSession, LoginError,
 } from './auth.js';
 import { createAdminPanel } from './admin.js';
+
+// 지급 함수(gamehubPayout)가 있는 리전. 로그인은 이제 함수를 쓰지 않지만
+// 운영자 지급 호출에는 여전히 필요하다.
+const FUNCTIONS_REGION = 'asia-northeast3';
 
 const FIREBASE_VERSION = '10.14.1';
 const CDN = `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}`;
@@ -375,7 +379,9 @@ async function toggleLike(slug) {
   const likeRef = doc(fb.db, GAMES_COL, slug, 'likes', userId);
   const userRef = doc(fb.db, USERS_COL, userId);
 
-  batch.set(gameRef, { likeCount: increment(delta) }, { merge: true });
+  // lastBy 로 이번에 누른 참가자를 지목한다. 규칙이 이 참가자의 좋아요 문서가
+  // 실제로 생겼는지(사라졌는지)를 getAfter() 로 대조한다.
+  batch.set(gameRef, { likeCount: increment(delta), lastBy: userId }, { merge: true });
   if (liked) batch.delete(likeRef);
   // paidIn 은 지급 회차 ID. 아직 미지급이라 null 로 두고, gamehubPayout 이 채운다.
   // 이 필드가 있어야 함수가 미지급 좋아요만 골라낼 수 있다.
@@ -521,9 +527,10 @@ function showAdmin(on) {
   $('#btn-admin-out').hidden = !on;
 }
 
-// 수강생(커스텀 토큰)과 운영자(Google)가 같은 Firebase Auth 를 공유하므로
-// 관찰자 하나로 둘 다 처리한다. 새로고침 시 세션 복원도 여기서 일어난다 —
-// Firebase 가 로그인 상태를 유지하므로 PIN 을 다시 묻지 않는다.
+// 수강생(익명)과 운영자(Google)가 같은 Firebase Auth 를 공유하므로 관찰자 하나로
+// 둘 다 처리한다. 익명 uid 는 학급 신원이 아니므로, 수강생 신원은 localStorage
+// 세션(participantId)에서 가져온다. Firebase 가 익명 로그인을 유지하므로 새로고침
+// 해도 PIN 을 다시 묻지 않는다.
 function watchAuth() {
   fb.auths.onAuthStateChanged(fb.auth, async (user) => {
     const isGoogle = !!user?.providerData?.some((p) => p.providerId === 'google.com');
@@ -546,23 +553,19 @@ function watchAuth() {
 
     showAdmin(false);
 
-    if (!user) {
-      state.user = null;
+    // 익명 로그인 + 저장된 세션이 함께 있어야 로그인 상태로 본다.
+    const session = user ? loadSession() : null;
+    state.user = session;
+    paintAuth();
+
+    if (!session) {
       state.myLikes = new Set();
-      paintAuth();
       paintAllLikes();
       return;
     }
 
-    // 커스텀 토큰이라 uid 가 곧 참가자 ID 다. 표시할 이름은 세션에서 가져온다.
-    if (state.user?.userId !== user.uid) {
-      const saved = loadSession();
-      state.user = saved?.userId === user.uid ? saved : { userId: user.uid, name: user.uid };
-      paintAuth();
-    }
-
     try {
-      await loadMyLikes(user.uid);
+      await loadMyLikes(session.userId);
     } catch (err) {
       console.warn('[HK GameHub] 좋아요 목록을 불러오지 못했습니다', err);
     }
