@@ -97,6 +97,68 @@ button { font: inherit; cursor: pointer; }
 .btn-ghost { border-color: var(--line); color: var(--ink-dim); }
 .btn-ghost:hover { border-color: #37405280; background: var(--bg-soft); color: var(--ink); }
 
+/* 이름 첫 글자를 넣는 원형 배지. 익명 로그인이라 프로필 사진이 없다. */
+.avatar {
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  background: linear-gradient(135deg, #39415a, #2a3142);
+}
+
+/* ---------------------------------------------------------- login dialog */
+
+.login-dialog {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg-card);
+  color: var(--ink);
+  padding: 0;
+  width: min(360px, calc(100vw - 32px));
+  box-shadow: var(--shadow);
+}
+
+.login-dialog::backdrop { background: rgba(6, 8, 12, .68); }
+
+.login-dialog form { padding: 24px; display: flex; flex-direction: column; }
+
+.login-dialog h2 { margin: 0 0 6px; font-size: 18px; letter-spacing: -.01em; }
+
+.login-hint { margin: 0 0 20px; font-size: 13px; color: var(--ink-faint); line-height: 1.5; }
+
+.login-dialog label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-dim);
+  margin-bottom: 6px;
+}
+
+.login-dialog input {
+  padding: 11px 13px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+}
+.login-dialog input:focus { border-color: #3d4a63; }
+
+.login-error {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: rgba(255, 93, 122, .1);
+  border: 1px solid rgba(255, 93, 122, .28);
+  color: #ff8ea3;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.login-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
 /* --------------------------------------------------------------- layout */
 
 .wrap {

@@ -1,4 +1,5 @@
 import { firebaseConfig, GAMES_ORIGIN, SITE } from './config.js';
+import { loginWithPin, loadSession, saveSession, clearSession, LoginError } from './auth.js';
 
 const FIREBASE_VERSION = '10.14.1';
 const CDN = `https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}`;
@@ -6,8 +7,8 @@ const SDK_TIMEOUT_MS = 12000;
 
 // Firestore 컬렉션 이름.
 //
-// 이 Firebase 프로젝트는 다른 앱과 공유한다. 접두사 없이 users 를 쓰면 그쪽
-// 사용자 문서에 좋아요 목록을 덮어쓰게 되므로, 반드시 gamehub_ 를 유지할 것.
+// 이 Firebase 프로젝트는 베팅판·주식판 등 여러 앱과 공유한다. 접두사 없이 users 를
+// 쓰면 그쪽 참가자 문서에 좋아요 목록을 덮어쓰게 되므로 반드시 gamehub_ 를 유지할 것.
 // firestore.rules 의 경로와 짝을 이룬다.
 const GAMES_COL = 'gamehub_games';
 const USERS_COL = 'gamehub_users';
@@ -20,7 +21,7 @@ const state = {
   games: [],          // games.json 그대로
   likeCounts: {},     // slug -> number
   myLikes: new Set(), // 내가 좋아요한 slug
-  user: null,
+  user: null,         // { userId, name } - 학급 참가자. 익명 uid 가 아니다.
   sort: 'new',
   query: '',
   tag: null,
@@ -28,7 +29,20 @@ const state = {
 };
 
 // Firebase SDK 가 로드된 뒤에만 채워진다. null 이면 로그인과 좋아요가 비활성.
+//
+// 초기화는 페이지 로드 직후 시작하지만 몇백 ms 걸린다. 그 사이에 로그인 버튼을
+// 누르면 아직 준비가 안 된 상태인데, 그렇다고 "사용할 수 없습니다" 를 띄우면
+// 정상 환경에서도 로드 직후에는 로그인이 안 되는 것처럼 보인다.
+// 그래서 준비 상태를 프로미스로 들고 있다가 필요한 시점에 기다린다.
 let fb = null;
+let fbPromise = null;
+
+function ensureFirebase() {
+  if (!fbPromise) {
+    fbPromise = initFirebase().then((v) => { fb = v; return v; });
+  }
+  return fbPromise;
+}
 
 const $ = (sel) => document.querySelector(sel);
 const el = {
@@ -41,8 +55,14 @@ const el = {
   authAnon: $('#auth-anon'),
   authUser: $('#auth-user'),
   userName: $('#user-name'),
-  userPhoto: $('#user-photo'),
+  userBadge: $('#user-badge'),
   loginBtn: $('#btn-login'),
+  dialog: $('#login-dialog'),
+  loginForm: $('#login-form'),
+  loginName: $('#login-name'),
+  loginPin: $('#login-pin'),
+  loginError: $('#login-error'),
+  loginSubmit: $('#login-submit'),
   player: $('#player'),
   frame: $('#game-frame'),
   playerTitle: $('#player-title'),
@@ -67,7 +87,7 @@ const isolated = gamesOrigin !== location.origin;
 if (!isolated) {
   console.warn(
     '[HK GameHub] 게임이 허브와 같은 오리진에서 서빙되고 있습니다. ' +
-    '게임 코드가 로그인 토큰에 접근하지 못하도록 allow-same-origin 을 제거합니다. ' +
+    '게임 코드가 로그인 정보에 접근하지 못하도록 allow-same-origin 을 제거합니다. ' +
     '(게임 내 localStorage 저장 기능이 동작하지 않을 수 있습니다)'
   );
 }
@@ -262,6 +282,16 @@ function paintAllLikes() {
   for (const g of state.games) paintLike(g.slug);
 }
 
+function paintAuth() {
+  const u = state.user;
+  el.authAnon.hidden = !!u;
+  el.authUser.hidden = !u;
+  if (u) {
+    el.userName.textContent = u.name;
+    el.userBadge.textContent = [...u.name][0] || '?';
+  }
+}
+
 // ---------------------------------------------------------------------------
 // 데이터 로드
 // ---------------------------------------------------------------------------
@@ -284,29 +314,38 @@ async function loadLikeCounts() {
   state.likeCounts = counts;
 }
 
-// 내 좋아요 목록은 users/{uid} 문서 하나로 끝낸다 (게임 수만큼 읽지 않기 위함)
-async function loadMyLikes(uid) {
-  if (!fb || !uid) { state.myLikes = new Set(); return; }
+// 내 좋아요 목록은 문서 하나로 끝낸다 (게임 수만큼 읽지 않기 위함)
+async function loadMyLikes(userId) {
+  if (!fb || !userId) { state.myLikes = new Set(); return; }
   const { doc, getDoc } = fb.fs;
-  const snap = await getDoc(doc(fb.db, USERS_COL, uid));
+  const snap = await getDoc(doc(fb.db, USERS_COL, userId));
   state.myLikes = new Set(snap.exists() ? (snap.data().liked || []) : []);
 }
 
 // ---------------------------------------------------------------------------
 // 좋아요 토글
 //
-// games/{slug}.likeCount, games/{slug}/likes/{uid}, users/{uid}.liked 를
-// 하나의 배치로 원자적으로 쓴다. 보안 규칙이 getAfter() 로 좋아요 문서 존재 여부와
-// 카운트 증감을 대조하므로 카운트만 임의로 부풀릴 수 없다.
+// 세 문서를 하나의 배치로 원자적으로 쓴다.
+//   gamehub_games/{slug}                  likeCount, lastBy
+//   gamehub_games/{slug}/likes/{userId}   문서 존재 = 좋아요
+//   gamehub_users/{userId}                liked 배열 (UI 캐시)
+//
+// 보안 규칙이 lastBy 로 지목된 참가자의 좋아요 문서가 실제로 생겼는지(사라졌는지)
+// getAfter() 로 대조하므로, 좋아요 문서 없이 숫자만 올릴 수 없다. 좋아요 문서는
+// 참가자당 하나뿐이라 한 게임의 카운트는 등록된 참가자 수를 넘을 수 없다.
 // ---------------------------------------------------------------------------
 
 async function toggleLike(slug) {
-  if (!fb) { toast('좋아요 기능을 사용할 수 없습니다. 잠시 후 새로고침해 주세요.'); return; }
-  if (!state.user) { toast('좋아요를 누르려면 로그인이 필요합니다.'); return; }
+  if (!state.user) { openLogin(); return; }
   if (state.pending.has(slug)) return;
 
+  if (!await ensureFirebase()) {
+    toast('좋아요 기능을 사용할 수 없습니다. 잠시 후 새로고침해 주세요.');
+    return;
+  }
+
   const { doc, writeBatch, increment, serverTimestamp, arrayUnion, arrayRemove } = fb.fs;
-  const uid = state.user.uid;
+  const userId = state.user.userId;
   const liked = state.myLikes.has(slug);
   const delta = liked ? -1 : 1;
 
@@ -326,10 +365,10 @@ async function toggleLike(slug) {
 
   const batch = writeBatch(fb.db);
   const gameRef = doc(fb.db, GAMES_COL, slug);
-  const likeRef = doc(fb.db, GAMES_COL, slug, 'likes', uid);
-  const userRef = doc(fb.db, USERS_COL, uid);
+  const likeRef = doc(fb.db, GAMES_COL, slug, 'likes', userId);
+  const userRef = doc(fb.db, USERS_COL, userId);
 
-  batch.set(gameRef, { likeCount: increment(delta) }, { merge: true });
+  batch.set(gameRef, { likeCount: increment(delta), lastBy: userId }, { merge: true });
   if (liked) batch.delete(likeRef);
   else batch.set(likeRef, { createdAt: serverTimestamp() });
   batch.set(userRef, { liked: liked ? arrayRemove(slug) : arrayUnion(slug) }, { merge: true });
@@ -387,6 +426,59 @@ function syncFromHash() {
 }
 
 // ---------------------------------------------------------------------------
+// 로그인
+// ---------------------------------------------------------------------------
+
+function openLogin() {
+  // Firebase 준비 여부와 무관하게 창은 바로 연다. 준비는 제출할 때 기다린다.
+  el.loginError.hidden = true;
+  el.dialog.showModal();
+  el.loginName.focus();
+}
+
+async function submitLogin(event) {
+  event.preventDefault();
+
+  el.loginError.hidden = true;
+  el.loginSubmit.disabled = true;
+  el.loginSubmit.textContent = '확인 중…';
+
+  try {
+    if (!await ensureFirebase()) {
+      throw new LoginError('지금은 로그인할 수 없습니다. 잠시 후 새로고침해 주세요.');
+    }
+    const session = await loginWithPin(fb, el.loginName.value, el.loginPin.value);
+    saveSession(session);
+    state.user = session;
+    paintAuth();
+
+    el.dialog.close();
+    el.loginForm.reset();
+
+    await loadMyLikes(session.userId);
+    paintAllLikes();
+    toast(`${session.name} 님, 반갑습니다.`);
+  } catch (err) {
+    el.loginError.textContent = err instanceof LoginError
+      ? err.message
+      : '로그인에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+    el.loginError.hidden = false;
+    if (!(err instanceof LoginError)) console.error('[HK GameHub] 로그인 실패', err);
+  } finally {
+    el.loginSubmit.disabled = false;
+    el.loginSubmit.textContent = '로그인';
+  }
+}
+
+function logout() {
+  clearSession();
+  state.user = null;
+  state.myLikes = new Set();
+  paintAuth();
+  paintAllLikes();
+}
+
+// ---------------------------------------------------------------------------
 // 이벤트
 // ---------------------------------------------------------------------------
 
@@ -440,27 +532,16 @@ el.playerLike.addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeGame();
+  // 로그인 창이 떠 있으면 ESC 는 그쪽이 가져간다
+  if (e.key === 'Escape' && !el.dialog.open) closeGame();
 });
 
 window.addEventListener('popstate', syncFromHash);
 
-el.loginBtn.addEventListener('click', async () => {
-  if (!fb) { toast('로그인 기능을 사용할 수 없습니다. 잠시 후 새로고침해 주세요.'); return; }
-  try {
-    await fb.auths.signInWithPopup(fb.auth, new fb.auths.GoogleAuthProvider());
-  } catch (err) {
-    if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') return;
-    console.error('[HK GameHub] 로그인 실패', err);
-    toast(err?.code === 'auth/unauthorized-domain'
-      ? 'Firebase 승인된 도메인에 이 주소를 추가해야 합니다.'
-      : '로그인에 실패했습니다.');
-  }
-});
-
-$('#btn-logout').addEventListener('click', () => {
-  if (fb) fb.auths.signOut(fb.auth);
-});
+el.loginBtn.addEventListener('click', openLogin);
+el.loginForm.addEventListener('submit', submitLogin);
+$('#login-cancel').addEventListener('click', () => el.dialog.close());
+$('#btn-logout').addEventListener('click', logout);
 
 // ---------------------------------------------------------------------------
 // 시작
@@ -489,37 +570,31 @@ document.title = SITE.title;
   render();
   syncFromHash();
 
-  fb = await initFirebase();
-  if (!fb) {
+  if (!await ensureFirebase()) {
     disableAuthUi('Firebase 를 사용할 수 없어 로그인과 좋아요가 비활성화되었습니다.');
     return;
   }
 
-  fb.auths.onAuthStateChanged(fb.auth, async (user) => {
-    state.user = user;
-    el.authAnon.hidden = !!user;
-    el.authUser.hidden = !user;
-
-    if (user) {
-      el.userName.textContent = user.displayName || user.email || '';
-      if (user.photoURL) el.userPhoto.src = user.photoURL;
-      try {
-        await loadMyLikes(user.uid);
-      } catch (err) {
-        console.warn('[HK GameHub] 내 좋아요 목록을 불러오지 못했습니다', err);
-      }
-    } else {
-      state.myLikes = new Set();
+  // 저장된 세션이 있으면 익명 로그인만 다시 붙여 좋아요를 쓸 수 있게 한다.
+  // PIN 은 다시 묻지 않는다. 기존 학급 앱과 같은 동작이다.
+  const session = loadSession();
+  if (session) {
+    state.user = session;
+    paintAuth();
+    try {
+      await fb.auths.signInAnonymously(fb.auth);
+      await loadMyLikes(session.userId);
+    } catch (err) {
+      console.warn('[HK GameHub] 세션 복원에 실패했습니다', err);
     }
-
-    paintAllLikes();
-  });
+  }
 
   try {
     await loadLikeCounts();
-    paintAllLikes();
   } catch (err) {
     // 좋아요 수를 못 읽어도 갤러리와 플레이는 그대로 동작한다
     console.warn('[HK GameHub] 좋아요 수를 불러오지 못했습니다', err);
   }
+
+  paintAllLikes();
 })();

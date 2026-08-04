@@ -24,7 +24,7 @@
               │
               ▼
    Firebase (hk-chess-betting)
-   Auth (Google) + Firestore (좋아요)
+   익명 인증 + 이름·PIN 확인, Firestore (좋아요)
 ```
 
 ### 왜 도메인을 두 개로 나눴나
@@ -46,8 +46,22 @@
 
 이 프로젝트는 다른 앱과 공유하므로, 허브가 쓰는 컬렉션에는 `gamehub_` 접두사를
 붙였습니다(`gamehub_games`, `gamehub_users`). 기존 `users` 컬렉션과 이름이 겹치면
-남의 사용자 문서를 덮어쓰게 되기 때문입니다. 보안 규칙도 통째로 교체하지 않고
-해당 블록만 기존 규칙에 추가합니다.
+참가자 문서를 덮어쓰게 되기 때문입니다. `firestore.rules` 는 기존 규칙 전체를 포함한
+통합본입니다 — 자세한 내용은 [docs/SETUP.md](docs/SETUP.md) 를 보세요.
+
+### 수강생 인증
+
+기존 학급 앱과 동일합니다. Google 로그인은 운영자 전용이라 허브에서는 쓰지 않습니다.
+
+```
+이름·PIN 입력 → users/{이름슬러그}.pinHash 대조 → signInAnonymously()
+```
+
+Firebase 계정은 익명이고 학급 신원은 Firestore 의 `users` 문서라, 좋아요도
+익명 uid 가 아니라 **참가자 ID** 로 기록됩니다. 그래서 기기를 바꿔도 좋아요가 따라옵니다.
+
+이름 슬러그와 PIN 해시는 기존 앱 구현과 바이트 단위로 같아야 합니다
+([`hub/auth.js`](hub/auth.js) 참고). 다르면 같은 이름·PIN 으로 로그인이 안 됩니다.
 
 <br>
 

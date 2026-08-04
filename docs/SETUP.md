@@ -30,7 +30,17 @@ hk-gamehub.pages.dev
 
 ### 1-3. 로그인 제공업체
 
-**Authentication → Sign-in method** 에서 **Google** 이 사용 설정되어 있는지 확인합니다.
+**Authentication → Sign-in method** 에서 **익명(Anonymous)** 이 사용 설정되어 있는지
+확인합니다. 기존 학급 앱(HK_Betting 등)이 이미 쓰고 있으므로 대개 켜져 있습니다.
+
+허브의 수강생 로그인은 기존 앱과 똑같은 방식입니다.
+
+```
+이름·PIN 입력 → users/{이름슬러그}.pinHash 대조 → signInAnonymously()
+```
+
+Firebase 계정은 익명이고, 학급 신원은 Firestore 의 `users` 문서입니다.
+Google 로그인은 운영자용이라 허브에서는 쓰지 않습니다.
 
 ### 1-4. Firestore 생성
 

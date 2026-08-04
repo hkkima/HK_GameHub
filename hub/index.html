@@ -22,15 +22,35 @@
 
   <div class="topbar-right">
     <div id="auth-anon">
-      <button id="btn-login" class="btn btn-primary">Google로 로그인</button>
+      <button id="btn-login" class="btn btn-primary">로그인</button>
     </div>
     <div id="auth-user" hidden>
-      <img id="user-photo" class="avatar" alt="" referrerpolicy="no-referrer">
+      <span id="user-badge" class="avatar" aria-hidden="true"></span>
       <span id="user-name" class="user-name"></span>
       <button id="btn-logout" class="btn btn-ghost">로그아웃</button>
     </div>
   </div>
 </header>
+
+<dialog id="login-dialog" class="login-dialog">
+  <form id="login-form" method="dialog">
+    <h2>로그인</h2>
+    <p class="login-hint">수업에서 쓰는 이름과 PIN 을 그대로 입력하세요.</p>
+
+    <label for="login-name">이름</label>
+    <input id="login-name" name="name" type="text" autocomplete="username" required>
+
+    <label for="login-pin">PIN</label>
+    <input id="login-pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" required>
+
+    <p id="login-error" class="login-error" role="alert" hidden></p>
+
+    <div class="login-actions">
+      <button type="button" id="login-cancel" class="btn btn-ghost">취소</button>
+      <button type="submit" id="login-submit" class="btn btn-primary">로그인</button>
+    </div>
+  </form>
+</dialog>
 
 <main class="wrap">
 

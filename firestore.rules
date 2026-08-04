@@ -207,57 +207,80 @@ service cloud.firestore {
     //     gamehub_games/{slug}/likes/{uid}  : { createdAt }   문서 존재 = 좋아요 누름
     //     gamehub_users/{uid}               : { liked: [...] } 갤러리용 캐시
     //
-    //   좋아요 수는 여기서만 Cloud Functions 없이 클라이언트가 직접 올린다.
-    //   대신 getAfter() 로 '내 좋아요 문서가 실제로 생겼을 때만 +1' 을 강제하므로
-    //   숫자만 임의로 부풀릴 수 없다. 클라이언트는 세 문서를 batch 로 함께 쓴다.
-    //   포인트(users.balance)와 무관한 값이라 인플레 불변식에도 영향이 없다.
-    function gh_myLikeRef(slug) {
-      return /databases/$(database)/documents/gamehub_games/$(slug)/likes/$(request.auth.uid);
+    //   ★ 신원은 request.auth.uid 가 아니라 users/{participantId} 다 ★
+    //   이 프로젝트의 수강생은 익명 로그인 + 이름·PIN 확인 방식이라(HK_Betting 과 동일),
+    //   request.auth.uid 는 브라우저마다 달라지는 익명 uid 이고 학급 신원이 아니다.
+    //   그래서 좋아요는 participantId 로 기록하고, 규칙은 그 id 가 실재하는 참가자인지
+    //   users 컬렉션에서 확인한다.
+    //
+    //   좋아요 수는 여기서만 Cloud Functions 없이 클라이언트가 직접 올린다. 대신
+    //   lastBy 로 지목된 참가자의 좋아요 문서가 실제로 생겼는지(사라졌는지)를
+    //   getAfter() 로 대조하므로, 좋아요 문서 없이 숫자만 올릴 수 없다.
+    //   좋아요 문서는 참가자당 하나뿐이라 한 게임의 카운트는 등록된 참가자 수를
+    //   넘을 수 없다. 포인트(users.balance)와 무관해 인플레 불변식에도 영향이 없다.
+    //
+    //   한계: 익명 uid 와 participantId 를 규칙 수준에서 묶을 수 없어, 마음먹으면
+    //   남의 이름으로 좋아요를 누를 수 있다(카운트 상한은 참가자 수로 막혀 있고
+    //   누가 눌렀는지는 남는다). 이를 원천 차단하려면 PIN 을 검증해 커스텀 토큰을
+    //   발급하는 Cloud Function 이 필요하다.
+    function gh_isParticipant(pid) {
+      return exists(/databases/$(database)/documents/users/$(pid));
     }
-    function gh_likedAfter(slug)  { return getAfter(gh_myLikeRef(slug)) != null; }
-    function gh_likedBefore(slug) { return exists(gh_myLikeRef(slug)); }
-    function gh_onlyLikeCount() {
-      return request.resource.data.keys().hasOnly(['likeCount'])
-        && request.resource.data.likeCount is int;
+    function gh_likeRef(slug, pid) {
+      return /databases/$(database)/documents/gamehub_games/$(slug)/likes/$(pid);
     }
+    function gh_countShape() {
+      return request.resource.data.keys().hasOnly(['likeCount', 'lastBy'])
+        && request.resource.data.likeCount is int
+        && request.resource.data.likeCount >= 0
+        && request.resource.data.lastBy is string
+        && gh_isParticipant(request.resource.data.lastBy);
+    }
+    function gh_likedAfter(slug)  { return getAfter(gh_likeRef(slug, request.resource.data.lastBy)) != null; }
+    function gh_likedBefore(slug) { return exists(gh_likeRef(slug, request.resource.data.lastBy)); }
 
     match /gamehub_games/{slug} {
       allow read: if true;                       // 좋아요 수는 비로그인도 본다
 
       // 첫 좋아요: 문서가 없던 게임에 likeCount = 1 로 생성
       allow create: if signedIn()
-        && gh_onlyLikeCount()
+        && gh_countShape()
         && request.resource.data.likeCount == 1
         && !gh_likedBefore(slug)
         && gh_likedAfter(slug);
 
       allow update: if signedIn()
-        && gh_onlyLikeCount()
+        && gh_countShape()
         && (
-          // 좋아요 누름: 없던 내 좋아요가 생기면서 +1
+          // 좋아요 누름: 없던 좋아요가 생기면서 +1
           (request.resource.data.likeCount == resource.data.likeCount + 1
            && !gh_likedBefore(slug) && gh_likedAfter(slug))
           ||
-          // 좋아요 취소: 있던 내 좋아요가 사라지면서 -1
+          // 좋아요 취소: 있던 좋아요가 사라지면서 -1
           (request.resource.data.likeCount == resource.data.likeCount - 1
            && gh_likedBefore(slug) && !gh_likedAfter(slug))
         );
 
       allow delete: if isAdmin();
 
-      match /likes/{uid} {
-        allow read: if true;
-        allow create: if signedIn() && request.auth.uid == uid
+      // 문서 ID 는 참가자 ID(users 문서 ID)다. 익명 uid 가 아니다.
+      match /likes/{participantId} {
+        allow read: if true;                     // 누가 눌렀는지 공개 (학급 투명성)
+        allow create: if signedIn()
+          && gh_isParticipant(participantId)
           && request.resource.data.keys().hasOnly(['createdAt']);
-        allow delete: if signedIn() && request.auth.uid == uid;
+        allow delete: if signedIn();
         allow update: if false;
       }
     }
 
-    // 내가 좋아요한 게임 목록 캐시. 갤러리를 열 때 게임 수만큼 읽지 않고
-    // 문서 1개로 끝내기 위한 것. 정본은 gamehub_games/{slug}/likes/{uid} 다.
-    match /gamehub_users/{uid} {
-      allow read, write: if signedIn() && request.auth.uid == uid;
+    // 참가자가 좋아요한 게임 목록 캐시. 갤러리를 열 때 게임 수만큼 읽지 않고
+    // 문서 1개로 끝내기 위한 것. 정본은 gamehub_games/{slug}/likes/{participantId} 다.
+    match /gamehub_users/{participantId} {
+      allow read: if true;
+      allow write: if signedIn()
+        && gh_isParticipant(participantId)
+        && request.resource.data.keys().hasOnly(['liked']);
     }
   }
 }
