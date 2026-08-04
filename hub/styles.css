@@ -363,6 +363,30 @@ button { font: inherit; cursor: pointer; }
 }
 .card:hover .play-veil { opacity: 1; }
 
+/* 내가 올린 게임의 수정·삭제 (썸네일 위 오른쪽) */
+.card-owner {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.card:hover .card-owner, .card:focus-within .card-owner { opacity: 1; }
+.card-owner .linkish {
+  padding: 4px 9px;
+  border-radius: 7px;
+  background: rgba(13, 15, 20, .82);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+.card-owner .linkish:hover { background: rgba(13, 15, 20, .95); }
+.card-owner [data-del]:hover { color: #ff8ea3; }
+
 .play-veil span {
   padding: 9px 18px;
   border-radius: 999px;
