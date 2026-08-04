@@ -266,9 +266,9 @@ function cardHtml(g) {
     .map((t) => `<button class="tag${state.tag === t ? ' is-on' : ''}" data-tag="${esc(t)}">${esc(t)}</button>`)
     .join('');
 
-  // 이 브라우저에서 올린 즉시 게시 게임에만 수정·삭제 버튼을 보인다.
-  // 소유 판정은 익명 uid(by) 기준이라, 다른 기기·재로그인 시에는 보이지 않는다.
-  const owned = g.instant && myUid() && g.by === myUid();
+  // 내가(로그인한 참가자가) 올린 즉시 게시 게임에만 수정·삭제 버튼을 보인다.
+  // 소유 판정은 participantId(authorId) 기준이라 기기·재로그인과 무관하다.
+  const owned = g.instant && state.user && g.authorId && g.authorId === state.user.userId;
   const ownerTools = owned
     ? `<div class="card-owner">
          <button class="linkish" data-edit="${esc(g.slug)}">수정</button>
@@ -296,11 +296,6 @@ function cardHtml(g) {
         </div>
       </div>
     </article>`;
-}
-
-// 현재 로그인한(익명) uid. 소유 게임 판정에 쓴다.
-function myUid() {
-  return fb?.auth?.currentUser?.uid || null;
 }
 
 function render() {
@@ -671,7 +666,9 @@ function openUpload(game = null) {
 
 async function deleteGame(slug) {
   const g = state.games.find((x) => x.slug === slug);
-  if (!g || !confirm(`"${g.title}" 를 삭제할까요? 되돌릴 수 없습니다.`)) return;
+  if (!g) return;
+  if (!g.instant || g.authorId !== state.user?.userId) { toast('삭제 권한이 없습니다.'); return; }
+  if (!confirm(`"${g.title}" 를 삭제할까요? 되돌릴 수 없습니다.`)) return;
   try {
     if (!await ensureFirebase()) throw new Error('unavailable');
     await deleteInstant(fb, slug);

@@ -145,7 +145,8 @@ export async function publishInstant(fb, { slug, meta, html, uid }) {
 
   const metaRef = doc(fb.db, 'gamehub_instant', slug);
   const existing = await getDoc(metaRef);
-  if (existing.exists() && existing.data().by !== uid) {
+  // 소유는 참가자(authorId) 기준. 남의 게임은 수정할 수 없다.
+  if (existing.exists() && existing.data().authorId !== meta.authorId) {
     throw new SubmitError('이 게임을 수정할 권한이 없습니다.');
   }
   if (!existing.exists() && !html) {
