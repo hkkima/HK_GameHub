@@ -1,0 +1,74 @@
+name: Firestore 규칙
+
+# 수동 실행 전용이다.
+#
+# 이 Firestore 는 다른 앱과 공유하므로, 푸시할 때마다 규칙이 자동 배포되면
+# 그 앱의 규칙을 덮어쓰게 된다. 규칙은 한 번 넣으면 끝나는 일이라 자동화하지 않는다.
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: '무엇을 할지'
+        required: true
+        default: dump
+        type: choice
+        options:
+          - dump    # 현재 배포된 규칙을 읽어서 출력만 한다 (안전)
+          - deploy  # firestore.rules 를 배포한다 (기존 규칙을 대체하므로 주의)
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: hk-chess-betting
+
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Google 인증
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+
+      # 현재 배포된 규칙을 그대로 읽어 로그와 요약에 남긴다.
+      # 병합본을 만들려면 지금 무엇이 올라가 있는지 먼저 알아야 한다.
+      - name: 현재 규칙 덤프
+        if: inputs.action == 'dump'
+        env:
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          node scripts/rules-dump.mjs | tee /tmp/current.rules
+          {
+            echo '### 현재 배포된 Firestore 규칙'
+            echo ''
+            echo '```'
+            cat /tmp/current.rules
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: 규칙 배포
+        if: inputs.action == 'deploy'
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
+        run: |
+          echo "배포할 파일:"
+          echo '```'
+          cat firestore.rules
+          echo '```'
+          npx --yes firebase-tools@13 deploy \
+            --only firestore:rules \
+            --project "$PROJECT_ID" \
+            --non-interactive
