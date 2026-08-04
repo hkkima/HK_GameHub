@@ -14,17 +14,16 @@ const BUNDLE_MAX = 8 * 1024 * 1024; // 함수로 보낼 멀티파일 합계 상�
 
 export class SubmitError extends Error {}
 
-// 즉시 게시 게임의 문서 ID. Firestore ID 는 유니코드를 허용하므로 한글 제목을
-// 그대로 살린다(URL 해시에서는 encodeURIComponent 로 처리된다). 금지 문자만 제거.
-// 같은 제목을 다시 올리면 같은 slug 가 되어 "수정" 이 된다.
-export function toSlug(title, authorId) {
-  const base = String(title).trim().toLowerCase()
-    .replace(/[/\\#?%\x00-\x1f\x7f]/g, ' ')   // Firestore ID 금지 문자 + 슬래시
-    .replace(/^_+|_+$/g, '')                    // __ 로 시작/끝나는 예약 패턴 회피
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  return base || `game-${String(authorId).replace(/[^\w-]/g, '')}`;
+// 즉시 게시 게임의 문서 ID.
+//
+// 제목을 키로 쓰지 않는다. 제목을 바꾸면 다른 게임이 되고, 같은 제목이면 서로
+// 충돌하기 때문이다. 대신 게시할 때 고유 ID 를 한 번 발급해 그걸로 고정한다.
+// 제목은 그냥 바꿀 수 있는 필드가 된다.
+export function newGameId() {
+  if (globalThis.crypto?.randomUUID) return 'g-' + crypto.randomUUID();
+  // 아주 오래된 브라우저 대비 폴백
+  const rnd = () => Math.floor(Math.random() * 1e9).toString(36);
+  return `g-${rnd()}${rnd()}`;
 }
 
 const readText = (file) => file.text();
@@ -138,14 +137,19 @@ export async function classify(fileList) {
   return { kind: 'bundle', files: out };
 }
 
-// 즉시 게시: 메타 문서 + content/html 을 한 배치로 쓴다.
+// 즉시 게시. 신규(slug 새로 발급)와 수정(기존 slug)을 모두 처리한다.
+//   html 이 주어지면 게임 파일을 새로/교체 저장하고, 없으면(수정 시 파일 미교체)
+//   기존 content 를 그대로 둔다.
 export async function publishInstant(fb, { slug, meta, html, uid }) {
   const { doc, getDoc, writeBatch, serverTimestamp } = fb.fs;
 
   const metaRef = doc(fb.db, 'gamehub_instant', slug);
   const existing = await getDoc(metaRef);
   if (existing.exists() && existing.data().by !== uid) {
-    throw new SubmitError('같은 이름의 게임이 이미 있습니다. 제목을 조금 바꿔 주세요.');
+    throw new SubmitError('이 게임을 수정할 권한이 없습니다.');
+  }
+  if (!existing.exists() && !html) {
+    throw new SubmitError('게임 파일을 선택하세요.');
   }
 
   const metaDoc = {
@@ -156,13 +160,24 @@ export async function publishInstant(fb, { slug, meta, html, uid }) {
     description: meta.description || '',
     tags: meta.tags || [],
     by: uid,
-    createdAt: serverTimestamp(),
+    createdAt: existing.exists()
+      ? (existing.data().createdAt || serverTimestamp())
+      : serverTimestamp(),
   };
   if (meta.thumb) metaDoc.thumb = meta.thumb;
 
   const batch = writeBatch(fb.db);
   batch.set(metaRef, metaDoc);
-  batch.set(doc(fb.db, 'gamehub_instant', slug, 'content', 'html'), { html });
+  if (html) batch.set(doc(fb.db, 'gamehub_instant', slug, 'content', 'html'), { html });
+  await batch.commit();
+}
+
+// 즉시 게시 게임 삭제. 메타와 content 를 함께 지운다.
+export async function deleteInstant(fb, slug) {
+  const { doc, writeBatch } = fb.fs;
+  const batch = writeBatch(fb.db);
+  batch.delete(doc(fb.db, 'gamehub_instant', slug, 'content', 'html'));
+  batch.delete(doc(fb.db, 'gamehub_instant', slug));
   await batch.commit();
 }
 

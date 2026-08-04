@@ -3,7 +3,9 @@ import {
   loginWithPin, loadSession, saveSession, clearSession, LoginError,
 } from './auth.js';
 import { createAdminPanel } from './admin.js';
-import { classify, toSlug, publishInstant, makeThumb, SubmitError } from './submit.js';
+import {
+  classify, newGameId, publishInstant, deleteInstant, makeThumb, SubmitError,
+} from './submit.js';
 
 // 지급 함수(gamehubPayout)가 있는 리전. 로그인은 이제 함수를 쓰지 않지만
 // 운영자 지급 호출에는 여전히 필요하다.
@@ -264,11 +266,22 @@ function cardHtml(g) {
     .map((t) => `<button class="tag${state.tag === t ? ' is-on' : ''}" data-tag="${esc(t)}">${esc(t)}</button>`)
     .join('');
 
+  // 이 브라우저에서 올린 즉시 게시 게임에만 수정·삭제 버튼을 보인다.
+  // 소유 판정은 익명 uid(by) 기준이라, 다른 기기·재로그인 시에는 보이지 않는다.
+  const owned = g.instant && myUid() && g.by === myUid();
+  const ownerTools = owned
+    ? `<div class="card-owner">
+         <button class="linkish" data-edit="${esc(g.slug)}">수정</button>
+         <button class="linkish" data-del="${esc(g.slug)}">삭제</button>
+       </div>`
+    : '';
+
   return `
     <article class="card" data-slug="${esc(g.slug)}">
       <div class="card-thumb" data-play="${esc(g.slug)}" role="button" tabindex="0" aria-label="${esc(g.title)} 플레이">
         ${thumb}
         <div class="play-veil"><span>▶ 플레이</span></div>
+        ${ownerTools}
       </div>
       <div class="card-body">
         <h3 class="card-title" data-play="${esc(g.slug)}">${esc(g.title)}</h3>
@@ -283,6 +296,11 @@ function cardHtml(g) {
         </div>
       </div>
     </article>`;
+}
+
+// 현재 로그인한(익명) uid. 소유 게임 판정에 쓴다.
+function myUid() {
+  return fb?.auth?.currentUser?.uid || null;
 }
 
 function render() {
@@ -381,6 +399,7 @@ async function loadInstant() {
       thumb: m.thumb || '',
       addedAt: m.createdAt?.toDate?.().toISOString?.() || '',
       instant: true,
+      by: m.by || '',
     });
   });
   mergeGames(list);
@@ -585,11 +604,13 @@ async function submitLogin(event) {
 
 let picked = null;    // classify() 결과
 let thumbUri = null;  // makeThumb() 결과 data URI
+let editing = null;   // 수정 중인 게임 { slug, ... } 또는 null(신규)
 
 function resetUpload() {
   el.uploadForm.reset();
   picked = null;
   thumbUri = null;
+  editing = null;
   el.upPicked.hidden = true;
   el.upPicked.className = 'up-picked';
   el.upThumbPreview.hidden = true;
@@ -621,12 +642,47 @@ function clearThumb() {
   el.upThumbClear.hidden = true;
 }
 
-function openUpload() {
+// game 을 주면 수정 모드로 연다. 안 주면 새 게임.
+function openUpload(game = null) {
   if (!state.user) { openLogin(); return; }
   resetUpload();
-  el.uploadWho.textContent = `${state.user.name} 님의 게임으로 올라갑니다.`;
+
+  if (game) {
+    editing = game;
+    el.upTitle.value = game.title || '';
+    el.upTags.value = (game.tags || []).join(', ');
+    el.upDesc.value = game.description || '';
+    if (game.thumb) {
+      thumbUri = game.thumb;
+      el.upThumbPreview.src = game.thumb;
+      el.upThumbPreview.hidden = false;
+      el.upThumbClear.hidden = false;
+    }
+    el.uploadWho.textContent = '수정 중 — 파일을 새로 고르지 않으면 기존 게임이 그대로 유지됩니다.';
+    el.uploadSubmit.textContent = '수정';
+  } else {
+    el.uploadWho.textContent = `${state.user.name} 님의 게임으로 올라갑니다.`;
+    el.uploadSubmit.textContent = '게시';
+  }
+
   el.uploadDialog.showModal();
   el.upTitle.focus();
+}
+
+async function deleteGame(slug) {
+  const g = state.games.find((x) => x.slug === slug);
+  if (!g || !confirm(`"${g.title}" 를 삭제할까요? 되돌릴 수 없습니다.`)) return;
+  try {
+    if (!await ensureFirebase()) throw new Error('unavailable');
+    await deleteInstant(fb, slug);
+    toast('삭제되었습니다.');
+    await loadInstant();
+    renderTagbar();
+    render();
+  } catch (err) {
+    console.error('[HK GameHub] 삭제 실패', err);
+    toast('삭제하지 못했습니다.');
+  }
 }
 
 async function handleFiles(fileList) {
@@ -662,8 +718,14 @@ async function submitUpload(event) {
 
   const title = el.upTitle.value.trim();
   if (!title) { el.uploadMsg.textContent = '제목을 입력하세요.'; el.uploadMsg.hidden = false; return; }
-  if (!picked) { el.uploadMsg.textContent = '게임 파일을 선택하세요.'; el.uploadMsg.hidden = false; return; }
   if (!state.user) { openLogin(); return; }
+  // 신규는 파일 필수. 수정은 파일을 안 고르면 기존 게임을 유지한다.
+  if (!picked && !editing) { el.uploadMsg.textContent = '게임 파일을 선택하세요.'; el.uploadMsg.hidden = false; return; }
+  if (picked && picked.kind !== 'instant') {
+    el.uploadMsg.textContent = '여러 파일 게임은 아직 준비 중입니다. 지금은 단일 index.html 만 올릴 수 있어요.';
+    el.uploadMsg.hidden = false;
+    return;
+  }
 
   const meta = {
     title,
@@ -674,35 +736,35 @@ async function submitUpload(event) {
     tags: el.upTags.value.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 6),
     thumb: thumbUri || '',
   };
-  const slug = toSlug(title, state.user.userId);
+  const slug = editing ? editing.slug : newGameId();
+  const label = editing ? '수정' : '게시';
 
   el.uploadSubmit.disabled = true;
-  el.uploadSubmit.textContent = '게시 중…';
+  el.uploadSubmit.textContent = `${label} 중…`;
 
   try {
     if (!await ensureFirebase()) throw new SubmitError('지금은 게시할 수 없습니다. 잠시 후 다시 시도해 주세요.');
 
-    if (picked.kind === 'instant') {
-      await publishInstant(fb, { slug, meta, html: picked.html, uid: fb.auth.currentUser.uid });
-      el.uploadDialog.close();
-      toast('게시되었습니다. 갤러리에 올라갔어요.');
-      await loadInstant();
-      renderTagbar();
-      render();
-    } else {
-      // 멀티파일 경로는 gamehubSubmit 함수가 필요하다. 아직 배포 전이면 안내한다.
-      el.uploadMsg.textContent = '여러 파일 게임은 아직 준비 중입니다. 지금은 단일 index.html 만 올릴 수 있어요. (여러 파일은 GitHub 제출 문서를 참고하세요.)';
-      el.uploadMsg.hidden = false;
-    }
+    await publishInstant(fb, {
+      slug,
+      meta,
+      html: picked ? picked.html : null, // 수정 시 파일 미교체면 기존 유지
+      uid: fb.auth.currentUser.uid,
+    });
+    el.uploadDialog.close();
+    toast(editing ? '수정되었습니다.' : '게시되었습니다. 갤러리에 올라갔어요.');
+    await loadInstant();
+    renderTagbar();
+    render();
   } catch (err) {
     el.uploadMsg.textContent = err instanceof SubmitError
       ? err.message
-      : '게시하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+      : `${label}하지 못했습니다. 잠시 후 다시 시도해 주세요.`;
     el.uploadMsg.hidden = false;
     if (!(err instanceof SubmitError)) console.error('[HK GameHub] 게시 실패', err);
   } finally {
     el.uploadSubmit.disabled = false;
-    el.uploadSubmit.textContent = '게시';
+    el.uploadSubmit.textContent = label;
   }
 }
 
@@ -778,6 +840,9 @@ function watchAuth() {
     const session = user ? loadSession() : null;
     state.user = session;
     paintAuth();
+    // 로그인 상태에 따라 내 게임의 수정·삭제 버튼 노출이 달라지므로 카드를 다시 그린다.
+    // (플레이어가 열려 있어도 갤러리 그리드는 별개라 안전하다.)
+    render();
 
     if (!session) {
       state.myLikes = new Set();
@@ -805,6 +870,17 @@ function setTag(tag) {
 }
 
 el.grid.addEventListener('click', (e) => {
+  const edit = e.target.closest('[data-edit]');
+  if (edit) {
+    e.stopPropagation();
+    const g = state.games.find((x) => x.slug === edit.dataset.edit);
+    if (g) openUpload(g);
+    return;
+  }
+
+  const del = e.target.closest('[data-del]');
+  if (del) { e.stopPropagation(); deleteGame(del.dataset.del); return; }
+
   const like = e.target.closest('[data-like]');
   if (like) { toggleLike(like.dataset.like); return; }
 

@@ -333,15 +333,22 @@ service cloud.firestore {
       allow delete: if isAdmin() || (signedIn() && resource.data.by == request.auth.uid);
 
       // HTML 원문. 플레이할 때만 읽으므로 갤러리 로드에는 포함되지 않는다.
-      // 부모 메타 문서와 같은 배치로 생성되므로, getAfter() 로 배치가 끝난 뒤의
-      // 부모 by 를 확인한다(get 은 배치 이전 상태라 아직 없는 부모를 못 본다).
       match /content/{doc} {
         allow read: if true;
-        allow write: if signedIn()
+
+        // 생성·교체는 부모 메타와 같은 배치로 이뤄지므로 getAfter() 로 배치가
+        // 끝난 뒤의 부모 by 를 확인한다(get 은 배치 이전 상태라 신규 부모를 못 본다).
+        allow create, update: if signedIn()
           && request.resource.data.keys().hasOnly(['html'])
           && request.resource.data.html is string
           && request.resource.data.html.size() < 900000
           && getAfter(/databases/$(database)/documents/gamehub_instant/$(slug)).data.by == request.auth.uid;
+
+        // 삭제는 부모와 함께 지워지므로 배치 이전 상태(get)의 부모 by 로 확인한다.
+        // 삭제 요청에는 request.resource 가 없어 위 create/update 조건을 쓸 수 없다.
+        allow delete: if isAdmin()
+          || (signedIn()
+              && get(/databases/$(database)/documents/gamehub_instant/$(slug)).data.by == request.auth.uid);
       }
     }
   }
