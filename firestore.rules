@@ -1,0 +1,92 @@
+rules_version = '2';
+
+// HK GameHub - Firestore 보안 규칙
+//
+// 설계 요약
+//   games/{slug}              : { likeCount: number }  - 좋아요 집계
+//   games/{slug}/likes/{uid}  : { createdAt }          - 문서 존재 = 그 유저가 좋아요 누름
+//
+// 좋아요 수는 서버(Cloud Functions) 없이 클라이언트가 직접 올리지만,
+// getAfter() 로 "좋아요 문서가 실제로 생겼을 때만 +1" 을 강제하므로 조작할 수 없다.
+// 클라이언트는 반드시 writeBatch 로 두 문서를 함께 써야 한다.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function myLikeRef(slug) {
+      return /databases/$(database)/documents/games/$(slug)/likes/$(request.auth.uid);
+    }
+
+    // 이번 쓰기가 끝난 뒤에도 내 좋아요 문서가 존재하는가
+    function likedAfter(slug) {
+      return getAfter(myLikeRef(slug)) != null;
+    }
+
+    // 이번 쓰기 전에 내 좋아요 문서가 존재했는가
+    function likedBefore(slug) {
+      return exists(myLikeRef(slug));
+    }
+
+    function onlyLikeCount() {
+      return request.resource.data.keys().hasOnly(['likeCount'])
+             && request.resource.data.likeCount is int;
+    }
+
+    match /games/{slug} {
+      // 좋아요 수는 비로그인 방문자도 본다
+      allow read: if true;
+
+      // 첫 좋아요: 게임 문서가 아직 없던 상태에서 likeCount = 1 로 생성
+      allow create: if request.auth != null
+                    && onlyLikeCount()
+                    && request.resource.data.likeCount == 1
+                    && !likedBefore(slug)
+                    && likedAfter(slug);
+
+      allow update: if request.auth != null
+                    && onlyLikeCount()
+                    && (
+                      // 좋아요 누름: 없던 내 좋아요가 생기면서 +1
+                      (request.resource.data.likeCount == resource.data.likeCount + 1
+                       && !likedBefore(slug)
+                       && likedAfter(slug))
+                      ||
+                      // 좋아요 취소: 있던 내 좋아요가 사라지면서 -1
+                      (request.resource.data.likeCount == resource.data.likeCount - 1
+                       && likedBefore(slug)
+                       && !likedAfter(slug))
+                    );
+
+      // 집계 문서는 지우지 않는다
+      allow delete: if false;
+
+      match /likes/{uid} {
+        // 누가 좋아요를 눌렀는지는 공개 (좋아요 누른 사람 목록 표시용)
+        allow read: if true;
+
+        allow create: if request.auth != null
+                      && request.auth.uid == uid
+                      && request.resource.data.keys().hasOnly(['createdAt']);
+
+        allow delete: if request.auth != null
+                      && request.auth.uid == uid;
+
+        // 좋아요는 켜고 끄는 것뿐, 수정 개념이 없다
+        allow update: if false;
+      }
+    }
+
+    // 내가 좋아요한 게임 목록 캐시.
+    // 갤러리를 열 때 좋아요 상태를 게임 수만큼 읽지 않고 문서 1개로 끝내기 위한 것.
+    // 좋아요의 정본은 games/{slug}/likes/{uid} 이고 이 문서는 UI 용 사본이라,
+    // 위 좋아요 배치 쓰기에 항상 함께 묶어서 갱신한다.
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // 그 외 모든 경로 차단
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
