@@ -310,13 +310,17 @@ service cloud.firestore {
     //   운영자는 언제나 가능하다. 좋아요=포인트라 부적절한 게임은 운영자가 지운다.
     function gh_instantMetaShape() {
       return request.resource.data.keys().hasOnly(
-               ['title', 'author', 'authorId', 'cohort', 'description', 'tags', 'by', 'createdAt'])
+               ['title', 'author', 'authorId', 'cohort', 'description', 'tags', 'thumb', 'by', 'createdAt'])
         && request.resource.data.title is string
         && request.resource.data.title.size() > 0
         && request.resource.data.title.size() <= 80
         && request.resource.data.author is string
         && request.resource.data.by == request.auth.uid
-        && gh_isParticipant(request.resource.data.authorId);
+        && gh_isParticipant(request.resource.data.authorId)
+        // 썸네일은 있으면 작은 data URI 여야 한다(갤러리가 메타와 함께 읽으므로)
+        && (!('thumb' in request.resource.data)
+            || (request.resource.data.thumb is string
+                && request.resource.data.thumb.size() < 80000));
     }
 
     match /gamehub_instant/{slug} {

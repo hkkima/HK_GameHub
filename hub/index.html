@@ -137,6 +137,14 @@
     </div>
     <p id="up-picked" class="up-picked" hidden></p>
 
+    <label for="up-thumb">썸네일 <span class="dim">(선택, 없으면 제목 글자로 표시)</span></label>
+    <div class="thumb-row">
+      <button type="button" id="up-thumb-btn" class="btn btn-ghost">이미지 선택</button>
+      <input id="up-thumb" type="file" accept="image/*" hidden>
+      <img id="up-thumb-preview" class="thumb-preview" alt="" hidden>
+      <button type="button" id="up-thumb-clear" class="linkish" hidden>제거</button>
+    </div>
+
     <p id="upload-msg" class="upload-msg" role="alert" hidden></p>
 
     <div class="upload-actions">
