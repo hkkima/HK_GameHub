@@ -309,7 +309,14 @@ async function main() {
     console.error(`\n빌드 중 ${problems.length}건의 문제가 있었습니다.\n`);
     for (const p of problems) console.error(`  ✗ ${p}`);
     console.error('');
-    process.exit(1);
+    // 관대 모드(배포): 문제 있는 게임만 제외하고 나머지는 배포한다. 수강생이 올린
+    // 게임 하나가 깨졌다고 전체 갤러리 배포가 막히면 안 되기 때문이다.
+    // pr-check 는 이 변수를 켜지 않으므로 여전히 엄격하게 실패한다.
+    if (process.env.BUILD_LENIENT) {
+      console.error('BUILD_LENIENT: 위 문제 게임을 제외하고 계속합니다.\n');
+    } else {
+      process.exit(1);
+    }
   }
 
   step(`완료 — 게임 ${games.length}개`);

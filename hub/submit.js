@@ -182,9 +182,9 @@ export async function deleteInstant(fb, slug) {
   await batch.commit();
 }
 
-// 멀티파일: gamehubSubmit 함수로 넘긴다. 함수가 PR 생성·자동머지한다.
-export async function publishBundle(fb, { slug, meta, files }) {
+// 멀티파일: gamehubSubmit 함수로 넘긴다. 함수가 slug 를 발급하고 PR 생성·자동머지한다.
+export async function publishBundle(fb, { meta, files }) {
   const call = fb.fns.httpsCallable(fb.functions, 'gamehubSubmit');
-  const res = await call({ slug, meta, files });
-  return res.data; // { prUrl, merged }
+  const res = await call({ meta, files });
+  return res.data; // { prUrl, prNumber, merged, slug }
 }

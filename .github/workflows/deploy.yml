@@ -31,6 +31,9 @@ jobs:
         run: node scripts/build.mjs
         env:
           HUB_ORIGIN: https://hk-gamehub.pages.dev
+          # 수강생이 올린 게임 하나가 깨져도 나머지는 배포한다(전체 갤러리가 막히지
+          # 않도록). PR 검사(pr-check.yml)는 이 변수를 켜지 않아 여전히 엄격하다.
+          BUILD_LENIENT: '1'
 
       # Pages 프로젝트가 없으면 만든다. 이미 있으면 wrangler 가 에러를 내는데,
       # 그게 정상 경로라서 continue-on-error 로 넘긴다. 대시보드에서 손으로

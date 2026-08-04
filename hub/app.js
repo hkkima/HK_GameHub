@@ -4,7 +4,7 @@ import {
 } from './auth.js';
 import { createAdminPanel } from './admin.js';
 import {
-  classify, newGameId, publishInstant, deleteInstant, makeThumb, SubmitError,
+  classify, newGameId, publishInstant, publishBundle, deleteInstant, makeThumb, SubmitError,
 } from './submit.js';
 
 // 지급 함수(gamehubPayout)가 있는 리전. 로그인은 이제 함수를 쓰지 않지만
@@ -718,8 +718,9 @@ async function submitUpload(event) {
   if (!state.user) { openLogin(); return; }
   // 신규는 파일 필수. 수정은 파일을 안 고르면 기존 게임을 유지한다.
   if (!picked && !editing) { el.uploadMsg.textContent = '게임 파일을 선택하세요.'; el.uploadMsg.hidden = false; return; }
-  if (picked && picked.kind !== 'instant') {
-    el.uploadMsg.textContent = '여러 파일 게임은 아직 준비 중입니다. 지금은 단일 index.html 만 올릴 수 있어요.';
+  // 멀티파일 게임은 즉시 게시(수정) 대상이 아니다. 수정 버튼은 즉시 게시 게임에만 뜬다.
+  if (editing && picked && picked.kind === 'bundle') {
+    el.uploadMsg.textContent = '여러 파일 게임은 이 화면에서 수정할 수 없습니다. 새로 올려 주세요.';
     el.uploadMsg.hidden = false;
     return;
   }
@@ -733,36 +734,53 @@ async function submitUpload(event) {
     tags: el.upTags.value.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 6),
     thumb: thumbUri || '',
   };
-  const slug = editing ? editing.slug : newGameId();
-  const label = editing ? '수정' : '게시';
+  const isBundle = picked && picked.kind === 'bundle';
+  const label = editing ? '수정' : (isBundle ? '올리기' : '게시');
 
   el.uploadSubmit.disabled = true;
   el.uploadSubmit.textContent = `${label} 중…`;
 
   try {
-    if (!await ensureFirebase()) throw new SubmitError('지금은 게시할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+    if (!await ensureFirebase()) throw new SubmitError('지금은 올릴 수 없습니다. 잠시 후 다시 시도해 주세요.');
 
-    await publishInstant(fb, {
-      slug,
-      meta,
-      html: picked ? picked.html : null, // 수정 시 파일 미교체면 기존 유지
-      uid: fb.auth.currentUser.uid,
-    });
-    el.uploadDialog.close();
-    toast(editing ? '수정되었습니다.' : '게시되었습니다. 갤러리에 올라갔어요.');
-    await loadInstant();
-    renderTagbar();
-    render();
+    if (isBundle) {
+      // 멀티파일: 함수가 GitHub PR 을 만들고 자동 머지한다. 빌드를 거쳐 배포되므로
+      // 갤러리에 뜨기까지 몇 분 걸린다(즉시 게시가 아니다).
+      const res = await publishBundle(fb, { meta, files: picked.files });
+      el.uploadDialog.close();
+      toast(res.merged
+        ? '올렸습니다. 빌드를 거쳐 몇 분 뒤 갤러리에 올라옵니다.'
+        : '올렸습니다. 자동 반영에 실패해 검토 후 반영됩니다.');
+    } else {
+      await publishInstant(fb, {
+        slug: editing ? editing.slug : newGameId(),
+        meta,
+        html: picked ? picked.html : null, // 수정 시 파일 미교체면 기존 유지
+        uid: fb.auth.currentUser.uid,
+      });
+      el.uploadDialog.close();
+      toast(editing ? '수정되었습니다.' : '게시되었습니다. 갤러리에 올라갔어요.');
+      await loadInstant();
+      renderTagbar();
+      render();
+    }
   } catch (err) {
     el.uploadMsg.textContent = err instanceof SubmitError
       ? err.message
-      : `${label}하지 못했습니다. 잠시 후 다시 시도해 주세요.`;
+      : mapFunctionError(err) || `${label}하지 못했습니다. 잠시 후 다시 시도해 주세요.`;
     el.uploadMsg.hidden = false;
-    if (!(err instanceof SubmitError)) console.error('[HK GameHub] 게시 실패', err);
+    if (!(err instanceof SubmitError)) console.error('[HK GameHub] 업로드 실패', err);
   } finally {
     el.uploadSubmit.disabled = false;
     el.uploadSubmit.textContent = label;
   }
+}
+
+// gamehubSubmit 함수가 던지는 HttpsError 는 사용자에게 보여줄 만한 문구다.
+function mapFunctionError(err) {
+  const code = err?.code || '';
+  if (code.startsWith('functions/')) return err.message;
+  return null;
 }
 
 async function logout() {
