@@ -1,0 +1,15 @@
+{
+  "name": "hk-gamehub",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "기획 수강생들이 만든 웹 게임을 전시하고 바로 플레이하는 허브",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs",
+    "check": "node scripts/build.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

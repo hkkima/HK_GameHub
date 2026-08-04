@@ -1,0 +1,9 @@
+{
+  "title": "게임 제목",
+  "author": "홍길동",
+  "cohort": "11기",
+  "description": "한두 문장으로 게임을 소개합니다. 갤러리 카드에 표시됩니다.",
+  "tags": ["퍼즐", "캐주얼"],
+  "thumb": "thumb.png",
+  "spa": false
+}

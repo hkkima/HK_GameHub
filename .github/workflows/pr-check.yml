@@ -1,0 +1,41 @@
+name: PR 검사
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 배포 없이 빌드만 돌려서, 머지 전에 게임이 제대로 빌드되는지 확인한다.
+      # 수강생 코드의 postinstall 은 build.mjs 가 --ignore-scripts 로 막는다.
+      - name: 전체 빌드 검증
+        run: node scripts/build.mjs
+
+      - name: 요약
+        if: always()
+        run: |
+          if [ -f dist/hub/games.json ]; then
+            echo "### 빌드 통과" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            node -e "
+              const games = require('./dist/hub/games.json');
+              console.log('| 게임 | 제작자 | 태그 |');
+              console.log('|---|---|---|');
+              for (const g of games) console.log(\`| \${g.title} | \${g.author} | \${(g.tags||[]).join(', ')} |\`);
+            " >> $GITHUB_STEP_SUMMARY
+          fi

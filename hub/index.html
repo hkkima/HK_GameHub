@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HK GameHub</title>
+<meta name="description" content="기획 수강생들이 만든 웹 게임 모음">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="./">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-text">
+      <strong id="site-title">HK GameHub</strong>
+      <small id="site-tagline">기획 수강생들이 만든 웹 게임 모음</small>
+    </span>
+  </a>
+
+  <div class="topbar-right">
+    <div id="auth-anon">
+      <button id="btn-login" class="btn btn-primary">로그인</button>
+    </div>
+    <div id="auth-user" hidden>
+      <span id="user-badge" class="avatar" aria-hidden="true"></span>
+      <span id="user-name" class="user-name"></span>
+      <button id="btn-logout" class="btn btn-ghost">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<dialog id="login-dialog" class="login-dialog">
+  <form id="login-form" method="dialog">
+    <h2>로그인</h2>
+    <p class="login-hint">수업에서 쓰는 이름과 PIN 을 그대로 입력하세요.</p>
+
+    <label for="login-name">이름</label>
+    <input id="login-name" name="name" type="text" autocomplete="username" required>
+
+    <label for="login-pin">PIN</label>
+    <input id="login-pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" required>
+
+    <p id="login-error" class="login-error" role="alert" hidden></p>
+
+    <div class="login-actions">
+      <button type="button" id="login-cancel" class="btn btn-ghost">취소</button>
+      <button type="submit" id="login-submit" class="btn btn-primary">로그인</button>
+    </div>
+  </form>
+</dialog>
+
+<main class="wrap">
+
+  <section class="controls">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="search" type="search" placeholder="게임, 제작자, 태그 검색" autocomplete="off">
+    </div>
+    <div class="sort-group" role="group" aria-label="정렬">
+      <button class="chip is-on" data-sort="new">최신순</button>
+      <button class="chip" data-sort="likes">인기순</button>
+      <button class="chip" data-sort="title">이름순</button>
+    </div>
+  </section>
+
+  <section id="tagbar" class="tagbar" aria-label="태그 필터"></section>
+
+  <section id="grid" class="grid" aria-live="polite"></section>
+
+  <p id="empty" class="empty" hidden>조건에 맞는 게임이 없습니다.</p>
+
+  <div id="skeleton" class="grid">
+    <div class="card skel"></div><div class="card skel"></div>
+    <div class="card skel"></div><div class="card skel"></div>
+  </div>
+
+</main>
+
+<footer class="foot">
+  <span id="count-line"></span>
+  <a href="https://github.com/hkkima/HK_GameHub#readme" target="_blank" rel="noopener">내 게임 올리는 법</a>
+</footer>
+
+<!-- 플레이 오버레이 -->
+<div id="player" class="player" hidden>
+  <div class="player-bar">
+    <button id="btn-close" class="btn btn-ghost" aria-label="닫기">← 목록</button>
+    <div class="player-meta">
+      <strong id="player-title"></strong>
+      <span id="player-author"></span>
+    </div>
+    <div class="player-actions">
+      <button id="player-like" class="btn btn-like" aria-pressed="false">
+        <svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5l-1.4-1.3C5.4 14.5 2 11.4 2 7.6 2 4.9 4.1 3 6.7 3c1.5 0 3 .7 3.9 1.9L12 6l1.4-1.1C14.3 3.7 15.8 3 17.3 3 19.9 3 22 4.9 22 7.6c0 3.8-3.4 6.9-8.6 11.6z"/></svg>
+        <span id="player-like-count">0</span>
+      </button>
+      <a id="btn-newtab" class="btn btn-ghost" target="_blank" rel="noopener">새 탭</a>
+    </div>
+  </div>
+  <div class="player-stage">
+    <iframe id="game-frame" title="게임" allow="fullscreen; gamepad; autoplay; clipboard-write"></iframe>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
