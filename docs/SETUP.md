@@ -59,19 +59,22 @@ Firestore 는 그와 **별개의 서비스**라 같은 프로젝트에 추가해
 
 ## 2. Cloudflare Pages
 
-### 2-1. 프로젝트 2개 생성
+### 2-1. 프로젝트 생성 — 할 일 없음
 
-1. [dash.cloudflare.com](https://dash.cloudflare.com) 무료 가입
-2. **Compute (Workers & Pages)** → **Create** → **Pages** 탭 → **Upload assets**
-3. 아래 두 개를 만듭니다. 프로젝트 이름이 그대로 주소가 됩니다.
+**대시보드에서 손으로 만들 필요가 없습니다.** 워크플로가 배포 직전에
+`wrangler pages project create` 로 아래 두 개를 알아서 만듭니다.
 
 | 프로젝트 이름 | 주소 | 용도 |
 |---|---|---|
 | `hk-gamehub` | hk-gamehub.pages.dev | 허브 |
 | `hk-games` | hk-games.pages.dev | 수강생 게임 |
 
-> **Git 연동이 아니라 Direct Upload 방식**으로 만들어야 합니다. 배포는 GitHub Actions 가
-> wrangler 로 수행합니다. 생성 시에는 아무 파일이나 올려 초기화만 해두면 됩니다.
+이미 존재하면 그 단계는 실패하지만 `continue-on-error` 로 넘어가므로,
+몇 번을 돌려도 안전합니다.
+
+> 굳이 대시보드에서 만들고 싶다면 **Workers & Pages → Create application →
+> Pages 탭 → Upload assets** 순서입니다. 다만 Cloudflare 가 이 화면 구성을
+> 자주 바꾸고 있어, CLI 로 맡기는 쪽이 안정적입니다.
 
 ### 2-2. Account ID 복사
 

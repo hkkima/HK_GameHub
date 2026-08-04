@@ -32,6 +32,26 @@ jobs:
         env:
           HUB_ORIGIN: https://hk-gamehub.pages.dev
 
+      # Pages 프로젝트가 없으면 만든다. 이미 있으면 wrangler 가 에러를 내는데,
+      # 그게 정상 경로라서 continue-on-error 로 넘긴다. 대시보드에서 손으로
+      # 만들 필요를 없애기 위한 단계다. 토큰 권한이 모자라면 아래 배포 단계가
+      # 더 분명한 메시지와 함께 실패하므로 여기서 삼켜도 문제되지 않는다.
+      - name: Pages 프로젝트 준비 (게임)
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create hk-games --production-branch=main
+
+      - name: Pages 프로젝트 준비 (허브)
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create hk-gamehub --production-branch=main
+
       - name: 게임 배포
         uses: cloudflare/wrangler-action@v3
         with:
