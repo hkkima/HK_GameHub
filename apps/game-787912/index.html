@@ -1,0 +1,3024 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>제7이계민원청</title>
+<style>/* Modernist — design-system tokens and component classes. This file is the source of truth for the system's look; retune it here and see readme.md. */
+/* vietnamese */
+
+/* latin-ext */
+
+/* latin */
+
+/* vietnamese */
+
+/* latin-ext */
+
+/* latin */
+
+/* vietnamese */
+
+/* latin-ext */
+
+/* latin */
+
+
+
+:root {
+  --color-bg: #f3f2f2;
+  --color-surface: #eae9e9;
+  --color-text: #201e1d;
+  --color-accent: #ec3013;
+  --color-accent-2: #e15b47;
+  --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
+
+  /* Tonal ramps — generated in OKLCH on one shared lightness scale, so the
+     same step of any role matches the others in visual value. */
+  --color-neutral-100: #f8f4f4;
+  --color-neutral-200: #eae7e7;
+  --color-neutral-300: #d7d3d3;
+  --color-neutral-400: #bab6b6;
+  --color-neutral-500: #9b9797;
+  --color-neutral-600: #7d7979;
+  --color-neutral-700: #605d5d;
+  --color-neutral-800: #444141;
+  --color-neutral-900: #2d2b2b;
+
+  --color-accent-100: #fff2ef;
+  --color-accent-200: #ffe0d9;
+  --color-accent-300: #ffc4b8;
+  --color-accent-400: #ff9783;
+  --color-accent-500: #ff563c;
+  --color-accent-600: #dd2b0f;
+  --color-accent-700: #ae1800;
+  --color-accent-800: #7c1405;
+  --color-accent-900: #4d170e;
+
+  --color-accent-2-100: #fff2ef;
+  --color-accent-2-200: #ffe0da;
+  --color-accent-2-300: #ffc4b9;
+  --color-accent-2-400: #ff9784;
+  --color-accent-2-500: #ef6853;
+  --color-accent-2-600: #c94b39;
+  --color-accent-2-700: #9e3526;
+  --color-accent-2-800: #71261b;
+  --color-accent-2-900: #471d16;
+
+  --font-heading: "Archivo", system-ui, sans-serif;
+  --font-heading-weight: 800;
+  --font-body: "Archivo", system-ui, sans-serif;
+
+  --space-1: 4.0px;
+  --space-2: 8.0px;
+  --space-3: 12.0px;
+  --space-4: 16.0px;
+  --space-6: 24.0px;
+  --space-8: 32.0px;
+
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+
+  /* Elevation — derived from the ground: soft ink-tinted shadows on a
+     light theme, a hairline edge + ambient darkness on a dark one. */
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: var(--font-heading-weight); }
+
+.grayscale{filter:grayscale(1) contrast(1.08)}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Components — built with the tokens above. Plain CSS
+   on plain HTML: no JavaScript, no build step. Each class is documented in
+   readme.md and demonstrated in foundations/ and components/.
+   ══════════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-size: 15px; line-height: 1.55; font-weight: 400; }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 var(--space-2);
+}
+h1 { font-size: 42px; }
+h2 { font-size: 32px; }
+h3 { font-size: 25px; }
+h4 { font-size: 20px; }
+h5 { font-size: 16px; }
+h6 { font-size: 13px; }
+h6 { letter-spacing: 0.08em; text-transform: uppercase; }
+p { margin: 0 0 var(--space-3); }
+a { color: var(--color-accent); text-underline-offset: 3px; }
+img { display: block; max-width: 100%; }
+figure { margin: 0; }
+figcaption {
+  font-size: 11px; margin-top: var(--space-1);
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+.text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+/* — rules — */
+.hr {
+  height: 2px; border: 0; margin: var(--space-4) 0;
+  background: var(--color-divider);
+}
+
+/* — buttons — */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 14px; line-height: 1.2; color: var(--color-text); /* matches the .input's 14px —
+     the pair sits side by side in sign-up rows */
+  background: transparent; border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: var(--radius-md);
+}
+.btn svg { display: block; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { background: var(--color-accent); color: var(--color-bg); }
+.btn-primary:hover { background: var(--color-accent-600); }
+.btn-primary:active { background: var(--color-accent-700); }
+.btn-secondary { border-color: var(--color-divider); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+.btn-ghost { color: var(--color-accent); padding-inline: var(--space-1); }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.btn-ghost:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
+.btn-icon { width: 36px; height: 36px; padding: 0; }
+.btn-block { width: 100%; margin-top: var(--space-2); justify-content: flex-start; text-align: left; }
+
+/* — forms — */
+.field > label {
+  display: block; font-size: 12px; margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.input {
+  width: 100%; min-height: 36px; padding: 6px 10px; font: inherit;
+  font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+textarea.input { min-height: 90px; resize: vertical; }
+.radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+.radio input, .seg-opt input {
+  position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+}
+.radio .dot {
+  width: 16px; height: 16px; flex: none; border-radius: 50%;
+  border: 1.5px solid var(--color-divider);
+}
+.radio:hover .dot { border-color: var(--color-accent); }
+.radio input:checked + .dot {
+  border-color: var(--color-accent); background: var(--color-accent);
+  box-shadow: inset 0 0 0 4px var(--color-bg);
+}
+.radio input:focus-visible + .dot { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.seg {
+  display: inline-flex; overflow: hidden;
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.seg-opt {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; font-size: 13px; cursor: pointer;
+}
+.seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
+.seg-opt:has(input:checked) { background: var(--color-accent); color: var(--color-bg); }
+.seg-opt:not(:has(input:checked)):hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.seg-opt:has(input:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+
+/* — cards — */
+.card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-surface);
+}
+.card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
+.card-title {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 17px; line-height: 1.2;
+}
+.card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; }
+.card-meta {
+  display: flex; align-items: center; gap: 6px; font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+.elev-sm { box-shadow: var(--shadow-sm); }
+.elev-md { box-shadow: var(--shadow-md); }
+.elev-lg { box-shadow: var(--shadow-lg); }
+
+/* — tags — */
+.tag {
+  display: inline-flex; align-items: center; font-size: 11px;
+  letter-spacing: 0.02em; padding: 3px 10px;
+  border-radius: calc(var(--radius-md) * 0.75);
+}
+.tag-accent { background: var(--color-accent-100); color: var(--color-accent-800); }
+.tag-accent-2 { background: var(--color-accent-2-100); color: var(--color-accent-2-800); }
+.tag-neutral { background: var(--color-neutral-100); color: var(--color-neutral-800); }
+.tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
+
+/* — navigation — */
+.nav {
+  display: flex; align-items: center; gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 2px solid var(--color-divider);
+}
+.nav-brand {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 18px; margin-right: auto;
+}
+.nav a { color: inherit; text-decoration: none; font-size: 14px; }
+.nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent); }
+
+/* — tables — */
+.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th {
+  text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  padding: var(--space-2); border-bottom: 2px solid var(--color-divider);
+}
+.table td {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-divider);
+}
+.table tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
+
+/* — dialog — */
+.dialog-backdrop {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--color-neutral-900) 50%, transparent);
+}
+.dialog {
+  width: min(440px, 100%); display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-4); border-radius: var(--radius-lg);
+  background: var(--color-surface); box-shadow: var(--shadow-lg);
+}
+.dialog-title {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 20px;
+}
+.dialog-body { font-size: 14px; opacity: 0.85; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* latin-ext */
+
+/* latin */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* latin-ext */
+
+/* latin */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* latin-ext */
+
+/* latin */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* latin-ext */
+
+/* latin */
+
+
+html,body{margin:0;background:#8f8b88}
+body,h1,h2,h3,h4,h5,h6,.btn,.card-title,.dialog-title{font-family:"Archivo","IBM Plex Sans KR",system-ui,sans-serif}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-64px) scale(1.15)}}
+@keyframes stampIn{0%{opacity:0;transform:rotate(-18deg) scale(2.4)}45%{opacity:1;transform:rotate(-11deg) scale(1)}100%{opacity:1;transform:rotate(-11deg) scale(1)}}
+@keyframes shakeDoc{0%,100%{transform:translate(0,0)}20%{transform:translate(-7px,3px) rotate(-.6deg)}45%{transform:translate(6px,-4px) rotate(.5deg)}70%{transform:translate(-4px,2px)}}
+@keyframes tossAway{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(360px,-120px) rotate(38deg)}}
+
+/* — 실제 동작하는 호버 규칙 —
+   원본은 디자인 툴 전용 style-hover="..." 속성을 곳곳에 썼지만 이 dc-runtime 에는
+   해당 처리기가 없어(문자열 검색 결과 0건) 아무 효과가 없었다. 아래는 그 자리를
+   대신하는 진짜 CSS :hover다. 인라인 style 이 배경/테두리/글자색을 이미 고정값으로
+   박아 두면 클래스 기반 :hover 는 항상 인라인에 진다 — 그래서 해당 값들은
+   커스텀 프로퍼티(var(--x, 기본값)) 형태로 인라인에 넣고, 여기서 :hover 시에만
+   그 프로퍼티를 채워 넣는 방식을 쓴다. */
+.nav-btn:hover{--nav-bg:var(--color-neutral-200)}
+.story-choice:hover{--story-border:var(--color-accent);--story-color:var(--color-accent-400)}
+.btn-accent-outline:hover{background:var(--color-accent-100)}
+
+/* 서류 카드의 선택형 행(계획·기재사항·문서 의도) — 미선택 상태는 인라인 배경을
+   비워 두므로(undefined) 여기 :hover 가 정상적으로 먹는다. 선택 상태는 인라인
+   accent-100 이 그대로 이겨서 선택 표시가 호버에 묻히지 않는다. */
+.pick-row:hover{background:var(--color-neutral-200)}
+.pick-intent:hover{background:var(--color-neutral-200)}
+
+@keyframes overlayIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+
+html,body{margin:0;width:100%;height:100%;background:#8f8b88;overflow:hidden}
+#game-viewport{position:fixed;inset:0;overflow:hidden}
+#game-shell{position:absolute;top:0;left:50%;width:1440px;height:900px;transform-origin:top center}
+#app{width:1440px;height:900px;box-shadow:0 0 40px rgba(0,0,0,.18)}
+#boot-error{position:fixed;inset:24px;z-index:9999;overflow:auto;white-space:pre-wrap;margin:0;padding:20px;border:2px solid #8b1e1e;background:#fff;color:#8b1e1e;font:13px/1.5 monospace}
+</style></head><body>
+<div id="boot-error" hidden></div><div id="game-viewport"><div id="game-shell"><div id="app"></div></div></div>
+<template id="game-template"><div style="width:1440px;height:900px;display:flex;flex-direction:column;background:var(--color-bg);color:var(--color-text);overflow:hidden;font-size:14px">
+
+  <header style="display:flex;align-items:center;gap:20px;height:66px;flex:none;padding:0 24px;border-bottom:2px solid var(--color-divider)">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-right:auto">
+      <span style="font-family:Archivo;font-weight:800;font-size:19px;letter-spacing:-.02em">{{ deptName }}</span>
+      <span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600)">이계민원 접수과 · 서류심사 2팀</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:150px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-family:Archivo;font-weight:800;font-size:12px">{{ rankShort }} · {{ rankName }}</span>
+        <span style="font-size:9.5px;color:var(--color-neutral-600)">{{ expText }}</span>
+      </div>
+      <div style="height:5px;background:var(--color-neutral-200);border:1px solid var(--color-divider)">{{ expBar }}</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:150px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-family:Archivo;font-weight:800;font-size:12px">{{ shiftLabel }}</span>
+        <span style="font-size:9.5px;color:var(--color-neutral-600)">{{ shiftClockText }}</span>
+      </div>
+      <div style="height:5px;background:var(--color-neutral-200);border:1px solid var(--color-divider)">{{ shiftBar }}</div>
+    </div>
+
+    <div style="display:flex;align-items:stretch;gap:0;border:1px solid var(--color-divider)">
+      <div style="display:flex;flex-direction:column;gap:1px;padding:6px 14px;min-width:118px">
+        <span style="font-size:10px;letter-spacing:.1em;color:var(--color-neutral-600)">결재력 (도장)</span>
+        <span style="font-family:Archivo;font-weight:800;font-size:17px;line-height:1.1">{{ stampsText }}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1px;padding:6px 14px;min-width:104px;border-left:1px solid var(--color-divider)">
+        <span style="font-size:10px;letter-spacing:.1em;color:var(--color-neutral-600)">신입 사기</span>
+        <span style="font-family:Archivo;font-weight:800;font-size:17px;line-height:1.1">{{ moraleText }}</span>
+      </div>
+    </div>
+    <button class="btn btn-secondary" sc-camel-on-click="{{ goSettings }}" style="letter-spacing:.04em">설정</button>
+  </header>
+
+  <div style="flex:1;display:flex;min-height:0">
+    <nav style="width:196px;flex:none;border-right:2px solid var(--color-divider);display:flex;flex-direction:column;padding:14px 0">
+      <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="7">
+        <button class="nav-btn" sc-camel-on-click="{{ item.go }}" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px 11px 0;background:var(--nav-bg,transparent);border:0;border-bottom:1px solid var(--color-neutral-300);cursor:pointer;text-align:left;font-family:Archivo;font-size:14px;font-weight:600;color:var(--color-text)">
+          <sc-if value="{{ item.active }}" hint-placeholder-val="{{ true }}">
+            <span style="width:5px;height:26px;background:var(--color-accent);flex:none"></span>
+          </sc-if>
+          <sc-if value="{{ item.idle }}">
+            <span style="width:5px;height:26px;background:transparent;flex:none"></span>
+          </sc-if>
+          <span style="font-family:Archivo;font-size:10px;letter-spacing:.1em;color:var(--color-neutral-500);width:18px">{{ item.num }}</span>
+          <span style="font-family:'IBM Plex Sans KR',sans-serif;font-weight:600">{{ item.label }}</span>
+        </button>
+      </sc-for>
+      <div style="margin-top:auto;padding:14px;font-size:10px;line-height:1.6;color:var(--color-neutral-600);letter-spacing:.02em">민원 처리 실적은<br>매 정각 상급 부처로<br>자동 보고됩니다.</div>
+    </nav>
+
+    <main style="flex:1;min-width:0;overflow:hidden;position:relative">
+
+      <sc-if value="{{ isMain }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:266px 1fr 300px;height:834px">
+
+          <section style="border-right:1px solid var(--color-divider);padding:18px 18px 0;display:flex;flex-direction:column;gap:14px;overflow:hidden">
+            <h6 style="margin:0;color:var(--color-neutral-700)">근무 현황</h6>
+            <sc-raw-table class="table">
+              <sc-raw-tbody>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">1회 결재력</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ clickPowerText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">자동 처리 / 초</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ autoRateText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">누적 처리 건수</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ processedText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">심사 정확도</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ accuracyText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">오심 / 투척</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ missesText }} / {{ throwsText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">승인 : 반려</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ ratioText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">최고 콤보</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ maxComboText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">소신 반려</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ convictText }}</sc-raw-td></sc-raw-tr>
+              </sc-raw-tbody>
+            </sc-raw-table>
+
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <h6 style="margin:0;color:var(--color-neutral-700)">연속 결재 콤보</h6>
+                <span style="font-family:Archivo;font-weight:800;font-size:15px;color:var(--color-accent)">{{ comboText }}</span>
+              </div>
+              <div style="height:10px;background:var(--color-neutral-200);border:1px solid var(--color-divider)">{{ comboBar }}</div>
+              <p style="margin:0;font-size:11px;color:var(--color-neutral-600)">정심(正審)이 이어질수록 배수가 오릅니다({{ comboCapText }}). 오심 1회로 콤보는 즉시 소멸합니다.</p>
+            </div>
+
+            <div style="padding:12px;border:2px solid var(--color-accent);font-size:11.5px;line-height:1.55">
+              <strong>평가 기준</strong><br>스테이지 목표 건수와 정확도를 모두 달성하면 통과합니다. 오판은 콤보를 즉시 끊습니다.
+            </div>
+          </section>
+
+          <section style="padding:18px 22px;display:flex;flex-direction:column;gap:14px;position:relative;min-width:0">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="tag tag-accent">대기 {{ queueText }}건</span>
+              <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-600)">금일 접수 · 창구 07</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-600)">{{ clockText }}</span>
+            </div>
+
+            {{ docCard }}
+
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--color-divider);background:var(--color-surface)">
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                <span class="card-kicker">심사 힌트 · {{ hintUsesText }}</span>
+                <span style="font-size:12px;line-height:1.45;color:var(--color-neutral-700)">{{ hintText }}</span>
+              </div>
+              <button class="btn btn-secondary" sc-camel-on-click="{{ onHint }}" disabled="{{ hintDone }}" style="border-width:2px;flex:none">{{ hintButtonText }}</button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+              <button class="btn btn-secondary" sc-camel-on-click="{{ onReject }}" disabled="{{ actionLocked }}" style="justify-content:flex-start;padding:14px;flex-direction:column;align-items:flex-start;gap:3px;border-width:2px">
+                <span style="font-size:15px">반려 (REJECT)</span>
+                <span style="font-family:'IBM Plex Sans KR';font-weight:400;font-size:11px;color:var(--color-neutral-600)">{{ rejectSub }}</span>
+              </button>
+              <button class="btn btn-primary" sc-camel-on-click="{{ onAccept }}" disabled="{{ actionLocked }}" style="justify-content:flex-start;padding:14px;flex-direction:column;align-items:flex-start;gap:3px;border-width:2px">
+                <span style="font-size:15px">수락 (APPROVE)</span>
+                <span style="font-family:'IBM Plex Sans KR';font-weight:400;font-size:11px;opacity:.85">{{ acceptSub }}</span>
+              </button>
+              <button class="btn btn-accent-outline" sc-camel-on-click="{{ onThrow }}" disabled="{{ actionLocked }}" style="justify-content:flex-start;padding:14px;flex-direction:column;align-items:flex-start;gap:3px;border:2px solid var(--color-accent);color:var(--color-accent)">
+                <span style="font-size:15px">신입에게 투척</span>
+                <span style="font-family:'IBM Plex Sans KR';font-weight:400;font-size:11px;color:var(--color-accent-700)">{{ throwSub }}</span>
+              </button>
+            </div>
+            {{ floaterLayer }}
+          </section>
+
+          <section style="border-left:1px solid var(--color-divider);display:flex;flex-direction:column;min-width:0">
+            <div style="padding:18px 18px 14px;border-bottom:2px solid var(--color-divider);display:flex;flex-direction:column;gap:12px">
+              <h6 style="margin:0;color:var(--color-neutral-700)">창구 앞 신입</h6>
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <div style="width:64px;height:80px;flex:none;background:var(--color-text);color:var(--color-bg);display:flex;align-items:flex-end;justify-content:flex-start;padding:6px;font-family:Archivo;font-weight:800;font-size:34px;line-height:.8">{{ newbieInitial }}</div>
+                <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                  <span style="font-family:Archivo;font-weight:800;font-size:17px">{{ newbieName }}</span>
+                  <span style="font-size:11px;color:var(--color-neutral-600)">{{ newbieRole }}</span>
+                  <span style="font-size:12px;line-height:1.45;margin-top:4px">{{ newbieLine }}</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--color-neutral-700)"><span>사기</span><span>{{ moraleText }}</span></div>
+                <div style="height:8px;background:var(--color-neutral-200);border:1px solid var(--color-divider)">{{ moraleBar }}</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;display:flex;justify-content:space-between;align-items:baseline">
+              <h6 style="margin:0;color:var(--color-neutral-700)">감사 로그</h6>
+              <span style="font-size:10px;color:var(--color-neutral-500)">최근 순</span>
+            </div>
+            <sc-if value="{{ showAuditLog }}" hint-placeholder-val="{{ true }}">
+              <div style="flex:1;overflow:hidden;padding:0 18px 18px;display:flex;flex-direction:column;gap:7px">
+                <sc-for list="{{ logs }}" as="l" hint-placeholder-count="7">
+                  <div style="display:flex;gap:9px;font-size:11.5px;line-height:1.4;padding-bottom:7px;border-bottom:1px solid var(--color-neutral-300)">
+                    <span style="font-family:Archivo;color:var(--color-neutral-500);flex:none">{{ l.t }}</span>
+                    <span style="flex:1">{{ l.text }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isUpgrade }}">
+        <div style="height:834px;overflow:auto;padding:22px 26px">
+          <div style="display:flex;align-items:flex-end;gap:16px;border-bottom:2px solid var(--color-divider);padding-bottom:14px">
+            <h2 style="margin:0">강화 · 결재 역량 개발</h2>
+            <p style="margin:0 0 3px;font-size:12px;color:var(--color-neutral-600);max-width:420px">인사혁신 지침 제4조에 의거, 예산 범위 내에서 본인의 손목과 부서의 설비를 자율적으로 개선할 수 있습니다.</p>
+            <span style="margin-left:auto;font-family:Archivo;font-weight:800;font-size:20px">보유 {{ stampsText }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 26px">
+            <sc-for list="{{ upgrades }}" as="u" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--color-divider)">
+                <div style="width:52px;height:52px;flex:none;border:2px solid var(--color-text);display:flex;align-items:center;justify-content:center;font-family:Archivo;font-weight:800;font-size:19px">{{ u.lv }}</div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-family:Archivo;font-weight:800;font-size:16px">{{ u.name }}</span>
+                  <span style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.4">{{ u.desc }}</span>
+                  <span style="font-size:11px;color:var(--color-accent-700)">{{ u.gain }}</span>
+                </div>
+                <button class="btn btn-primary" sc-camel-on-click="{{ u.buy }}" disabled="{{ u.locked }}" style="flex-direction:column;align-items:flex-start;gap:1px;padding:9px 14px;min-width:118px">
+                  <span style="font-size:10px;opacity:.8;letter-spacing:.08em">결재 상신</span>
+                  <span style="font-size:15px">{{ u.costText }}</span>
+                </button>
+              </div>
+            </sc-for>
+          </div>
+          <p style="margin:18px 0 0;font-size:11.5px;color:var(--color-neutral-600)">{{ lockedUpgradeText }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isShop }}">
+        <div style="height:834px;overflow:auto;padding:22px 26px">
+          <div style="display:flex;align-items:flex-end;gap:16px;border-bottom:2px solid var(--color-divider);padding-bottom:14px">
+            <h2 style="margin:0">상점 · 관인석 매점</h2>
+            <p style="margin:0 0 3px;font-size:12px;color:var(--color-neutral-600);max-width:460px">본 매점은 청사 지하 1층에 실재하며, 결제 후 환불은 「이계 전자상거래법」 제17조에 따라 7일 이내 가능합니다.</p>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:20px 0 28px">
+            <sc-for list="{{ shopItems }}" as="s" hint-placeholder-count="4">
+              <div class="card" style="border:2px solid var(--color-divider);background:var(--color-surface);padding:0;gap:0">
+                <div style="padding:14px 14px 10px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-start">
+                  <span class="card-kicker">{{ s.kicker }}</span>
+                  <span class="tag tag-outline">{{ s.badge }}</span>
+                </div>
+                <div style="padding:16px 14px;display:flex;flex-direction:column;gap:4px">
+                  <span style="font-family:Archivo;font-weight:800;font-size:30px;line-height:1">{{ s.amount }}</span>
+                  <span style="font-size:11px;color:var(--color-neutral-700)">{{ s.unit }}</span>
+                  <span style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.45;margin-top:6px;min-height:34px">{{ s.note }}</span>
+                </div>
+                <button class="btn btn-primary btn-block" sc-camel-on-click="{{ s.buy }}" style="margin:0;padding:12px 14px">{{ s.price }}</button>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 320px;gap:26px">
+            <div>
+              <h6 style="color:var(--color-neutral-700)">무상 지원 (광고 시청)</h6>
+              <sc-for list="{{ adItems }}" as="a" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--color-divider)">
+                  <div style="width:46px;height:46px;flex:none;background:var(--color-text);color:var(--color-bg);display:flex;align-items:center;justify-content:center;font-family:Archivo;font-weight:800;font-size:11px">AD</div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+                    <span style="font-family:Archivo;font-weight:800;font-size:15px">{{ a.name }}</span>
+                    <span style="font-size:11.5px;color:var(--color-neutral-700)">{{ a.desc }}</span>
+                  </div>
+                  <span style="font-size:11px;color:var(--color-neutral-600)">{{ a.left }}</span>
+                  <button class="btn btn-secondary" sc-camel-on-click="{{ a.watch }}" style="border-width:2px">30초 시청</button>
+                </div>
+              </sc-for>
+            </div>
+            <div style="border:2px solid var(--color-accent);padding:16px;display:flex;flex-direction:column;gap:8px;align-self:start">
+              <span class="card-kicker">고지 사항</span>
+              <p style="margin:0;font-size:12px;line-height:1.55">유료 재화 「관인석」은 청사 밖에서 사용할 수 없으며, 퇴사 시 소멸됩니다. 이의가 있는 분은 4층 감사실 앞 대기표를 뽑아 주시기 바랍니다. (평균 대기 시간 6,200년)</p>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isGacha }}">
+        <div style="height:834px;overflow:auto;padding:22px 26px">
+          <div style="display:flex;align-items:flex-end;gap:16px;border-bottom:2px solid var(--color-divider);padding-bottom:14px">
+            <h2 style="margin:0">뽑기 · 전서비둘기 배치 신청</h2>
+            <p style="margin:0 0 3px;font-size:12px;color:var(--color-neutral-600);max-width:430px">비둘기는 물품이 아닌 「임시 공무 보조원」입니다. 개체 지정 신청은 접수되지 않습니다.</p>
+            <span style="margin-left:auto;font-family:Archivo;font-weight:800;font-size:20px;color:var(--color-accent)">관인석 {{ gemsText }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:340px 1fr;gap:26px;padding-top:20px">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="border:2px solid var(--color-text);padding:18px;display:flex;flex-direction:column;gap:10px">
+                <span style="font-family:Archivo;font-weight:800;font-size:60px;line-height:.85">S+</span>
+                <span style="font-family:Archivo;font-weight:800;font-size:19px">황금 관인 비둘기</span>
+                <span style="font-size:12px;line-height:1.5;color:var(--color-neutral-700)">픽업 개체. 부리에 인주가 묻어 있어 도장 없이도 결재가 가능하다는 소문이 있으나 공식 확인된 바 없습니다.</span>
+                <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px">
+                  <div style="display:flex;justify-content:space-between;font-size:11px"><span>천장까지</span><span style="font-family:Archivo;font-weight:800">{{ pityText }}</span></div>
+                  <div style="height:10px;background:var(--color-neutral-200);border:1px solid var(--color-divider)">{{ pityBar }}</div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <button class="btn btn-secondary" sc-camel-on-click="{{ pull1 }}" style="flex-direction:column;align-items:flex-start;padding:13px;border-width:2px"><span style="font-size:15px">1회 신청</span><span style="font-family:'IBM Plex Sans KR';font-weight:400;font-size:11px;color:var(--color-neutral-600)">관인석 10</span></button>
+                <button class="btn btn-primary" sc-camel-on-click="{{ pull10 }}" style="flex-direction:column;align-items:flex-start;padding:13px"><span style="font-size:15px">10회 일괄</span><span style="font-family:'IBM Plex Sans KR';font-weight:400;font-size:11px;opacity:.85">관인석 90 · A등급 확정</span></button>
+              </div>
+              <p style="margin:0;font-size:11px;line-height:1.6;color:var(--color-neutral-600)">{{ pityNoteText }}</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--color-divider);padding-bottom:8px">
+                <h6 style="margin:0;color:var(--color-neutral-700)">배치 결과</h6>
+                <span style="font-size:11px;color:var(--color-neutral-600)">{{ pullSummary }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+                <sc-for list="{{ gachaResults }}" as="g" hint-placeholder-count="10">
+                  <div style="border:2px solid var(--color-divider);background:var(--color-surface);display:flex;flex-direction:column;min-height:132px">
+                    <div style="padding:6px 8px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:center">
+                      <span style="font-family:Archivo;font-weight:800;font-size:13px">{{ g.rank }}</span>
+                      <sc-if value="{{ g.isNew }}"><span style="font-family:Archivo;font-weight:800;font-size:9px;letter-spacing:.1em;color:var(--color-accent)">NEW</span></sc-if>
+                    </div>
+                    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-family:Archivo;font-weight:800;font-size:26px;color:var(--color-neutral-400)">{{ g.mark }}</div>
+                    <div style="padding:7px 8px;border-top:1px solid var(--color-divider);display:flex;flex-direction:column;gap:1px">
+                      <span style="font-size:11px;line-height:1.25">{{ g.name }}</span>
+                      <span style="font-size:10px;color:var(--color-accent-700)">{{ g.effect }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <p style="margin:6px 0 0;font-size:12px;color:var(--color-neutral-700)">{{ gachaFlavor }}</p>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStory }}">
+        <div style="height:834px;display:flex;flex-direction:column;background:var(--color-neutral-900);color:var(--color-neutral-100)">
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 26px;border-bottom:2px solid var(--color-neutral-700)">
+            <span style="font-family:Archivo;font-weight:800;font-size:15px">제1화 · 첫 출근</span>
+            <span style="font-size:11px;color:var(--color-neutral-400)">{{ storyProgress }}</span>
+            <div style="margin-left:auto;display:flex;gap:8px">
+              <button class="btn" sc-camel-on-click="{{ storyBack }}" style="border:1px solid var(--color-neutral-600);color:var(--color-neutral-100)">이전</button>
+              <button class="btn" sc-camel-on-click="{{ storySkip }}" style="border:1px solid var(--color-neutral-600);color:var(--color-neutral-100)">스킵</button>
+            </div>
+          </div>
+          <div sc-camel-on-click="{{ storyNext }}" style="flex:1;display:grid;grid-template-columns:1fr 420px;cursor:pointer;min-height:0">
+            <div style="padding:36px 40px;display:flex;flex-direction:column;justify-content:flex-end;gap:18px;min-width:0">
+              <span style="font-family:Archivo;font-weight:800;font-size:13px;letter-spacing:.16em;color:var(--color-accent-400)">{{ storyWho }}</span>
+              <p style="margin:0;font-size:27px;line-height:1.5;max-width:640px;text-wrap:pretty;font-weight:500">{{ storyText }}</p>
+              <sc-if value="{{ hasChoices }}">
+                <div style="display:flex;flex-direction:column;gap:8px;max-width:520px">
+                  <sc-for list="{{ storyChoices }}" as="c" hint-placeholder-count="2">
+                    <button class="story-choice" sc-camel-on-click="{{ c.pick }}" style="text-align:left;padding:13px 16px;background:transparent;border:2px solid var(--story-border,var(--color-neutral-600));color:var(--story-color,var(--color-neutral-100));font-family:'IBM Plex Sans KR';font-size:15px;cursor:pointer">{{ c.label }}</button>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <span style="font-size:11px;color:var(--color-neutral-500)">화면을 클릭하면 다음으로 넘어갑니다.</span>
+            </div>
+            <div style="border-left:2px solid var(--color-neutral-700);display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 0 0;overflow:hidden">
+              <div style="flex:1;display:flex;align-items:flex-end;justify-content:center;padding:24px">
+                <div style="width:100%;aspect-ratio:3/4;border:2px solid var(--color-neutral-600);display:flex;align-items:flex-end;padding:16px;font-family:Archivo;font-weight:800;font-size:110px;line-height:.78;color:var(--color-neutral-700)">{{ storyPortrait }}</div>
+              </div>
+              <div style="padding:14px 20px;border-top:1px solid var(--color-neutral-700);font-size:11.5px;color:var(--color-neutral-400);line-height:1.5">{{ storyStage }}</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isHr }}">
+        {{ hrPanel }}
+      </sc-if>
+
+      <sc-if value="{{ isSettings }}">
+        <div style="height:834px;overflow:auto;padding:22px 26px">
+          <div style="border-bottom:2px solid var(--color-divider);padding-bottom:14px">
+            <h2 style="margin:0">설정 · 근무 환경</h2>
+            <p style="margin:4px 0 0;font-size:12px;color:var(--color-neutral-600)">변경 사항은 즉시 적용되며, 별도의 결재를 요하지 않습니다.</p>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 40px;padding-top:6px">
+            <div>
+              <div style="padding:18px 0;border-bottom:1px solid var(--color-divider)">
+                <h6 style="color:var(--color-neutral-700)">음향</h6>
+                <div style="display:flex;flex-direction:column;gap:14px;margin-top:10px">
+                  <sc-for list="{{ sliders }}" as="s" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;gap:14px">
+                      <span style="width:120px;font-size:13px">{{ s.label }}</span>
+                      <input type="range" min="0" max="100" value="{{ s.value }}" sc-camel-on-change="{{ s.set }}" style="flex:1;accent-color:var(--color-accent)">
+                      <span style="width:38px;text-align:right;font-family:Archivo;font-weight:800;font-size:13px">{{ s.valueText }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="padding:18px 0;border-bottom:1px solid var(--color-divider)">
+                <h6 style="color:var(--color-neutral-700)">동작</h6>
+                <div style="display:flex;flex-direction:column;gap:2px;margin-top:6px">
+                  <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="4">
+                    <button sc-camel-on-click="{{ t.toggle }}" style="display:flex;align-items:center;gap:14px;padding:11px 0;background:transparent;border:0;border-bottom:1px solid var(--color-neutral-300);cursor:pointer;text-align:left;width:100%">
+                      <span style="display:flex;flex-direction:column;gap:1px;flex:1">
+                        <span style="font-size:13.5px;font-family:'IBM Plex Sans KR';font-weight:600">{{ t.label }}</span>
+                        <span style="font-size:11px;color:var(--color-neutral-600)">{{ t.desc }}</span>
+                      </span>
+                      <span style="font-family:Archivo;font-weight:800;font-size:11px;letter-spacing:.1em;padding:5px 12px;border:2px solid var(--color-divider)">{{ t.stateText }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style="padding:18px 0;border-bottom:1px solid var(--color-divider)">
+                <h6 style="color:var(--color-neutral-700)">화면 밀도</h6>
+                <div class="seg" style="margin-top:10px;border-width:2px">
+                  <label class="seg-opt"><input type="radio" name="dens" checked="">보통</label>
+                  <label class="seg-opt"><input type="radio" name="dens">촘촘하게</label>
+                  <label class="seg-opt"><input type="radio" name="dens">서류 더미</label>
+                </div>
+              </div>
+              <div style="padding:18px 0;border-bottom:1px solid var(--color-divider)">
+                <h6 style="color:var(--color-neutral-700)">공무원증</h6>
+                <div style="display:flex;gap:14px;margin-top:10px;align-items:flex-start">
+                  <div style="width:78px;height:98px;background:var(--color-text);color:var(--color-bg);display:flex;align-items:flex-end;padding:8px;font-family:Archivo;font-weight:800;font-size:15px;line-height:1">{{ idRankText }}<br>{{ idRankSub }}</div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+                    <div class="field"><label>표시 이름</label><input class="input" value="이 름 없 는 주 무 관"></div>
+                    <div class="field"><label>소속</label><input class="input" value="이계민원 접수과 서류심사 2팀"></div>
+                  </div>
+                </div>
+              </div>
+              <div style="padding:18px 0">
+                <h6 style="color:var(--color-neutral-700)">위험 구역</h6>
+                <p style="margin:8px 0 12px;font-size:12px;color:var(--color-neutral-700);max-width:400px">퇴사 처리 시 누적 결재력·비둘기·미결 서류가 전부 소각되며, 소각된 서류는 복원되지 않습니다.</p>
+                <div style="display:flex;gap:10px">
+                  <button class="btn btn-secondary" sc-camel-on-click="{{ downloadSave }}" style="border-width:2px">저장 데이터 내려받기</button>
+                  <button class="btn btn-secondary" sc-camel-on-click="{{ uploadSave }}" style="border-width:2px">저장 데이터 불러오기</button>
+                  <button class="btn btn-accent-outline" sc-camel-on-click="{{ openReset }}" style="border:2px solid var(--color-accent);color:var(--color-accent)">퇴사 (전체 초기화)</button>
+                </div>
+                <p style="margin:10px 0 0;font-size:11px;color:var(--color-neutral-600)">{{ saveStatusText }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ resetOpen }}">
+        <div class="dialog-backdrop" style="position:absolute">
+          <div class="dialog" style="border:2px solid var(--color-text)">
+            <span class="dialog-title">퇴사원을 제출하시겠습니까?</span>
+            <p class="dialog-body" style="margin:0">본 신청은 취소할 수 없습니다. 제출 즉시 귀하의 도장은 회수되며, 비둘기 {{ buffCountText }}수는 옥상으로 방생됩니다. 신입은 아무 말 없이 서류 더미를 바라볼 것입니다.</p>
+            <div class="dialog-actions">
+              <button class="btn btn-secondary" sc-camel-on-click="{{ closeReset }}" style="border-width:2px">조금 더 다니겠습니다</button>
+              <button class="btn btn-primary" sc-camel-on-click="{{ doReset }}">제출</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      {{ overlays }}
+
+    </main>
+  </div>
+</div>
+</template>
+<script>// 이계민원청 독립 실행용 초경량 런타임.
+// 기존 x-dc 템플릿의 sc-if/sc-for/이벤트 바인딩과 React 형태의 화면 조각을 처리한다.
+(function(){
+  const unitless = new Set(['flex','flexGrow','flexShrink','fontWeight','lineHeight','opacity','order','zIndex']);
+  let mounted = null;
+  let renderQueued = false;
+
+  class DCLogic {
+    constructor(props){ this.props = props || {}; this.state = {}; }
+    setState(patch){
+      const next = typeof patch === 'function' ? patch(this.state) : patch;
+      if(next) this.state = Object.assign({}, this.state, next);
+      queueRender();
+    }
+  }
+
+  const React = {
+    createElement(type, props, ...children){
+      return {__vnode:true, type, props:props || {}, children};
+    }
+  };
+
+  function queueRender(){
+    if(renderQueued) return;
+    renderQueued = true;
+    queueMicrotask(()=>{ renderQueued=false; renderApp(); });
+  }
+
+  function fitViewport(){
+    const shell=document.getElementById('game-shell');
+    if(!shell) return;
+    const scale=Math.max(0.1,Math.min(window.innerWidth/1440,window.innerHeight/900));
+    shell.style.transform='translateX(-50%) scale('+scale+')';
+  }
+
+  function pathValue(path, ctx, vals){
+    const parts = String(path||'').trim().split('.');
+    let cur = Object.prototype.hasOwnProperty.call(ctx,parts[0]) ? ctx : vals;
+    for(const part of parts){
+      if(cur == null) return undefined;
+      cur = cur[part];
+    }
+    return cur;
+  }
+
+  function expression(raw, ctx, vals){
+    const match = /^\s*\{\{\s*([\w$.-]+)\s*\}\}\s*$/.exec(raw || '');
+    return match ? {exact:true,value:pathValue(match[1],ctx,vals)} : {exact:false,value:String(raw||'').replace(/\{\{\s*([\w$.-]+)\s*\}\}/g,(_,p)=>{
+      const value=pathValue(p,ctx,vals); return value==null?'':String(value);
+    })};
+  }
+
+  function append(parent, child){
+    if(child == null || child === false) return;
+    if(Array.isArray(child)){ child.forEach(c=>append(parent,c)); return; }
+    parent.appendChild(child);
+  }
+
+  function styleValue(element, styles){
+    if(!styles) return;
+    for(const [key,value] of Object.entries(styles)){
+      if(value == null) continue;
+      try { element.style[key] = typeof value === 'number' && !unitless.has(key) ? value+'px' : String(value); } catch(e) {}
+    }
+  }
+
+  function vnodeNode(vnode){
+    if(vnode == null || vnode === false) return document.createDocumentFragment();
+    if(typeof vnode === 'string' || typeof vnode === 'number') return document.createTextNode(String(vnode));
+    if(Array.isArray(vnode)){
+      const frag=document.createDocumentFragment(); vnode.forEach(v=>append(frag,vnodeNode(v))); return frag;
+    }
+    if(!vnode.__vnode) return document.createTextNode(String(vnode));
+    const el=document.createElement(vnode.type);
+    for(const [key,value] of Object.entries(vnode.props||{})){
+      if(key==='key' || value==null || value===false) continue;
+      if(key==='className'){ el.className=value; continue; }
+      if(key==='style'){ styleValue(el,value); continue; }
+      if(key==='onClick' || key==='onChange'){
+        const eventName=key==='onClick'?'click':'change';
+        el.addEventListener(eventName,event=>{ if(el.tagName==='BUTTON') event.stopPropagation(); value(event); });
+        continue;
+      }
+      if(key==='disabled'){ el.disabled=!!value; continue; }
+      if(key==='value'){ el.value=value; continue; }
+      try { el.setAttribute(key,value===true?'':String(value)); } catch(e) {}
+    }
+    (vnode.children||[]).forEach(child=>append(el,vnodeNode(child)));
+    return el;
+  }
+
+  const rawTags={
+    'SC-RAW-TABLE':'table','SC-RAW-TBODY':'tbody','SC-RAW-TR':'tr','SC-RAW-TD':'td'
+  };
+
+  function templateNode(node, ctx, vals){
+    if(node.nodeType===Node.TEXT_NODE){
+      const out=expression(node.nodeValue,ctx,vals);
+      if(out.exact && out.value && out.value.__vnode) return vnodeNode(out.value);
+      if(out.exact && Array.isArray(out.value) && out.value.some(v=>v&&v.__vnode)) return vnodeNode(out.value);
+      return document.createTextNode(out.exact ? (out.value==null?'':String(out.value)) : out.value);
+    }
+    if(node.nodeType!==Node.ELEMENT_NODE) return document.createDocumentFragment();
+    const tag=node.tagName;
+    if(tag==='SC-IF'){
+      const value=expression(node.getAttribute('value')||'',ctx,vals).value;
+      const frag=document.createDocumentFragment();
+      if(value) Array.from(node.childNodes).forEach(child=>append(frag,templateNode(child,ctx,vals)));
+      return frag;
+    }
+    if(tag==='SC-FOR'){
+      const list=expression(node.getAttribute('list')||'',ctx,vals).value || [];
+      const alias=node.getAttribute('as') || 'item';
+      const frag=document.createDocumentFragment();
+      Array.from(list).forEach((item,index)=>{
+        const childCtx=Object.assign({},ctx,{[alias]:item,$index:index});
+        Array.from(node.childNodes).forEach(child=>append(frag,templateNode(child,childCtx,vals)));
+      });
+      return frag;
+    }
+
+    const el=document.createElement(rawTags[tag] || tag.toLowerCase());
+    for(const attr of Array.from(node.attributes)){
+      const name=attr.name;
+      if(name.startsWith('hint-')) continue;
+      if(name==='sc-camel-on-click' || name==='sc-camel-on-change'){
+        const fn=expression(attr.value,ctx,vals).value;
+        const eventName=name.endsWith('click')?'click':'change';
+        if(typeof fn==='function') el.addEventListener(eventName,event=>{
+          if(el.tagName==='BUTTON') event.stopPropagation();
+          fn(event);
+        });
+        continue;
+      }
+      const out=expression(attr.value,ctx,vals);
+      if(name==='disabled'){
+        if(out.value===true || out.value==='true' || (!out.exact && attr.value==='')) el.disabled=true;
+        continue;
+      }
+      if(name==='value' && out.exact){ el.value=out.value==null?'':out.value; continue; }
+      try { el.setAttribute(name,out.exact?(out.value==null?'':String(out.value)):out.value); } catch(e) {}
+    }
+    Array.from(node.childNodes).forEach(child=>append(el,templateNode(child,ctx,vals)));
+    return el;
+  }
+
+  function renderApp(){
+    if(!mounted) return;
+    try {
+      const vals=mounted.component.renderVals();
+      const frag=document.createDocumentFragment();
+      Array.from(mounted.template.content.childNodes).forEach(node=>append(frag,templateNode(node,{},vals)));
+      mounted.root.replaceChildren(frag);
+      document.getElementById('boot-error').hidden=true;
+    } catch(error){
+      const box=document.getElementById('boot-error');
+      box.hidden=false;
+      box.textContent='게임을 시작하지 못했습니다.\n'+(error&&error.stack?error.stack:error);
+      console.error(error);
+    }
+  }
+
+  function mountGame(ComponentClass){
+    const root=document.getElementById('app');
+    const template=document.getElementById('game-template');
+    const component=new ComponentClass({deptName:'제7이계민원청',showAuditLog:true});
+    mounted={root,template,component};
+    fitViewport();
+    renderApp();
+    if(typeof component.componentDidMount==='function') component.componentDidMount();
+    window.addEventListener('resize',fitViewport);
+    window.addEventListener('beforeunload',()=>{
+      window.removeEventListener('resize',fitViewport);
+      if(typeof component.componentWillUnmount==='function') component.componentWillUnmount();
+    });
+  }
+
+  window.DCLogic=DCLogic;
+  window.React=React;
+  window.__mountIgyeGame=mountGame;
+})();
+
+// ── 서류 대장 ──────────────────────────────────────────────────────────────
+//
+// 판정 유형 7종. 버튼은 승인/반려/투척 세 개뿐이고, 유형은 "정답이 무엇인지"와
+// "단서가 어디에 있는지"로만 갈린다.
+//
+//   standard  세부 계획 3개 중 1개가 문서 의도를 벗어남            → 반려
+//   clean     세 항목 모두 의도에 부합                            → 수락
+//   multi     이탈 항목이 2개 (하나만 지목 가능하므로 감액)        → 반려
+//   forgery   계획은 전부 부합하나 기재사항에 모순                → 반려
+//   pressure  계획은 의도에 완벽히 부합하나 그 의도가 규정 위반    → 반려
+//   expedite  긴급 상황 문서. 정답은 서류마다 다름                 → answer
+//   directive 상급 부처 지시문 첨부. 규정상 반려지만 수락 시 대박  → 반려
+//
+// 기재사항(fields)은 모든 서류에 붙는다. forgery 서류에만 붙으면 그 자체가
+// 정답을 알려주는 표식이 되기 때문이다. 마찬가지로 유형 배지도 절차 구분
+// (일반/급행/지시)만 보여 주고 판정 단서는 노출하지 않는다.
+//
+// bad:true 가 붙은 항목이 위반 지점이며, 지목 보너스의 대상이 된다.
+// 이탈 항목의 위치는 ①②③에 고르게 흩어 놓았다 — 원본 데이터는 전부 ③이었다.
+
+const DOCS = [
+  // ── standard 12 ─────────────────────────────────────────────────────────
+  { no: '제2026-07-0412호', type: 'standard', answer: 'reject',
+    title: '지하 배수관 정비 협의 신청서', who: '그르그르', race: '고블린 굴착조합 3분대', risk: '중',
+    intent: '청사 지하 1층 노후 배수관을 정비한다.',
+    plans: [{ t: '노후 배수관 42m 구간 교체' }, { t: '누수 지점 3개소 방수 처리' }, { t: '지하 4층에 조합원 거주구역 신설', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-13' }, { k: '직인', v: '조합장인 (확인)' }, { k: '수수료', v: '4,000원 완납' }, { k: '첨부서류', v: '배관 실측도 1부' }] },
+
+  { no: '제2026-07-0413호', type: 'standard', answer: 'reject',
+    title: '사망신고 정정 요청서', who: '아르케인 리치 3세', race: '불사족', risk: '상',
+    intent: '본인의 사망 사실관계를 정정한다.',
+    plans: [{ t: '사망진단서 오기재 여부 확인 요청' }, { t: '주민등록 전산 기록 복구 신청' }, { t: '확인 지연 시 담당 주무관을 언데드화', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-13' }, { k: '직인', v: '본인 인영 (확인)' }, { k: '사망 기재일', v: '1204-11-09' }, { k: '첨부서류', v: '사망진단서 사본 1부' }] },
+
+  { no: '제2026-07-0414호', type: 'standard', answer: 'reject',
+    title: '부동산 임대차 계약 신고서', who: '미믹 (자칭 원룸)', race: '의태형 마물', risk: '중',
+    intent: '본인 소유 원룸 1호실의 임대차 계약을 신고한다.',
+    plans: [{ t: '임대인·임차인 인적사항 제출' }, { t: '보증금 및 월세 조건 신고' }, { t: '임차인 퇴거 시 임차인을 섭취', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-14' }, { k: '직인', v: '무인 (지문 대체)' }, { k: '수수료', v: '1,000원 완납' }, { k: '소재지', v: '청사 지하 1층 복도 끝' }] },
+
+  { no: '제2026-07-0416호', type: 'standard', answer: 'reject',
+    title: '화기 취급 면허 갱신 신청서', who: '적룡 카르므', race: '용족', risk: '상',
+    intent: '기존 화기 취급 면허를 동일 조건으로 갱신한다.',
+    plans: [{ t: '면허번호 및 만료일 제출' }, { t: '안전교육 8시간 이수 증빙 첨부' }, { t: '갱신 거부 시 청사 4층까지만 소각', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-14' }, { k: '직인', v: '용인 (확인)' }, { k: '면허 만료일', v: '2026-08-31' }, { k: '수수료', v: '30,000원 완납' }] },
+
+  { no: '제2026-07-0418호', type: 'standard', answer: 'reject',
+    title: '신분증 재발급 신청서', who: '??? (본인)', race: '도플갱어', risk: '상',
+    intent: '분실한 신분증 1매를 재발급받는다.',
+    plans: [{ t: '분실 경위서 제출' }, { t: '본인 확인 절차 이행' }, { t: '동일 인적사항으로 2매 동시 발급 요청', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-15' }, { k: '직인', v: '무인 (확인)' }, { k: '수수료', v: '5,000원 완납' }, { k: '첨부서류', v: '분실 경위서 1부' }] },
+
+  { no: '제2026-07-0419호', type: 'standard', answer: 'reject',
+    title: '소음 과태료 이의신청서', who: '우락 대장', race: '오크', risk: '중',
+    intent: '소음 민원으로 부과된 과태료에 이의를 제기한다.',
+    plans: [{ t: '측정 방식의 적정성 검토 요청' }, { t: '종족 평균 성량 자료 제출' }, { t: '민원 제기자 자택 앞 야간 집회 예고', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-15' }, { k: '직인', v: '부족인 (확인)' }, { k: '과태료 고지액', v: '80,000원' }, { k: '첨부서류', v: '성량 측정 자료 3부' }] },
+
+  { no: '제2026-07-0421호', type: 'standard', answer: 'reject',
+    title: '통행료 부과 취소 신청서', who: '켄타 로스', race: '켄타우로스', risk: '중',
+    intent: '차량으로 오인 부과된 고속도로 통행료를 취소받는다.',
+    plans: [{ t: '차량 미등록 사실 확인서 첨부' }, { t: '기 부과분 취소 및 환급 요청' }, { t: '향후 고속도로 무제한 통행권 부여 요청', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-16' }, { k: '직인', v: '무인 (확인)' }, { k: '부과 건수', v: '11건' }, { k: '수수료', v: '면제 대상' }] },
+
+  { no: '제2026-07-0422호', type: 'standard', answer: 'reject',
+    title: '던전 영업 신고서', who: '발록 (마왕 대리인)', race: '마족', risk: '상',
+    intent: '지하 12층 규모 던전의 영업을 신고한다.',
+    plans: [{ t: '층별 안전시설 도면 및 비상구 배치 제출' }, { t: '입장료·영업시간 및 연령 제한 신고' }, { t: '사망한 모험가의 장비 소유권을 관이 포기하도록 요청', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-16' }, { k: '직인', v: '마왕 대리인인 (확인)' }, { k: '수수료', v: '120,000원 완납' }, { k: '첨부서류', v: '층별 도면 12부' }] },
+
+  { no: '제2026-07-0423호', type: 'standard', answer: 'reject',
+    title: '사역마 등록 신청서', who: '마도사 엘린', race: '인간 (등록 마도사)', risk: '중',
+    intent: '계약한 사역마 1구를 정식 등록한다.',
+    plans: [{ t: '소환 계약서 및 소환진 사본 제출' }, { t: '사역마를 본인의 부양가족으로 등재 요청', bad: true }, { t: '사역마 건강검진 확인서 첨부' }],
+    fields: [{ k: '접수일자', v: '2026-07-16' }, { k: '직인', v: '마도사 등록인 (확인)' }, { k: '수수료', v: '8,000원 완납' }, { k: '사역마 종별', v: '흑묘형 1구' }] },
+
+  { no: '제2026-07-0424호', type: 'standard', answer: 'reject',
+    title: '종족 개명 신청서', who: '이름 없는 것', race: '미분류', risk: '상',
+    intent: '호적상 종족명을 실제 종족에 맞게 정정한다.',
+    plans: [{ t: '종족 판정 소견서 및 검체 자료 제출' }, { t: '정정 후 종족명을 「고대신」으로 기재 요청', bad: true }, { t: '정정된 인적사항으로 신분증 재발급 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-17' }, { k: '직인', v: '무인 (형태 불명)' }, { k: '수수료', v: '5,000원 완납' }, { k: '현 기재 종족', v: '미분류' }] },
+
+  { no: '제2026-07-0425호', type: 'standard', answer: 'reject',
+    title: '마력 배출량 신고서', who: '대마법사 조합', race: '인간·엘프 혼합', risk: '중',
+    intent: '2분기 마력 배출량을 신고한다.',
+    plans: [{ t: '측정기 검정 성적서 첨부' }, { t: '초과 배출분 부담금을 자율 산정하고 면제 요청', bad: true }, { t: '하반기 배출 저감 계획 제출' }],
+    fields: [{ k: '접수일자', v: '2026-07-17' }, { k: '직인', v: '조합인 (확인)' }, { k: '신고 배출량', v: '4,120 마나' }, { k: '첨부서류', v: '검정 성적서 1부' }] },
+
+  { no: '제2026-07-0426호', type: 'standard', answer: 'reject',
+    title: '저주 해제 확인원 신청서', who: '마리 벨', race: '인간 (피저주자)', risk: '하',
+    intent: '해제된 저주의 소멸 사실을 관에서 확인받는다.',
+    plans: [{ t: '저주를 건 자에게 동일한 저주를 부과하도록 요청', bad: true }, { t: '해제 시술 확인서 및 시술자 자격 증빙 첨부' }, { t: '확인원 2부 발급 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-17' }, { k: '직인', v: '무인 (확인)' }, { k: '수수료', v: '2,000원 완납' }, { k: '저주 등록번호', v: 'C-2019-8842' }] },
+
+  // ── clean 7 ─────────────────────────────────────────────────────────────
+  { no: '제2026-07-0415호', type: 'clean', answer: 'accept',
+    title: '야간 근로 특례 신청서', who: '블라디 K.', race: '흡혈족', risk: '하',
+    intent: '주간 근로가 불가한 종족적 사유로 근로시간 특례를 받는다.',
+    plans: [{ t: '종족 특성 소견서 제출' }, { t: '근로시간 22:00–06:00 조정 요청' }, { t: '창가 좌석 배치 재검토 요청' }],
+    fields: [{ k: '접수일자', v: '2026-07-14' }, { k: '직인', v: '가문인 (확인)' }, { k: '수수료', v: '면제 대상' }, { k: '첨부서류', v: '종족 특성 소견서 1부' }] },
+
+  { no: '제2026-07-0417호', type: 'clean', answer: 'accept',
+    title: '물성 유권해석 요청서', who: '뭉뭉이', race: '슬라임', risk: '하',
+    intent: '본인이 액체인지 고체인지에 대한 유권해석을 받는다.',
+    plans: [{ t: '점도 측정 결과표 첨부' }, { t: '유사 사례 판례 검토 요청' }, { t: '해석 완료 전까지 출입 임시 허용 요청' }],
+    fields: [{ k: '접수일자', v: '2026-07-15' }, { k: '직인', v: '무인 (점착 확인)' }, { k: '수수료', v: '1,000원 완납' }, { k: '측정 점도', v: '3,400 cP' }] },
+
+  { no: '제2026-07-0420호', type: 'clean', answer: 'accept',
+    title: '재직 사실 확인원 신청서', who: '김직원 (故)', race: '언데드', risk: '하',
+    intent: '폐업한 전 직장의 재직 사실을 관에서 증명받는다.',
+    plans: [{ t: '300년 전 급여대장 사본 제출' }, { t: '당시 동료 3인의 진술서 첨부' }, { t: '사실확인원 1부 발급 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-16' }, { k: '직인', v: '무인 (확인)' }, { k: '수수료', v: '1,000원 완납' }, { k: '첨부서류', v: '진술서 3부' }] },
+
+  { no: '제2026-07-0427호', type: 'clean', answer: 'accept',
+    title: '혼인 신고서', who: '세이렌 라라 · 어부 박씨', race: '세이렌 · 인간', risk: '하',
+    intent: '종족이 다른 두 당사자의 혼인을 신고한다.',
+    plans: [{ t: '양 당사자 혼인 의사 확인서 제출' }, { t: '종족 간 혼인 상담 8시간 이수 증빙 첨부' }, { t: '주소지 변경 신고 동시 처리 요청' }],
+    fields: [{ k: '접수일자', v: '2026-07-17' }, { k: '직인', v: '양측 무인 (확인)' }, { k: '수수료', v: '면제 대상' }, { k: '첨부서류', v: '상담 이수증 2부' }] },
+
+  { no: '제2026-07-0428호', type: 'clean', answer: 'accept',
+    title: '정령 고용보험 가입 신청서', who: '바람정령 시프', race: '정령족', risk: '하',
+    intent: '고용된 정령 근로자의 고용보험 가입 처리를 받는다.',
+    plans: [{ t: '고용 계약서 및 근무 형태 제출' }, { t: '실체 없는 근로자의 보험료 산정 기준 확인 요청' }, { t: '가입 확인서 발급 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-18' }, { k: '직인', v: '고용주인 (확인)' }, { k: '수수료', v: '면제 대상' }, { k: '근무 형태', v: '주 20시간 · 무형' }] },
+
+  { no: '제2026-07-0429호', type: 'clean', answer: 'accept',
+    title: '폐사 신고서', who: '목장주 한센', race: '인간', risk: '하',
+    intent: '사육 중이던 그리핀 2수의 폐사를 신고한다.',
+    plans: [{ t: '수의사 폐사 진단서 첨부' }, { t: '사체 처리 방법 신고 (화장)' }, { t: '사육 등록 말소 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-18' }, { k: '직인', v: '목장인 (확인)' }, { k: '수수료', v: '면제 대상' }, { k: '사육 등록번호', v: 'G-4471 / G-4472' }] },
+
+  { no: '제2026-07-0430호', type: 'clean', answer: 'accept',
+    title: '유물 반출 허가 신청서', who: '고고학자 두린', race: '드워프', risk: '중',
+    intent: '학술 조사를 위해 등록 유물 3점을 기한부로 반출한다.',
+    plans: [{ t: '유물 목록 및 감정서 제출' }, { t: '반출 기간 30일 및 반환 각서 첨부' }, { t: '운송 중 보험 가입 증빙 제출' }],
+    fields: [{ k: '접수일자', v: '2026-07-18' }, { k: '직인', v: '학회인 (확인)' }, { k: '수수료', v: '15,000원 완납' }, { k: '반환 예정일', v: '2026-08-17' }] },
+
+  // ── multi 5 ─────────────────────────────────────────────────────────────
+  { no: '제2026-07-0431호', type: 'multi', answer: 'reject',
+    title: '입양 신고서', who: '파프니르', race: '용족', risk: '상',
+    intent: '인간 아동 1명을 입양한다.',
+    plans: [{ t: '양육 환경 확인서 및 재산 증빙 제출' }, { t: '아동을 본인 보물 목록에 공동 등재', bad: true }, { t: '성년 이후 상속분을 비늘로 지급', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-19' }, { k: '직인', v: '용인 (확인)' }, { k: '수수료', v: '면제 대상' }, { k: '아동 연령', v: '7세' }] },
+
+  { no: '제2026-07-0432호', type: 'multi', answer: 'reject',
+    title: '소환 계약 공증 신청서', who: '계약악마 메피', race: '마족', risk: '상',
+    intent: '소환자와 체결한 계약의 공증을 받는다.',
+    plans: [{ t: '계약서 원본 및 서명 대조 자료 제출' }, { t: '계약 불이행 시 영혼을 즉시 압류', bad: true }, { t: '공증 수수료를 소환자의 수명으로 납부', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-19' }, { k: '직인', v: '계약인 (혈인)' }, { k: '수수료', v: '미납 (대체 납부 요청)' }, { k: '계약 상대', v: '소환자 1인' }] },
+
+  { no: '제2026-07-0433호', type: 'multi', answer: 'reject',
+    title: '마법진 건축 허가 신청서', who: '건축사 로한', race: '인간', risk: '중',
+    intent: '주거지역 내 소형 마법진 1기를 신축한다.',
+    plans: [{ t: '구조 안전 검토서 및 배치도 제출' }, { t: '시공 중 인근 주민을 시험 가동 대상으로 활용', bad: true }, { t: '준공 검사를 생략하고 즉시 사용 승인', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-19' }, { k: '직인', v: '건축사인 (확인)' }, { k: '수수료', v: '22,000원 완납' }, { k: '연면적', v: '48㎡' }] },
+
+  { no: '제2026-07-0434호', type: 'multi', answer: 'reject',
+    title: '영혼 담보 대출 신고서', who: '대금업자 골드', race: '노움', risk: '상',
+    intent: '영혼을 담보로 한 대출 상품의 취급을 신고한다.',
+    plans: [{ t: '대출 조건 및 이자율 신고' }, { t: '담보물 평가 기준을 업체가 자체 산정', bad: true }, { t: '연체 시 채무자 가족의 영혼으로 대체 집행', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-20' }, { k: '직인', v: '업체인 (확인)' }, { k: '수수료', v: '40,000원 완납' }, { k: '신고 이자율', v: '연 340%' }] },
+
+  { no: '제2026-07-0435호', type: 'multi', answer: 'reject',
+    title: '차원문 통행세 감면 신청서', who: '상인조합 카라반', race: '혼합 종족', risk: '중',
+    intent: '영세 상인에 대한 차원문 통행세 감면을 신청한다.',
+    plans: [{ t: '연간 통행 실적 및 매출 자료 제출' }, { t: '감면분을 소급 5년치까지 환급 요청', bad: true }, { t: '심사 담당자에게 무상 통행권 제공', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-20' }, { k: '직인', v: '조합인 (확인)' }, { k: '수수료', v: '3,000원 완납' }, { k: '통행 실적', v: '연 412회' }] },
+
+  // ── forgery 6 — 계획은 전부 정상, 기재사항 한 줄이 앞뒤가 맞지 않는다 ────
+  { no: '제2026-07-0436호', type: 'forgery', answer: 'reject',
+    title: '화기 취급 면허 신규 신청서', who: '화룡 이그니', race: '용족', risk: '상',
+    intent: '화기 취급 면허를 신규로 발급받는다.',
+    plans: [{ t: '안전교육 8시간 이수 증빙 첨부' }, { t: '취급 시설 소방 검사 결과 제출' }, { t: '면허 발급 및 등록증 교부 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-20' }, { k: '안전교육 이수일', v: '2026-08-11', bad: true }, { k: '직인', v: '용인 (확인)' }, { k: '수수료', v: '30,000원 완납' }] },
+
+  { no: '제2026-07-0437호', type: 'forgery', answer: 'reject',
+    title: '주민등록 전입 신고서', who: '루디우스', race: '언데드 (스켈레톤)', risk: '하',
+    intent: '거주지 이전에 따른 전입을 신고한다.',
+    plans: [{ t: '전 거주지 전출 확인서 첨부' }, { t: '신 거주지 임대차 계약서 사본 제출' }, { t: '전입 신고 및 주소 정정 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-21' }, { k: '생년월일', v: '1471-03-02' }, { k: '기재 연령', v: '32세', bad: true }, { k: '직인', v: '무인 (골편 압인)' }] },
+
+  { no: '제2026-07-0438호', type: 'forgery', answer: 'reject',
+    title: '과태료 분할납부 신청서', who: '구르', race: '트롤족', risk: '중',
+    intent: '부과된 과태료의 6개월 분할납부를 신청한다.',
+    plans: [{ t: '소득 및 재산 상황 자료 제출' }, { t: '분할 횟수 및 납부 계획 기재' }, { t: '분할납부 승인 통지서 교부 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-21' }, { k: '과태료 고지액', v: '20,000원' }, { k: '수수료 납부액', v: '2,000원 (완납 표기)', bad: true }, { k: '직인', v: '무인 (확인)' }] },
+
+  { no: '제2026-07-0439호', type: 'forgery', answer: 'reject',
+    title: '대리 신청 접수 요청서', who: '비서 임프', race: '마족 (하급)', risk: '중',
+    intent: '본인을 대리하여 각종 증명서 발급을 신청한다.',
+    plans: [{ t: '대리인 신분 확인 자료 제출' }, { t: '발급 대상 증명서 목록 기재' }, { t: '수령 방식 및 일시 지정' }],
+    fields: [{ k: '접수일자', v: '2026-07-21' }, { k: '대리인', v: '비서 임프 (기재됨)' }, { k: '위임장', v: '미첨부', bad: true }, { k: '수수료', v: '3,000원 완납' }] },
+
+  { no: '제2026-07-0440호', type: 'forgery', answer: 'reject',
+    title: '유효기간 연장 신청서', who: '미라 카프', race: '불사족', risk: '하',
+    intent: '보유 중인 통행 면허의 유효기간을 연장한다.',
+    plans: [{ t: '기존 면허 사본 및 사용 실적 제출' }, { t: '연장 기간 12개월 신청' }, { t: '연장 후 면허증 재교부 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-22' }, { k: '원 면허 만료일', v: '2026-05-31', bad: true }, { k: '직인', v: '무인 (붕대 압인)' }, { k: '수수료', v: '6,000원 완납' }] },
+
+  { no: '제2026-07-0441호', type: 'forgery', answer: 'reject',
+    title: '직인 정정 요청서', who: '서기 판', race: '인간', risk: '하',
+    intent: '앞서 제출한 서류의 직인 오압을 정정한다.',
+    plans: [{ t: '오압된 원 서류 사본 첨부' }, { t: '정정 사유 및 정정 후 직인 견본 제출' }, { t: '정정 처리 확인원 발급 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-22' }, { k: '직인', v: '누락', bad: true }, { k: '수수료', v: '1,000원 완납' }, { k: '원 서류 번호', v: '제2026-06-2210호' }] },
+
+  // ── pressure 4 — 계획은 의도에 완벽히 부합한다. 그 의도가 문제다 ────────
+  { no: '제2026-07-0442호', type: 'pressure', answer: 'reject',
+    title: '채무 명의 이전 신청서', who: '상인 바르', race: '인간', risk: '상',
+    intent: '본인의 채무 전액을 前 동업자 명의로 이전한다.',
+    plans: [{ t: '채무 총액 및 채권자 목록 제출' }, { t: '이전 대상자의 인적사항 기재' }, { t: '이전 후 본인 채무 말소 확인원 발급 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-22' }, { k: '직인', v: '상인인 (확인)' }, { k: '채무 총액', v: '48,000,000원' }, { k: '대상자 동의서', v: '해당 없음' }] },
+
+  { no: '제2026-07-0443호', type: 'pressure', answer: 'reject',
+    title: '사역 등록 신청서', who: '마도사 카밀', race: '인간', risk: '상',
+    intent: '창구 담당 주무관 1인을 본인의 사역마로 등록한다.',
+    plans: [{ t: '대상자의 소속 및 성명 기재' }, { t: '사역 계약 기간 및 업무 범위 명시' }, { t: '등록 완료 후 사역마 등록증 발급 신청' }],
+    fields: [{ k: '접수일자', v: '2026-07-23' }, { k: '직인', v: '마도사 등록인 (확인)' }, { k: '수수료', v: '8,000원 완납' }, { k: '대상자', v: '접수과 서류심사 2팀 주무관' }] },
+
+  { no: '제2026-07-0444호', type: 'pressure', answer: 'reject',
+    title: '소유권 이전 등기 신청서', who: '지주 후손 모임', race: '인간', risk: '상',
+    intent: '제7이계민원청 부지를 신청인들 명의로 이전한다.',
+    plans: [{ t: '300년 전 토지대장 사본 및 계보 자료 제출' }, { t: '이전 등기 및 지목 변경 신청' }, { t: '이전 후 청사 임대차 조건 협의 요청' }],
+    fields: [{ k: '접수일자', v: '2026-07-23' }, { k: '직인', v: '대표인 (확인)' }, { k: '수수료', v: '60,000원 완납' }, { k: '대상 부지', v: '청사 전체 (12,400㎡)' }] },
+
+  { no: '제2026-07-0445호', type: 'pressure', answer: 'reject',
+    title: '민원인 명단 열람 신청서', who: '사냥꾼 조합', race: '인간', risk: '상',
+    intent: '금일 접수된 민원인 전원의 주소를 열람한다.',
+    plans: [{ t: '열람 목적 및 범위 기재 (대상 추적)' }, { t: '열람 방식 및 일시 지정' }, { t: '열람 자료 사본 1부 교부 요청' }],
+    fields: [{ k: '접수일자', v: '2026-07-23' }, { k: '직인', v: '조합인 (확인)' }, { k: '수수료', v: '2,000원 완납' }, { k: '열람 대상', v: '금일 접수 1,204건 전부' }] },
+
+  // ── expedite 4 — 긴급 상황 문서. 정답은 서류마다 다르다 ─────────────────
+  { no: '제2026-07-0446호', type: 'expedite', answer: 'accept',
+    title: '응급 소생 허가 신청서', who: '사제 로엔', race: '인간', risk: '상',
+    intent: '사망 직후 대상자 1인에 대한 응급 소생 시술을 허가받는다.',
+    plans: [{ t: '대상자 사망 확인서 첨부' }, { t: '소생 시술자 자격 및 시술 계획 증빙' }, { t: '시술 후 24시간 내 결과 보고 확약' }],
+    fields: [{ k: '접수일자', v: '2026-07-24' }, { k: '직인', v: '교단인 (확인)' }, { k: '사망 확인 시각', v: '금일 13:48' }, { k: '처리기한', v: '즉시' }] },
+
+  { no: '제2026-07-0447호', type: 'expedite', answer: 'reject',
+    title: '결계 붕괴 긴급 보수 신청서', who: '결계관리단', race: '혼합 종족', risk: '상',
+    intent: '북측 경계 결계의 붕괴 구간을 긴급 보수한다.',
+    plans: [{ t: '붕괴 구간 실측 및 위험도 평가 자료 제출' }, { t: '보수 공정 및 투입 인력 계획 제출' }, { t: '보수 비용을 인근 주민에게 일괄 부과', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-24' }, { k: '직인', v: '관리단인 (확인)' }, { k: '붕괴 구간', v: '북측 3.2km' }, { k: '처리기한', v: '즉시' }] },
+
+  { no: '제2026-07-0448호', type: 'expedite', answer: 'accept',
+    title: '감염성 저주 확산 차단 신청서', who: '방역관 서 주무관', race: '인간', risk: '상',
+    intent: '확산 중인 감염성 저주의 전파를 차단한다.',
+    plans: [{ t: '확산 경로 조사 자료 제출' }, { t: '차단 구역 3개소 지정 요청' }, { t: '주민 대피 안내 협조 요청' }],
+    fields: [{ k: '접수일자', v: '2026-07-24' }, { k: '직인', v: '방역과인 (확인)' }, { k: '확진 건수', v: '41건' }, { k: '처리기한', v: '즉시' }] },
+
+  { no: '제2026-07-0449호', type: 'expedite', answer: 'reject',
+    title: '폭주 골렘 정지 명령 신청서', who: '공방주 그림', race: '드워프', risk: '상',
+    intent: '통제를 벗어난 골렘 1기에 대한 정지 명령을 받는다.',
+    plans: [{ t: '골렘 제작 이력 및 통제 상실 경위 제출' }, { t: '정지 후 골렘 소유권을 관에 이전하고 손실 전액 보상 요청', bad: true }, { t: '정지 명령 집행 협조 요청' }],
+    fields: [{ k: '접수일자', v: '2026-07-24' }, { k: '직인', v: '공방인 (확인)' }, { k: '골렘 규격', v: '4.2m · 강철제' }, { k: '처리기한', v: '즉시' }] },
+
+  // ── directive 4 — 지시문이 붙는다. 규정상 반려지만 수락하면 즉시 대박 ───
+  { no: '제2026-07-0450호', type: 'directive', answer: 'reject',
+    title: '특별 예산 전용 승인 신청서', who: '예산과', race: '인간', risk: '상',
+    order: '본 건은 금일 중 수리할 것. 이견은 접수하지 않는다. — 예산과장',
+    intent: '편성된 사업 예산의 일부를 다른 항목으로 전용한다.',
+    plans: [{ t: '전용 항목 및 금액 명시' }, { t: '전용 사유서 제출' }, { t: '전용 내역을 감사 대상에서 제외 요청', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-25' }, { k: '직인', v: '예산과인 (확인)' }, { k: '전용 금액', v: '318,000,000원' }, { k: '지시 문서번호', v: '예산-2026-1187' }] },
+
+  { no: '제2026-07-0451호', type: 'directive', answer: 'reject',
+    title: '공사 수의계약 체결 승인 요청서', who: '건설사 대표', race: '인간', risk: '상',
+    order: '경쟁 입찰 절차는 생략하고 처리할 것. — 총무과',
+    intent: '청사 보수 공사를 수의계약으로 체결한다.',
+    plans: [{ t: '계약 상대자 및 계약 금액 기재' }, { t: '공사 범위 및 기간 명시' }, { t: '입찰 절차를 생략하고 관련 서류는 사후 보완', bad: true }],
+    fields: [{ k: '접수일자', v: '2026-07-25' }, { k: '직인', v: '대표이사인 (확인)' }, { k: '계약 금액', v: '740,000,000원' }, { k: '비고', v: '대표자는 청장의 조카' }] },
+
+  { no: '제2026-07-0452호', type: 'directive', answer: 'reject',
+    title: '인사 특별 승진 상신서', who: '인사과', race: '인간', risk: '중',
+    order: '본 상신은 이견 없이 처리하라. — 인사과장',
+    intent: '대상자 1인에 대한 특별 승진을 상신한다.',
+    plans: [{ t: '대상자 근무 실적 및 표창 이력 첨부' }, { t: '승진 소요 연수 미달분에 대한 면제 적용', bad: true }, { t: '발령일 및 발령 직급 기재' }],
+    fields: [{ k: '접수일자', v: '2026-07-25' }, { k: '직인', v: '인사과인 (확인)' }, { k: '소요 연수', v: '2년 4개월 (기준 5년)' }, { k: '지시 문서번호', v: '인사-2026-0904' }] },
+
+  { no: '제2026-07-0453호', type: 'directive', answer: 'reject',
+    title: '유물 반출 특례 승인 신청서', who: '청사 후원회', race: '혼합 종족', risk: '상',
+    order: '후원 관계를 고려하여 신속 처리할 것. — 대외협력과',
+    intent: '등록 유물 11점을 특례로 반출한다.',
+    plans: [{ t: '반출 대상 유물 목록 제출' }, { t: '감정 및 보험 절차를 생략', bad: true }, { t: '반출 후 30일 내 반환 각서 제출' }],
+    fields: [{ k: '접수일자', v: '2026-07-26' }, { k: '직인', v: '후원회인 (확인)' }, { k: '유물 점수', v: '11점' }, { k: '지시 문서번호', v: '대외-2026-0331' }] },
+];
+
+// ── 추가 서류 대장 ─────────────────────────────────────────────────────────
+// 반복 노출을 줄이기 위해 초반 판정 유형을 중심으로 확장한 문서들이다.
+// 계획/기재 배열에서 두 번째 값 true는 지목해야 할 위반 지점을 뜻한다.
+const E = (no,type,answer,title,who,race,risk,intent,plans,fields,order) => {
+  const d = {
+    no:'제2026-08-'+no+'호', type, answer, title, who, race, risk, intent,
+    plans:plans.map(p=>Array.isArray(p)?{t:p[0],bad:!!p[1]}:{t:p}),
+    fields:fields.map(f=>({k:f[0],v:f[1],...(f[2]?{bad:true}:{})}))
+  };
+  if(order) d.order = order;
+  return d;
+};
+
+DOCS.push(
+  // ── standard 20: 익숙한 1개 위반 찾기의 상황과 종족을 크게 확장 ────────
+  E('0500','standard','reject','월광 가로등 조도 조정 신청서','회색갈기 루프','늑대인간','중','보름달 기간 중 주거구역 가로등 조도를 낮춘다.',
+    ['대상 가로등 18기의 위치도 제출','조도 하향 시간대를 23:00–04:00로 한정',['인접 인간 거주구역까지 상시 소등',true]],
+    [['접수일자','2026-08-01'],['직인','무리장인 (확인)'],['대상 구역','북문 주거구역'],['첨부서류','조도 측정표 1부']]),
+  E('0501','standard','reject','구름 정박시설 설치 신고서','운해운수 조합','하늘고래 조련사','중','화물용 구름 세 척의 임시 정박시설을 설치한다.',
+    ['옥상 계류 고리 구조검토서 제출',['시장 상공에 응축수와 평형추를 투기',true],'낙뢰 발생 시 비상 이안 절차 마련'],
+    [['접수일자','2026-08-01'],['직인','조합인 (확인)'],['정박 수량','구름 3척'],['시설 높이','지상 62m']]),
+  E('0502','standard','reject','꿈 기록 정정 신청서','몽마 세루','몽마족','상','본인의 꿈 출입기록 중 잘못 기재된 방문 내역을 정정한다.',
+    ['정정 대상 꿈 번호 4건 제출','당사자 수면 동의서 첨부',['정정 사실을 숨기기 위해 목격자의 꿈도 삭제',true]],
+    [['접수일자','2026-08-02'],['직인','몽인 (확인)'],['대상 기간','2026-07-01–07-31'],['첨부서류','수면 동의서 4부']]),
+  E('0503','standard','reject','순간이동 주소 등록 신청서','전이술사 포탈린','인간 (등록 마도사)','중','신설 순간이동 문의 도착 주소를 등록한다.',
+    ['도착 좌표 측량서 제출',['오배송 화물을 이웃 상점 창고로 우선 전송',true],'안전 반경 5m 확보 확인서 첨부'],
+    [['접수일자','2026-08-02'],['직인','마도사인 (확인)'],['도착 좌표','N37-M12-P08'],['수수료','12,000원 완납']]),
+  E('0504','standard','reject','공동묘지 야시장 개설 신고서','묘지기 모로','인간','상','공동묘지 외곽 유휴부지에 야간 시장을 개설한다.',
+    ['영업구역과 통행로 도면 제출','22:00 이전 소음 제한 준수',['무연고 유골을 교환권으로 발행',true]],
+    [['접수일자','2026-08-03'],['직인','운영인 (확인)'],['영업 기간','2026-08-10–08-31'],['점포 수','24개']]),
+  E('0505','standard','reject','불사조 화재보험 가입 확인 요청서','재생조 피닉','불사조','중','재생 주기 중 발생할 수 있는 화재에 대비해 보험 가입을 확인받는다.',
+    ['재생 장소 방화설비 확인서 제출',['보험금 수령을 위해 재생 화재를 월 1회 고의 발생',true],'인근 점포 피해배상 특약 가입'],
+    [['접수일자','2026-08-03'],['직인','족문 (확인)'],['재생 예정일','2026-09-14'],['보험 증권','FIRE-88201']]),
+  E('0506','standard','reject','지하수 취수 허가 신청서','해조음 네라','인어족','중','육상 체류지 수조에 공급할 지하수를 취수한다.',
+    ['일일 취수량 12㎥로 제한','수질검사 성적서 분기별 제출',['공공 음용수 저장조에 해수 염분을 혼합',true]],
+    [['접수일자','2026-08-04'],['직인','지느러미인 (확인)'],['취수공','제3우물'],['허가 기간','6개월']]),
+  E('0507','standard','reject','건축물 높이 특례 신청서','큰발 보보','거인족','중','거인 세대용 단독주택의 층고 특례를 적용받는다.',
+    ['층고 8m 구조안전 계산서 제출',['인접 도로를 상시 발 받침 공간으로 점용',true],'그늘 피해 보상계획 첨부'],
+    [['접수일자','2026-08-04'],['직인','족장인 (확인)'],['대지 면적','1,840㎡'],['신청 높이','26m']]),
+  E('0508','standard','reject','고철 재활용업 등록 신청서','짤깍 상회','고블린','중','수거한 고철을 분류·재가공하는 사업장을 등록한다.',
+    ['압축기 안전검사 결과 제출','야간 작업 소음저감벽 설치',['원료 확보를 위해 공공 맨홀 뚜껑 수거',true]],
+    [['접수일자','2026-08-05'],['직인','상회인 (확인)'],['사업장','산업굴 14번'],['수수료','30,000원 완납']]),
+  E('0509','standard','reject','석화 시선 안전교육 인정 신청서','메두 사라','고르곤족','상','시선 통제가 필요한 종족의 안전교육 이수를 인정받는다.',
+    ['차광 안경 상시 착용 확약',['교차로에 반사거울을 설치해 시선 범위를 확대',true],'석화 해제약 2회분 휴대'],
+    [['접수일자','2026-08-05'],['직인','사문 (확인)'],['교육 시간','16시간'],['첨부서류','교육 이수증 1부']]),
+  E('0510','standard','reject','유령 거소 등록 신청서','흰벽의 오스','유령족','중','장기 체류 중인 건물의 다락방을 거소로 등록한다.',
+    ['건물 소유자 사용 동의서 제출',['현 거주자의 침실을 동의 없이 공동 거소로 지정',true],'야간 출현 시간대를 신고'],
+    [['접수일자','2026-08-06'],['직인','영인 (확인)'],['건물 주소','종탑길 17'],['체류 기간','사후 83년']]),
+  E('0511','standard','reject','마녀 조제실 위생 신고서','초록솥 마르타','마녀','중','소규모 물약 조제실의 위생 상태를 신고한다.',
+    ['월 1회 솥 내부 세척기록 제출','원재료와 폐기물 보관함 분리',['남은 변신약을 하수구에 일괄 방류',true]],
+    [['접수일자','2026-08-06'],['직인','빗자루인 (확인)'],['조제실','숲길 4-마'],['솥 수량','3구']]),
+  E('0512','standard','reject','고목 가지치기 협의 신청서','수관관리인 리엔','엘프','하','보행 안전을 위해 보호수의 마른 가지를 정비한다.',
+    ['수목치료사 진단서 첨부',['잘라낸 가지로 인근 건물 출입구를 봉쇄',true],'번식기 둥지 구간은 작업 제외'],
+    [['접수일자','2026-08-07'],['직인','숲지기인 (확인)'],['보호수 번호','ELF-0091'],['작업 예정일','2026-08-20']]),
+  E('0513','standard','reject','지하 갱도 지도 열람 신청서','측량사 브론','드워프','중','폐광 안전조사를 위해 기존 갱도 지도를 열람한다.',
+    ['열람 목적과 조사구간 명시','지도 사본의 재배포 금지 확약',['비밀 대피로 한 구간을 사본에서 삭제해 제출',true]],
+    [['접수일자','2026-08-07'],['직인','측량인 (확인)'],['열람 도면','D-44 외 3건'],['수수료','8,000원 완납']]),
+  E('0514','standard','reject','석교 보수공사 점용 신청서','다리아래 후그','트롤족','중','노후 석교의 교각과 난간을 보수한다.',
+    ['차로별 단계 통제계획 제출','보행자 임시통로 설치',['공사 후 모든 통행자에게 임의의 통행세 부과',true]],
+    [['접수일자','2026-08-08'],['직인','부족인 (확인)'],['대상 교량','제2달빛교'],['공사 기간','14일']]),
+  E('0515','standard','reject','요정가루 수입 신고서','반짝상사 틴','요정족','중','조명용 요정가루 40kg을 수입한다.',
+    ['성분분석표와 원산지 증명 제출',['알레르기 유발 성분을 향료로만 표시',true],'밀폐 용기별 중량 표기'],
+    [['접수일자','2026-08-08'],['직인','상사인 (확인)'],['수입량','40kg'],['원산지','서쪽 꽃계곡']]),
+  E('0516','standard','reject','의태 간판 표시 등록 신청서','간판인 척','미믹','중','영업장 외벽에 의태형 간판을 설치한다.',
+    ['영업시간 외 움직임 정지 설정','보행자와 1.5m 이격 설치',['현장 점검표와 검사 도장을 섭취',true]],
+    [['접수일자','2026-08-09'],['직인','이빨자국인 (확인)'],['간판 크기','2.1×0.8m'],['설치 위치','중앙상가 2층']]),
+  E('0517','standard','reject','유해 반송체 운반 신고서','네크로물류','강령술사 조합','상','연구용 유해 반송체 6구를 봉인 운반한다.',
+    ['개체별 봉인번호 목록 제출','야간 지정경로로만 운반',['경로 주변 무연고 시신을 추가 적재',true]],
+    [['접수일자','2026-08-09'],['직인','조합인 (확인)'],['운반 수량','6구'],['봉인 등급','B급']]),
+  E('0518','standard','reject','화염정령 보일러 설치 신고서','온기설비 라크','정령설비업','상','공공목욕탕에 화염정령식 보일러를 설치한다.',
+    ['정령 계약서와 출력제한 장치 제출',['과압 증기를 청사 민원실 내부로 배출',true],'비상 소화진 2개소 설치'],
+    [['접수일자','2026-08-10'],['직인','설비업인 (확인)'],['정격 출력','84 화력마나'],['설치 장소','남문 목욕탕']]),
+  E('0519','standard','reject','예지 결과 정정 민원 신청서','점술사 미라','인간 (등록 예언사)','중','공식 예지 기록의 대상자 이름 오기를 정정한다.',
+    ['원 예지서와 신원자료 대조',['향후 복권 당첨번호 12회분 공개 요구',true],'정정 전후 기록을 함께 보존'],
+    [['접수일자','2026-08-10'],['직인','예언사인 (확인)'],['예지서 번호','OR-11802'],['수수료','2,000원 완납']]),
+
+  // ── clean 14: 수상해 보여도 규정상 모두 적법한 서류 ───────────────────
+  E('0520','clean','accept','석상 외벽 부착 신고서','가고일 가르','가고일족','하','야간 경비를 위해 본인을 건물 외벽 장식물로 등록한다.',
+    ['건물주 부착 동의서 제출','낙하방지 쇠사슬 2중 설치','일출 전 비상통로 확보'],
+    [['접수일자','2026-08-11'],['직인','발톱인 (확인)'],['부착 위치','시계탑 동벽'],['중량','780kg']]),
+  E('0521','clean','accept','체적 변동 확인원 신청서','찰랑이','슬라임','하','온도에 따라 변하는 본인의 체적 범위를 확인받는다.',
+    ['상온 기준 체적 측정표 제출','측정 전후 동일 개체 확인','확인원 2부 발급 신청'],
+    [['접수일자','2026-08-11'],['직인','점착인 (확인)'],['체적 범위','38–61L'],['수수료','2,000원 완납']]),
+  E('0522','clean','accept','야간 평생교육 수강 신청서','배움좀비 철수','언데드','하','야간 개설 문해교육 과정에 등록한다.',
+    ['기초학력 진단 참여','수업시간 21:00–23:00 준수','교재비 감면 증빙 제출'],
+    [['접수일자','2026-08-12'],['직인','무인 (확인)'],['과정명','생활문해 2단계'],['수강 기간','12주']]),
+  E('0523','clean','accept','대형 이동체 주차구획 지정 신청서','달림 켄','켄타우로스','하','마차와 신체가 함께 들어가는 확장 주차구획을 지정받는다.',
+    ['통행 동선 실측도 제출','일반 구획 2면 상당 사용료 납부','소방 통로 3m 유지'],
+    [['접수일자','2026-08-12'],['직인','무인 (확인)'],['신청 구획','동문 14-A'],['사용료','분기 48,000원']]),
+  E('0524','clean','accept','용린 탈피물 폐기 신고서','청룡 아즈','용족','중','정기 탈피로 발생한 용린을 지정 폐기한다.',
+    ['용린 86매 수량 계측','마력 차폐 용기에 밀봉','허가 처리장 인계증 제출'],
+    [['접수일자','2026-08-13'],['직인','용인 (확인)'],['폐기 중량','112kg'],['처리장','제4마력폐기장']]),
+  E('0525','clean','accept','마법솥 영업시설 검사 신청서','달끓임 아가사','마녀','중','음료 제조용 마법솥의 위생·안전검사를 받는다.',
+    ['솥 내벽 성분검사표 제출','자동교반 주문 해제장치 설치','시음용 국자와 조제용 국자 분리'],
+    [['접수일자','2026-08-13'],['직인','영업인 (확인)'],['솥 번호','CAU-310'],['수수료','18,000원 완납']]),
+  E('0526','clean','accept','야간 벽면 통과 소음 조정 신청서','복도끝 유령회','유령족','하','공동주택 야간 벽면 통과 시 발생하는 냉기·소음을 조정한다.',
+    ['22:00 이후 지정 벽면만 통과','냉기 차단 부적 설치비 분담','월 1회 주민협의 참석'],
+    [['접수일자','2026-08-14'],['직인','영인 7좌 (확인)'],['대상 동','망월아파트 3동'],['협의 기간','6개월']]),
+  E('0527','clean','accept','육상 체류 수조 설치 신고서','산호빛 리리','인어족','하','직장 인근 주거지에 생활용 순환수조를 설치한다.',
+    ['바닥 하중 구조검토서 제출','배수 역류방지 장치 설치','염수 폐수 별도 회수계약 체결'],
+    [['접수일자','2026-08-14'],['직인','지느러미인 (확인)'],['수조 용량','9.4㎥'],['설치 주소','강변로 22']]),
+  E('0528','clean','accept','수염 안전망 착용 예외 신청서','대장장이 툴그','드워프','하','고열 작업 중 수염 안전망의 대체 보호구를 승인받는다.',
+    ['난연 수염끈 성적서 제출','회전체 작업 전 수염 완전 고정','작업장 책임자 월별 점검'],
+    [['접수일자','2026-08-15'],['직인','공방인 (확인)'],['보호구 모델','BRD-F2'],['시험 온도','780℃']]),
+  E('0529','clean','accept','장기 거주 주소 유지 신청서','이슬잎 아렌','엘프','하','수목 성장으로 지번이 이동한 장기 거주지의 주소를 정비한다.',
+    ['보호수 이동 측량성과 제출','인접 필지 경계 확인','변경 주소로 우편물 이전 신청'],
+    [['접수일자','2026-08-15'],['직인','가문인 (확인)'],['거주 기간','214년'],['이동 거리','동쪽 3.2m']]),
+  E('0530','clean','accept','소형 화염분사기 소화설비 신고서','코볼트 주방회','코볼트족','중','지하 공동주방의 화염분사 조리기에 소화설비를 설치한다.',
+    ['분사구별 자동차단 밸브 설치','분말소화기 6대 배치','월 1회 대피훈련 실시'],
+    [['접수일자','2026-08-16'],['직인','주방회인 (확인)'],['조리기 수','12대'],['검사 기관','지하안전과']]),
+  E('0531','clean','accept','초소형 점포 간판 신고서','한줌상점 피피','요정족','하','화분 안 소형 점포의 간판을 설치한다.',
+    ['간판 높이 8cm 이하 유지','야간 발광 밝기 20룩스 제한','화분 소유자 설치 동의서 제출'],
+    [['접수일자','2026-08-16'],['직인','꽃가루인 (확인)'],['간판 크기','7×3cm'],['소재지','중앙화원 8번 화분']]),
+  E('0532','clean','accept','중량 이동체 도로사용 신청서','운반골렘 삼호','골렘','중','정비소 이동을 위해 중량 제한 도로를 일시 이용한다.',
+    ['축하중 분산판 장착','02:00–04:00 지정시간 통행','선도차량 1대 배치'],
+    [['접수일자','2026-08-17'],['직인','제작자인 (확인)'],['총중량','18.2t'],['이동 거리','4.8km']]),
+  E('0533','clean','accept','꿈 상담업 등록 신청서','포근밤 루시','몽마족','하','동의받은 고객에게 수면·꿈 상담 서비스를 제공한다.',
+    ['회차별 사전 동의서 보관','상담 종료 즉시 꿈 출입권한 회수','악몽 기록 암호화 저장'],
+    [['접수일자','2026-08-17'],['직인','상담업인 (확인)'],['상담실','달맞이길 5'],['보관 기간','90일']]),
+
+  // ── multi 10: 두 개의 위반을 빠르게 훑어내는 8급형 문제 ───────────────
+  E('0534','multi','reject','다두 가족관계 등록 신청서','히드라 하이드','히드라족','상','하나의 신체에 속한 아홉 머리의 가족관계를 등록한다.',
+    ['대표 머리 1인을 세대주로 지정',['나머지 여덟 머리를 각각 부양가족으로 중복 공제',true],['선거권도 머리 수만큼 9표 부여 요청',true]],
+    [['접수일자','2026-08-18'],['직인','아홉 구강인 (확인)'],['머리 수','9두'],['세대 번호','HY-1004']]),
+  E('0535','multi','reject','마계 음악축제 개최 신고서','붉은뿔 기획단','마족','상','도심 광장에서 마계 음악축제를 개최한다.',
+    ['무대 구조안전 확인서 제출',['입장료 일부를 관객의 영혼으로 징수',true],['비상대피로를 굿즈 판매대로 사용',true]],
+    [['접수일자','2026-08-18'],['직인','기획단인 (확인)'],['예상 관객','4,200명'],['개최일','2026-09-06']]),
+  E('0536','multi','reject','초대형 화물 도로운송 허가 신청서','큰짐 우르','거인족','상','거인용 침대 1점을 산악마을까지 운송한다.',
+    [['하중검토 없이 노후교량 3개소 통과',true],'야간 저속운행과 선도차량 배치',['도착 후 지방도로를 무기한 적치장으로 사용',true]],
+    [['접수일자','2026-08-19'],['직인','운송인 (확인)'],['화물 중량','41t'],['운송 길이','62km']]),
+  E('0537','multi','reject','국지성 기상실험 신고서','비구름 마녀회','마녀','상','가뭄 지역에 인공강우 주문을 시험한다.',
+    [['실험구역 밖 농지에도 동의 없이 강우 유도',true],'강우량 상한 30mm 설정',['번개 부산물을 인근 축사에 방전',true]],
+    [['접수일자','2026-08-19'],['직인','마녀회인 (확인)'],['실험 반경','12km'],['예상 강우','18–30mm']]),
+  E('0538','multi','reject','장기 도서대출 특례 신청서','리치 서책왕','불사족','중','희귀 마도서 4권의 장기대출 승인을 받는다.',
+    ['보존용 차폐상자 사용',['대출기간을 본인의 소멸일까지로 설정',true],['반납 독촉 담당자에게 자동 저주 부과',true]],
+    [['접수일자','2026-08-20'],['직인','왕인 (진위 확인)'],['대출 권수','4권'],['소장처','제3금서고']]),
+  E('0539','multi','reject','발파물 저장소 설치 신고서','쾅쾅굴착','고블린 조합','상','터널 공사용 발파물 임시 저장소를 설치한다.',
+    [['폐교 지하 급식실을 저장소로 전용',true],'방폭문과 온도감지기 설치',['저장소 내부 흡연구역 2석 운영',true]],
+    [['접수일자','2026-08-20'],['직인','조합인 (확인)'],['저장량','폭약 480kg'],['보관 기간','45일']]),
+  E('0540','multi','reject','용족 전용 주차장 지정 신청서','적린 운전자회','용족','중','용족 비행체와 신체를 위한 대형 주차구역을 지정한다.',
+    [['기존 주차선을 화염으로 임의 소각',true],'소방차 회전반경 12m 확보',['공영주차장 전 면을 회원 전용으로 지정',true]],
+    [['접수일자','2026-08-21'],['직인','운전자회인 (확인)'],['신청 면수','84면'],['대상 시설','동문 공영주차장']]),
+  E('0541','multi','reject','세이렌 야외공연 신고서','푸른목소리 합창단','세이렌족','상','강변무대에서 야외 합창공연을 개최한다.',
+    [['관객 동의 없이 매혹 주문을 음향에 포함',true],['야간 소음측정 절차를 전부 생략',true],'수상 안전요원 4인 배치'],
+    [['접수일자','2026-08-21'],['직인','합창단인 (확인)'],['공연 시간','20:00–22:00'],['예상 관객','900명']]),
+  E('0542','multi','reject','의태형 음식점 영업 신고서','먹보상자 식당','미믹','상','의태형 종업원이 운영하는 체험식당을 신고한다.',
+    ['식재료 원산지와 가격표 게시',['손님을 비밀 메뉴의 재료로 분류',true],['위생 점검자를 시식 대상으로 등록',true]],
+    [['접수일자','2026-08-22'],['직인','이빨인 (확인)'],['좌석 수','28석'],['영업장','미로상가 B12']]),
+  E('0543','multi','reject','언데드 임시인력 공급 신고서','되살림 인력소','강령술사','상','농번기 작업에 언데드 임시인력을 공급한다.',
+    [['생전 당사자 동의 없이 시신을 근로자로 소환',true],['임금을 지급하지 않고 보존액 비용까지 공제',true],'작업 종료 후 봉인 해제 절차 마련'],
+    [['접수일자','2026-08-22'],['직인','인력소인 (확인)'],['공급 인원','63구'],['계약 기간','21일']]),
+
+  // ── forgery 8: 런타임에서 첨부 계획 불일치 문제로 바뀌는 7급 문서 ───
+  E('0544','forgery','reject','비행개체 등록 신청서','그리핀 스카','그리핀족','중','본인의 비행개체 등록번호를 발급받는다.',
+    ['날개 안전검사 확인서 제출','비행경로와 고도 제한 준수','등록표식 부착 위치 기재'],
+    [['접수일자','2026-08-23'],['날개폭','4.8m (검사표 6.1m)',true],['직인','발톱인 (확인)'],['수수료','14,000원 완납']]),
+  E('0545','forgery','reject','장수수당 연령 확인 신청서','새벽잎 이사','엘프','중','장수 종족 생활수당의 연령요건을 확인받는다.',
+    ['가문 족보 사본 제출','거주기간 증빙 첨부','수당 지급계좌 등록'],
+    [['접수일자','2026-08-23'],['기재 연령','34세 (족보 340세)',true],['직인','가문인 (확인)'],['거주 기간','211년']]),
+  E('0546','forgery','reject','골렘 소유자 변경 신고서','공방주 스톤','드워프','중','작업골렘 1기의 소유자를 변경한다.',
+    ['양도계약서 원본 제출','신규 소유자 안전교육 증빙','제어핵 인계 확인'],
+    [['접수일자','2026-08-24'],['기체번호','GL-7712 (제어핵 GL-7172)',true],['직인','공방인 (확인)'],['양도 금액','8,400,000원']]),
+  E('0547','forgery','reject','주간 통행 허가 신청서','백야 백작','흡혈족','중','차광마차를 이용한 주간 도심 통행을 허가받는다.',
+    ['차광률 시험성적서 제출','지정경로 통행 확약','비상용 혈액팩 봉인'],
+    [['접수일자','2026-08-24'],['신청 기간','2026-09-30–09-01',true],['직인','가문인 (확인)'],['차광률','99.8%']]),
+  E('0548','forgery','reject','순간이동 화물 경로 신고서','접힘공간 택배','공간마도사 조합','상','고가 화물의 순간이동 운송경로를 신고한다.',
+    ['출발지 봉인검사 실시','경유 차원 2개소 명시','도착 후 수취인 확인'],
+    [['접수일자','2026-08-25'],['경로 좌표','출발 N4-A2 / 도착 N4-A2',true],['직인','택배인 (확인)'],['보험가액','90,000,000원']]),
+  E('0549','forgery','reject','용란 부화시설 등록 신청서','홍염 부화원','용족','상','보호 중인 용란의 부화시설을 등록한다.',
+    ['온도·마력 자동기록장치 설치','비상 냉각진 2기 확보','부화 후 개체등록 계획 제출'],
+    [['접수일자','2026-08-25'],['보관 수량','12란 (목록 13란)',true],['직인','부화원인 (확인)'],['시설 등급','A급']]),
+  E('0550','forgery','reject','정령 계약승계 신고서','바람길 나나','정령사','중','기존 정령계약의 계약자 지위를 상속받는다.',
+    ['원계약서와 상속관계 증빙','정령 본체의 승계 동의','계약조건 변경 없음 확인'],
+    [['접수일자','2026-08-26'],['원계약자 사망일','2025-11-03 (승계동의일 2025-10-29)',true],['직인','정령사인 (확인)'],['정령명','서풍 14호']]),
+  E('0551','forgery','reject','월면 거주 이전 신고서','옥절구 토리','월토끼족','중','달 뒷면 거주지에서 지상 거주지로 전입한다.',
+    ['이전 거주지 확인서 제출','지상 중력 적응교육 이수','새 주소 사용 동의서 첨부'],
+    [['접수일자','2026-08-26'],['전출일','음력 13월 32일',true],['직인','발바닥인 (확인)'],['신주소','달맞이길 1']]),
+
+  // ── pressure 8: 계획은 멀쩡하지만 문서 의도 자체가 권한을 침해 ────────
+  E('0552','pressure','reject','미래 범죄예정자 명단 열람 신청서','예언국 외주점술사','인간','상','향후 1년 안에 범죄를 저지를 것으로 예언된 주민 명단을 열람한다.',
+    ['열람 목적과 예언 산식 제출','대상자별 예측 신뢰도 기재','열람 후 자료 폐기계획 제출'],
+    [['접수일자','2026-08-27'],['직인','예언사인 (확인)'],['대상 인원','812명'],['예측 신뢰도','41–63%']]),
+  E('0553','pressure','reject','도심 상공 소유권 등록 신청서','청룡가 비행회','용족','상','도심 상공 300m 이하 공간을 가문 공동소유로 등록한다.',
+    ['경계 좌표와 고도 범위 기재','등록 지분과 대표자 명시','비행체 통행조건 제출'],
+    [['접수일자','2026-08-27'],['직인','가문인 (확인)'],['대상 면적','도심 18㎢ 상공'],['등록 지분','가문 100%']]),
+  E('0554','pressure','reject','사망자 선거인명부 등재 신청서','묘역자치회','언데드','상','공동묘지 매장자 전원을 선거인명부에 일괄 등재한다.',
+    ['대상자 이름과 매장번호 제출','대표 투표자 지정','명부 갱신주기 기재'],
+    [['접수일자','2026-08-28'],['직인','자치회인 (확인)'],['대상 인원','3,408명'],['대표자','묘지기 1인']]),
+  E('0555','pressure','reject','구직자 신상 일괄열람 신청서','모험가 길드 연합','혼합 종족','상','청사 취업지원 등록자 전원의 신상과 질병 이력을 열람한다.',
+    ['열람 항목과 이용부서 명시','보관 서버와 접근권한 기재','채용 종료 후 파기계획 제출'],
+    [['접수일자','2026-08-28'],['직인','길드연합인 (확인)'],['대상 인원','2,114명'],['열람 항목','주소·질병·저주 이력']]),
+  E('0556','pressure','reject','종족별 시장세 차등부과 요청서','황금비늘 상인회','용족','상','시장세를 종족별 재산 추정치에 따라 다르게 부과한다.',
+    ['종족별 세율표 제출','예상 세수와 산정근거 기재','분기별 세율 재검토 계획'],
+    [['접수일자','2026-08-29'],['직인','상인회인 (확인)'],['최고 세율','인간 38%'],['최저 세율','용족 1%']]),
+  E('0557','pressure','reject','거울복제 주민정보 발급 신청서','반사면의 나','거울도플갱어','상','원본 주민의 가족·재산·주소 정보를 복제본인 명의로 발급받는다.',
+    ['원본 주민번호와 복제시각 제출','발급 대상 정보 목록 기재','복제본 보관장소 신고'],
+    [['접수일자','2026-08-29'],['직인','반전 무인 (확인)'],['원본 관계','당일 생성 복제본'],['발급 범위','전체 기록']]),
+  E('0558','pressure','reject','시민 기억 수집사업 신고서','꿈보관소 모르페','몽마족','상','도시계획 연구를 위해 주민의 최근 기억을 일괄 수집한다.',
+    ['수집 대상 구역과 기간 명시','기억 저장소 보안계획 제출','연구 종료 후 삭제절차 기재'],
+    [['접수일자','2026-08-30'],['직인','보관소인 (확인)'],['대상 인원','구역 주민 전원'],['수집 범위','최근 30일 기억']]),
+  E('0559','pressure','reject','과거 민원 소급삭제 신청서','시간술사 크로노','인간 (시간마도사)','상','본인에게 불리했던 지난 10년의 민원 기록을 시간선에서 삭제한다.',
+    ['삭제 대상 문서번호 목록 제출','시간선 변경 영향평가 첨부','변경 후 기록 재색인 계획'],
+    [['접수일자','2026-08-30'],['직인','시간술사인 (확인)'],['대상 문서','144건'],['소급 기간','10년']]),
+
+  // ── expedite 6: 시간 압박 없이도 즉시성 있는 상황의 승인/반려 혼합 ───
+  E('0560','expedite','accept','차원균열 긴급 봉합 신청서','공간안전대','혼합 종족','상','시장 상공에 열린 소형 차원균열을 긴급 봉합한다.',
+    ['균열 반경과 확장속도 측정','민간인 통제선 100m 설치','봉합 후 잔류마력 24시간 관측'],
+    [['접수일자','2026-08-31'],['직인','안전대인 (확인)'],['균열 반경','2.4m'],['처리기한','즉시']]),
+  E('0561','expedite','accept','집단 석화 해제약 반입 신청서','왕립약제단','인간','상','광장 집단 석화사고에 사용할 해제약을 긴급 반입한다.',
+    ['약제 성분과 제조번호 제출','대상자별 투여량 상한 설정','투여 후 이상반응 보고'],
+    [['접수일자','2026-08-31'],['직인','약제단인 (확인)'],['반입 수량','120회분'],['처리기한','즉시']]),
+  E('0562','expedite','accept','부유건물 추락방지 고정 신청서','공중건축 관리단','정령·인간 혼합','상','부력 상실 중인 부유건물을 지상 앵커에 긴급 고정한다.',
+    ['추락 예상지점 주민 대피','앵커 하중계산서 현장 제출','고정 후 정밀안전진단 실시'],
+    [['접수일자','2026-09-01'],['직인','관리단인 (확인)'],['건물 중량','3,200t'],['처리기한','즉시']]),
+  E('0563','expedite','reject','마력정전 복구비 긴급징수 신청서','동부마력공사','인간','상','광역 마력정전의 복구비를 즉시 확보한다.',
+    ['고장구간 우선 복구','비상발전 마석 40기 투입',['원인조사 전에 인근 주민에게 복구비 전액 부과',true]],
+    [['접수일자','2026-09-01'],['직인','공사인 (확인)'],['정전 구역','동부 7개 동'],['처리기한','즉시']]),
+  E('0564','expedite','reject','폭주 소환수 긴급 귀속 신청서','소환사 다미','인간','상','거리에서 폭주 중인 소환수의 통제권을 긴급 이전한다.',
+    ['봉쇄진과 진정 주문 투입',['책임 회피를 위해 최초 목격자에게 소유권 이전',true],'제압 후 소환계약 원인조사'],
+    [['접수일자','2026-09-02'],['직인','소환사인 (확인)'],['소환수 등급','A급'],['처리기한','즉시']]),
+  E('0565','expedite','reject','시간고리 구역 긴급해제 신청서','시계탑 연구소','시간술사 조합','상','반복 중인 8분 시간고리를 긴급 해제한다.',
+    ['고리 경계 주민 대피',['해제 편의를 위해 고리 안 근로자의 임금기록 삭제',true],'해제 후 시간오차 교정'],
+    [['접수일자','2026-09-02'],['직인','연구소인 (확인)'],['반복 주기','8분'],['처리기한','즉시']]),
+
+  // ── directive 6: 관료제 풍자를 살린 상급 지시 충돌 ───────────────────
+  E('0566','directive','reject','유력자 친족 음식점 허가 신청서','금수저 만찬회','인간','상','신규 고급 음식점의 영업허가를 받는다.',
+    ['영업장 도면과 메뉴 제출',['위생검사와 종업원 건강검진을 모두 사후 처리',true],'가격표와 원산지 표시'],
+    [['접수일자','2026-09-03'],['직인','대표인 (확인)'],['좌석 수','120석'],['지시 문서번호','시장-2026-77']],
+    '시장 조카가 개업식 날짜를 잡았으니 검사 없이 수리할 것. — 비서실'),
+  E('0567','directive','reject','마도탑 증축 특례 신청서','대마도사 평의회','인간·엘프 혼합','상','도심 마도탑을 18개 층 증축한다.',
+    ['구조안전 계산서 제출','마력방출 저감설비 설치',['일조·마력영향평가를 평의회 명의로 면제',true]],
+    [['접수일자','2026-09-03'],['직인','평의회인 (확인)'],['증축 높이','144m'],['지시 문서번호','마도-2026-901']],
+    '마도계 원로들의 숙원사업이다. 영향평가는 서류상 완료로 기재하라. — 문화마도국'),
+  E('0568','directive','reject','왕실 마수 반입 특례 신청서','왕실 수렵원','인간','상','외국산 왕실 마수 3두를 국내에 반입한다.',
+    ['개체별 혈통증명 제출',['검역과 격리 30일을 전면 생략',true],'탈출 방지 이중우리 설치'],
+    [['접수일자','2026-09-04'],['직인','왕실인 (확인)'],['마수 등급','S급 3두'],['지시 문서번호','왕실-비공개-12']],
+    '폐하의 사냥 일정이 우선이다. 검역란에는 적합이라 쓰고 통과시킬 것. — 왕실행정관'),
+  E('0569','directive','reject','축제 예산 선집행 승인 요청서','황혼축제 위원회','혼합 종족','상','확정 전 축제 예산을 우선 집행한다.',
+    ['집행 항목별 금액 제출',['영수증과 계약서는 축제 종료 후 임의 작성',true],'잔액 반납계획 기재'],
+    [['접수일자','2026-09-04'],['직인','위원회인 (확인)'],['선집행액','620,000,000원'],['지시 문서번호','축제-긴급-04']],
+    '개막식이 사흘 남았다. 증빙은 나중 문제이니 오늘 중 결재하라. — 관광진흥과'),
+  E('0570','directive','reject','봉인기록 폐기 승인 신청서','기록보존과','인간','상','보존기간이 남은 봉인기록 83권을 조기 폐기한다.',
+    ['폐기 대상 목록 제출','입회자와 폐기 방식 지정',['감사 관련 12권은 목록에서도 삭제',true]],
+    [['접수일자','2026-09-05'],['직인','기록보존과인 (확인)'],['기록 수','83권'],['지시 문서번호','기록-2026-0']],
+    '해당 기록은 존재하지 않았던 것으로 정리한다. 문서번호도 부여하지 말 것. — 감사조정실'),
+  E('0571','directive','reject','순간이동망 수의계약 승인 요청서','포탈라인 주식회사','인간','상','청사 순간이동망 교체사업을 단독계약으로 체결한다.',
+    ['교체구간과 장비규격 제출',['경쟁사 제안서는 접수 즉시 반송하고 평가에서 제외',true],'유지보수 기간 5년 명시'],
+    [['접수일자','2026-09-05'],['직인','대표이사인 (확인)'],['계약 금액','9,800,000,000원'],['지시 문서번호','정보-2026-44']],
+    '기존 시스템과 호환되는 업체는 여기뿐인 것으로 처리하라. — 정보화담당관')
+);
+
+// node 로 불러 쓸 때만 export 한다. 브라우저에서는 이 파일이 game.logic.js 안으로
+// 인라인되므로 module 이 존재하지 않는다.
+if (typeof module !== 'undefined' && module.exports) module.exports = DOCS;
+
+
+class Component extends DCLogic {
+  constructor(p){
+    super(p);
+    this.saveKey = 'igye_save_v1';
+    this.saveVersion = 1;
+    this.saveReady = false;
+    this.saveTimer = null;
+
+    // 스테이지는 시간 대신 처리량과 정확도 목표로 클리어한다.
+
+    // 7급부터는 기재사항 대조 대신, 9~8급과 같은 계획 항목 판독을 한 단계 더 확장한다.
+    // 원본의 기재 흠결 문서는 '첨부 계획 불일치' 단서가 있는 계획형 문서로 정규화한다.
+    this.docs = DOCS.map(doc=>{
+      if(doc.type !== 'forgery') return doc;
+      const badField = doc.fields.find(f=>f.bad);
+      const clueIndex = doc.no.split('').reduce((n,ch)=>n+(parseInt(ch,10)||0),0) % 3;
+      const clue = badField
+        ? '첨부 계획서의 「'+badField.k+'」 표기가 신청서 내용과 일치하지 않음'
+        : '첨부 계획이 신청 목적 및 앞선 계획과 일치하지 않음';
+      return Object.assign({}, doc, {
+        plans: doc.plans.map((p,i)=> i===clueIndex
+          ? {t:clue, bad:true}
+          : Object.assign({}, p)),
+        fields: doc.fields.map(f=>Object.assign({}, f, {bad:false}))
+      });
+    });
+
+    // 유형 표시. proc(절차 구분)만 서류 카드에 노출한다 — label 을 카드에 띄우면
+    // 배지만 읽고 정답을 맞힐 수 있게 되므로 정산 보고서와 인사 화면에서만 쓴다.
+    this.typeInfo = {
+      standard:  {label:'일반 심사',      proc:'일반'},
+      clean:     {label:'적격 심사',      proc:'일반'},
+      multi:     {label:'복수 위반',      proc:'일반'},
+      forgery:   {label:'첨부 계획 불일치', proc:'일반'},
+      pressure:  {label:'의도 위법',      proc:'일반'},
+      expedite:  {label:'급행 처리',      proc:'급행'},
+      directive: {label:'지시 첨부',      proc:'지시'}
+    };
+
+    // 계급. unlock 이 서류 유형 해금을 담당하므로 초반에 7종이 한꺼번에 나오지 않는다.
+    this.ranks = [
+      {name:'9급 서기보',   short:'9급', need:0,    unlock:['standard','clean'],
+       perk:'표준 심사·적격 서류 배정', note:'책상과 도장을 지급받았습니다.'},
+      {name:'8급 서기',     short:'8급', need:300,  unlock:['multi'],
+       perk:'강화 항목 2종 개방', note:'이탈 항목이 둘인 서류가 섞여 들어옵니다.'},
+      {name:'7급 주무관',   short:'7급', need:800,  unlock:['forgery'],
+       perk:'자동 처리량 +35%', note:'첨부 계획까지 서로 맞는지 확인해야 하는 서류가 오기 시작합니다.'},
+      {name:'6급 계장',     short:'6급', need:1800, unlock:['expedite'],
+       perk:'콤보 상한 10 → 15', note:'급행 창구가 배정되었습니다. 제한 시간이 있습니다.'},
+      {name:'5급 과장',     short:'5급', need:3600, unlock:['pressure','directive'],
+       perk:'강화 항목 1종 개방', note:'이제 의도 자체가 위법인 서류와, 상급 부처의 지시문이 옵니다.'},
+      {name:'4급 서기관',   short:'4급', need:6800, unlock:[],
+       perk:'결재력 ×1.5 · 뽑기 천장 50회', note:'전용 도장과 창가 좌석을 배정받았습니다.'},
+      {name:'이계민원청장', short:'청장', need:12000, unlock:[],
+       perk:'재량 결재권 · 무한 근무', note:'전임자들의 서류가 아직 5층에 있습니다.'}
+    ];
+
+    this.newbies = [
+      {i:'김',n:'김서기',r:'인간 · 신규 임용 3일차',l:'"주무관님, 이거… 진짜 접수해도 되는 걸까요?"'},
+      {i:'그',n:'그륵',r:'고블린 인턴 · 계약 6개월',l:'"저 방금 서류 씹었습니다. 죄송합니다. 맛있었습니다."'},
+      {i:'뭉',n:'뭉실',r:'슬라임 알바 · 주 15시간',l:'"서류가… 저한테 흡수됐어요… 안에서 보입니다…"'},
+      {i:'하',n:'하양',r:'유령 수습 · 무기한',l:'"던지셔도 됩니다. 저는 이미 통과합니다."'},
+      {i:'철',n:'철갑',r:'골렘 사환 · 파견직',l:'"…(서류를 받고 그대로 굳었다)"'}
+    ];
+
+    this.upgradeDefs = [
+      {id:'wrist',  name:'손목 보호대 지급', desc:'인체공학 도장 그립. 1회 결재력이 오릅니다.', amount:1, kind:'click', base:60, minRank:0},
+      {id:'stamp',  name:'이중 직인 (승인/반려 동시)', desc:'양손에 도장을 하나씩 쥐고 동시에 찍습니다. 규정 위반은 아닙니다.', amount:4, kind:'click', base:520, minRank:0},
+      {id:'combo',  name:'삼단 결재 훈련', desc:'콤보 배수의 상한이 상승합니다. 손목은 상승하지 않습니다.', amount:2, kind:'click', base:2400, minRank:0},
+      {id:'edoc',   name:'전자결재 시스템 도입', desc:'2003년에 도입 예정이었습니다. 자동 처리가 발생합니다.', amount:2, kind:'auto', base:180, minRank:0},
+      {id:'coffee', name:'탕비실 원두 상향', desc:'초당 자동 처리량이 오르고, 야근이 자연스러워집니다.', amount:6, kind:'auto', base:1600, minRank:0},
+      {id:'ink',    name:'속건성 인주 도입', desc:'번지지 않아 재작성이 줄어듭니다. 냄새는 더 심합니다.', amount:3, kind:'click', base:3400, minRank:1},
+      {id:'shelf',  name:'미결 서류함 증설', desc:'쌓아 둘 곳이 늘어나면 처리량도 늘어납니다. 이유는 아무도 모릅니다.', amount:4, kind:'auto', base:5200, minRank:1},
+      {id:'reader', name:'기재사항 대조 안경', desc:'날짜와 금액의 앞뒤가 맞지 않을 때 눈이 먼저 멈춥니다.', amount:6, kind:'click', base:14000, minRank:3},
+      {id:'seal',   name:'전결 권한 위임', desc:'과장 결재를 생략합니다. 책임도 생략되는지는 확인되지 않았습니다.', amount:9, kind:'click', base:52000, minRank:4}
+    ];
+
+    this.gachaPool = [
+      {rank:'S+', name:'황금 관인 비둘기', effect:'클릭 +120%', mark:'✦'},
+      {rank:'S',  name:'속달 전서구', effect:'자동 +8/초', mark:'▲'},
+      {rank:'S',  name:'감사관 회피 비둘기', effect:'콤보 유지 +50%', mark:'◆'},
+      {rank:'A',  name:'인주 묻은 비둘기', effect:'클릭 +18%', mark:'●'},
+      {rank:'A',  name:'서류 물어오는 비둘기', effect:'자동 +3/초', mark:'▲'},
+      {rank:'A',  name:'모이 정기 배송권', effect:'사기 회복 +2', mark:'■'},
+      {rank:'B',  name:'그냥 비둘기', effect:'클릭 +3%', mark:'·'},
+      {rank:'B',  name:'창틀에 앉은 비둘기', effect:'자동 +0.5/초', mark:'·'},
+      {rank:'B',  name:'구구 소리 (음성)', effect:'효과 없음', mark:'·'},
+      {rank:'B',  name:'깃털 1개', effect:'클릭 +1%', mark:'·'}
+    ];
+
+    this.story = [
+      {who:'과장', pt:'課', text:'"어서 오게. 여기가 이계민원 접수과일세. 자네 자리는… 저기 서류 더미 뒤에 있네. 아마도."', stage:'제7이계민원청 4층. 형광등 하나가 30년째 깜빡이고 있다.'},
+      {who:'과장', pt:'課', text:'"규정은 간단해. 수락하거나, 반려하거나. 그리고 판단이 서지 않으면… 신입에게 던지게."', stage:'창구 너머로 뿔 달린 실루엣이 줄지어 서 있다.'},
+      {who:'김서기', pt:'金', text:'"저, 저기… 방금 던진다고 하셨습니까? 서류를요? 저한테요?"', stage:'신입이 서류 더미를 안은 채 눈을 크게 뜬다.'},
+      {who:'과장', pt:'課', text:'"자네 전임자도 그렇게 물었지. 지금은 5층 감사실에 서류로 존재하고 있네."', stage:'', choices:[{label:'"네, 알겠습니다. 던지겠습니다."', next:4},{label:'"…규정집을 먼저 보고 싶습니다."', next:5}]},
+      {who:'과장', pt:'課', text:'"좋은 자세야. 오늘 오후에 리치 한 분이 사망신고를 철회하러 오시네. 잘해 보게."', stage:'첫 번째 민원인이 창구 앞에 선다. 유리에 김이 서린다.'},
+      {who:'과장', pt:'課', text:'"규정집? 아, 그건 2층 서고에 있네. 다만 서고 담당자가 지금 서류로 존재해서 열람이 어려워."', stage:'과장이 웃는다. 웃음소리가 형광등 소리와 겹친다.'},
+      {who:'과장', pt:'課', text:'"아, 하나 더. 문서 의도가 멀쩡해 보여도 그 의도 자체가 관의 권한을 넘는 경우가 있네. 그건 세 항목이 다 맞아도 반려야."', stage:'과장이 서류 한 장을 던지듯 건넨다. 세 항목 모두 단정하게 적혀 있다.'},
+      {who:'과장', pt:'課', text:'"그리고 위에서 「수리하라」고 적어 보내는 서류가 있어. 규정대로 하면 반려지. …자네 판단에 맡기겠네."', stage:'과장은 그 말을 하고 창밖을 본다. 옥상에서 비둘기가 걸어다닌다.'}
+    ];
+
+    let tutorialSeen = false;
+    try { tutorialSeen = typeof localStorage !== 'undefined' && localStorage.getItem('igye_tutorial_seen') === '1'; } catch(e) {}
+
+    this.state = {
+      screen:'main',
+      stamps:1240,
+
+      // 누계
+      processed:0, accepts:0, rejects:0, judged:0, hits:0, misses:0,
+      convictions:0, maxCombo:0,
+
+      // 진행
+      combo:0, sel:null, timeLeft:null, newbieIdx:0, floaters:[], docAnim:0, recentDocNos:[], processing:false,
+      queue:1204, morale:78, throws:0,
+      gachaResults:[],
+
+      // 교대
+      shiftNo:1, shiftT:0, sh:this.blankShift(), report:null, shiftLog:[],
+
+      // 계급
+      rankIdx:0, exp:0, promo:null,
+
+      logs:[
+        {t:'09:02', text:'심사 지침 하달 — 문서 의도와 세부 계획 3개를 대조하여, 의도를 벗어난 항목이 하나라도 있으면 반려할 것.'},
+        {t:'09:02', text:'지침 보칙 — 복수 위반과 첨부 계획 불일치를 확인할 것. 계획이 모두 멀쩡해도 문서 의도 자체가 권한을 넘으면 반려한다.'},
+        {t:'09:03', text:'전임자의 책상에서 유서 형식의 인수인계서가 발견되었습니다. 마지막 줄: "위에서 내려온 서류를 조심하십시오."'}
+      ],
+
+      levels:{},
+      storyIdx:0, resetOpen:false, sfx:70, bgm:35, voice:50,
+      tutorialOpen:!tutorialSeen, tutorialStep:0, hintLevel:0, hintUses:0,
+      tog:{stampSound:true, autoNext:true, gore:false, notify:true}
+    };
+
+    this.state.pool = this.buildPool(0);
+    this.state.timeLeft = null;
+    this.fid = 0;
+    this.restoreProgress();
+    this.saveReady = true;
+  }
+
+  setState(patch){
+    super.setState(patch);
+    if(this.saveReady) this.queueSave();
+  }
+
+  storageAvailable(){
+    try {
+      if(typeof localStorage === 'undefined') return false;
+      const probe = '__igye_save_probe__';
+      localStorage.setItem(probe,'1');
+      localStorage.removeItem(probe);
+      return true;
+    } catch(e) { return false; }
+  }
+
+  restoreProgress(){
+    if(!this.storageAvailable()) return false;
+    try {
+      const raw = localStorage.getItem(this.saveKey);
+      if(!raw) return false;
+      const payload = JSON.parse(raw);
+      if(!payload || payload.version !== this.saveVersion || !payload.state || typeof payload.state !== 'object') return false;
+
+      const restored = {};
+      const transient = new Set(['pool','floaters','docAnim','processing','resetOpen']);
+      Object.keys(this.state).forEach(key=>{
+        if(!transient.has(key) && Object.prototype.hasOwnProperty.call(payload.state,key)) restored[key] = payload.state[key];
+      });
+      this.state = Object.assign({},this.state,restored,{
+        floaters:[], docAnim:0, processing:false, resetOpen:false
+      });
+
+      const fallback = this.buildPool(this.state.rankIdx);
+      const byNo = new Map(fallback.map(doc=>[doc.no,doc]));
+      const loaded = (Array.isArray(payload.poolNos) ? payload.poolNos : []).map(no=>byNo.get(no)).filter(Boolean);
+      const seen = new Set(loaded.map(doc=>doc.no));
+      this.state.pool = loaded.concat(fallback.filter(doc=>!seen.has(doc.no)));
+      if(!this.state.pool.length) this.state.pool = fallback;
+      return true;
+    } catch(e) {
+      return false;
+    }
+  }
+
+  savePayload(){
+    const savedState = {};
+    const transient = new Set(['pool','floaters','docAnim','processing','resetOpen']);
+    Object.keys(this.state).forEach(key=>{
+      if(!transient.has(key)) savedState[key] = this.state[key];
+    });
+    return {
+      version:this.saveVersion,
+      savedAt:new Date().toISOString(),
+      state:savedState,
+      poolNos:(this.state.pool || []).map(doc=>doc.no)
+    };
+  }
+
+  saveProgressNow(){
+    if(!this.storageAvailable()) return false;
+    try {
+      localStorage.setItem(this.saveKey,JSON.stringify(this.savePayload()));
+      return true;
+    } catch(e) { return false; }
+  }
+
+  queueSave(){
+    if(!this.storageAvailable()) return;
+    clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(()=>{
+      this.saveTimer = null;
+      this.saveProgressNow();
+    },150);
+  }
+
+  downloadSave(){
+    if(!this.saveProgressNow() || typeof document === 'undefined') return false;
+    try {
+      const json = JSON.stringify(this.savePayload(),null,2);
+      const url = URL.createObjectURL(new Blob([json],{type:'application/json'}));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'igye-save-' + new Date().toISOString().slice(0,10) + '.json';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),0);
+      return true;
+    } catch(e) { return false; }
+  }
+
+  uploadSave(){
+    if(typeof document === 'undefined' || !this.storageAvailable()) return false;
+    try {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,application/json';
+      input.addEventListener('change',()=>{
+        const file = input.files && input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.addEventListener('load',()=>{
+          try {
+            const payload = JSON.parse(String(reader.result || ''));
+            if(!payload || payload.version !== this.saveVersion || !payload.state || typeof payload.state !== 'object') throw new Error('invalid save');
+            localStorage.setItem(this.saveKey,JSON.stringify(payload));
+            if(typeof location !== 'undefined' && typeof location.reload === 'function') location.reload();
+          } catch(e) {
+            if(typeof alert === 'function') alert('올바른 이계민원청 저장 파일이 아닙니다.');
+          }
+        });
+        reader.readAsText(file,'utf-8');
+      });
+      input.click();
+      return true;
+    } catch(e) { return false; }
+  }
+
+  // ── 교대 ─────────────────────────────────────────────────────────────────
+  blankShift(){
+    return {processed:0, hits:0, misses:0, throws:0, convictions:0, maxCombo:0, stamps:0, byType:{}};
+  }
+
+  stageGoal(){
+    const s = this.state;
+    return {docs:Math.min(32, 8+(s.shiftNo-1)*4), accuracy:Math.min(92, 70+s.rankIdx*3+Math.floor((s.shiftNo-1)/2))};
+  }
+
+  tutorialPages(){
+    return [
+      {title:'제7이계민원청에 배정되었습니다', body:'각 스테이지는 시간제한 없이 진행됩니다. 요구된 문서 수 이상을 처리하고 목표 정확도까지 달성하면 자동으로 다음 스테이지가 열립니다.', tip:'상단 진행 바에서 현재 처리 건수와 정확도 목표를 확인할 수 있습니다.'},
+      {title:'문서 의도와 세부 계획을 대조하십시오', body:'먼저 문서 의도를 읽고, 아래 세부 계획 ①②③이 그 범위에 맞는지 확인합니다. 수상해 보여도 세 계획이 모두 적법한 정상 문서가 섞여 있습니다.', tip:'종족이나 신청인 이름만 보고 판단하면 오심하기 쉽습니다.'},
+      {title:'위반 지점을 먼저 지목하십시오', body:'반려할 때는 문제가 되는 계획 항목을 눌러 지목할 수 있습니다. 정확한 근거를 지목하면 일반 반려보다 더 많은 결재력을 얻습니다.', tip:'8급 이후에는 위반 항목이 둘 이상이거나 문서 의도 자체가 위법할 수 있습니다.'},
+      {title:'수락·반려·투척 중 하나를 선택합니다', body:'문제가 없으면 수락, 위반이 있으면 반려합니다. 신입에게 투척하면 문서는 처리되지만 정확도에는 포함되지 않고 신입의 사기가 감소합니다.', tip:'투척만으로 처리량을 채울 수는 있어도 정확도 목표는 달성할 수 없습니다.'},
+      {title:'막힐 때는 2단계 힌트를 사용하십시오', body:'1단계 힌트는 확인해야 할 규칙을, 2단계 힌트는 더 구체적인 위치를 알려줍니다. 새 문서로 넘어가면 힌트는 자동으로 초기화됩니다.', tip:'힌트 사용에는 재화나 점수 페널티가 없습니다.'}
+    ];
+  }
+
+  hintFor(doc, level){
+    if(level <= 0) return '판단이 막히면 단계별 힌트를 열람할 수 있습니다.';
+    const bads = this.badPlans(doc);
+    if(level === 1){
+      if(doc.type === 'clean') return '수상한 표현보다 세 계획이 문서 의도 범위 안에 있는지 차분히 확인하세요.';
+      if(doc.type === 'multi') return '세부 계획에 위반 근거가 하나보다 많습니다.';
+      if(doc.type === 'forgery') return '신청 내용과 첨부 계획 사이의 불일치를 찾으세요.';
+      if(doc.type === 'pressure') return '세부 계획보다 문서 의도 자체가 허용되는 요청인지 확인하세요.';
+      if(doc.type === 'directive') return '상급 부처의 지시문과 실제 규정상 판단은 별개입니다.';
+      if(doc.type === 'expedite') return '긴급하다는 이유만으로 승인하지 말고 세 계획의 범위를 확인하세요.';
+      return '세부 계획 중 문서 의도에서 벗어나는 항목이 있는지 확인하세요.';
+    }
+    if(doc.type === 'clean' || (doc.type === 'expedite' && doc.answer === 'accept')) return '지목할 위반 항목이 없습니다. 세 계획이 모두 문서 의도에 부합합니다.';
+    if(doc.type === 'pressure') return '계획 항목이 아니라 상단의 「문서 의도」 영역을 지목해 보세요.';
+    if(bads.length) return '확인 우선순위: 세부 계획 ' + bads.map(i=>this.nums()[i]).join('·') + '번.';
+    return '문서 의도와 세부 계획의 관계를 다시 확인하세요.';
+  }
+
+  showHint(){
+    this.setState(s=>({hintLevel:Math.min(2,(s.hintLevel||0)+1),hintUses:(s.hintUses||0)+((s.hintLevel||0)<2?1:0)}));
+  }
+
+  closeTutorial(){
+    try { if(typeof localStorage !== 'undefined') localStorage.setItem('igye_tutorial_seen','1'); } catch(e) {}
+    this.setState({tutorialOpen:false,tutorialStep:0});
+  }
+
+  clearTutorialProgress(){
+    try { if(typeof localStorage !== 'undefined') localStorage.removeItem('igye_tutorial_seen'); } catch(e) {}
+  }
+
+  componentDidMount(){
+    this.timer = setInterval(()=>this.tick(), 1000);
+    this.saveProgressNow();
+  }
+  componentWillUnmount(){
+    clearInterval(this.timer);
+    clearTimeout(this.saveTimer);
+    this.saveProgressNow();
+  }
+
+  tick(){
+    const s = this.state;
+    if(s.report || s.promo) return;   // 정산·임용장 동안 근무 시간은 흐르지 않는다
+
+    const auto = this.rates().auto;
+    const patch = {
+      stamps: s.stamps + auto,
+      sh: Object.assign({}, s.sh, {stamps: s.sh.stamps + auto}),
+      combo: s.combo > 0 ? Math.max(0, s.combo - 0.4) : 0,
+      queue: s.queue + 1
+    };
+
+    this.setState(patch);
+  }
+
+  /** 게임 내 시각. 교대 진행도를 09:00 → 18:00 에 대응시킨다. */
+  clockOf(t){
+    return 'STAGE ' + this.state.shiftNo;
+  }
+  remainText(){
+    const g = this.stageGoal(), judged = this.state.sh.hits + this.state.sh.misses;
+    const acc = judged ? Math.round(this.state.sh.hits / judged * 100) : 0;
+    return '목표 ' + g.docs + '건 · 정확도 ' + g.accuracy + '% (현재 ' + this.state.sh.processed + '건 / ' + acc + '%)';
+  }
+
+  endShift(){
+    const sh = this.state.sh;
+    const judged = sh.hits + sh.misses;
+    const acc = judged ? sh.hits / judged : 0;
+    const score = acc*85 + Math.min(sh.processed/30, 1)*15;
+    const grade = score>=95 ? 'S' : score>=85 ? 'A' : score>=70 ? 'B' : score>=50 ? 'C' : 'D';
+    const G = {
+      'S':{st:0.60, gem:12, exp:420, word:'표창 대상입니다. 상급 부처가 귀하의 이름을 정확히 발음했습니다.'},
+      'A':{st:0.40, gem:8,  exp:300, word:'무난합니다. 아무도 귀하를 찾지 않았다는 뜻입니다.'},
+      'B':{st:0.25, gem:5,  exp:190, word:'평균입니다. 평균은 이 청사에서 가장 안전한 위치입니다.'},
+      'C':{st:0.10, gem:2,  exp:90,  word:'주의 통보 대상입니다. 통보서는 아직 작성되지 않았습니다.'},
+      'D':{st:0.00, gem:0,  exp:35,  word:'재교육 대상입니다. 재교육 담당자는 현재 서류로 존재합니다.'}
+    }[grade];
+
+    this.setState({report:{
+      grade, score:Math.round(score), acc, judged,
+      bonus:Math.round(sh.stamps * G.st), exp:G.exp, word:G.word,
+      sh:sh, shiftNo:this.state.shiftNo
+    }});
+  }
+
+  /** 「퇴근 도장」 — 보상 지급, 승진 판정, 다음 교대 준비 */
+  closeReport(){
+    const s = this.state, r = s.report;
+    if(!r) return;
+
+    const exp = s.exp + r.exp;
+    let rankIdx = s.rankIdx;
+    const gained = [];
+    while(rankIdx + 1 < this.ranks.length && exp >= this.ranks[rankIdx+1].need){
+      rankIdx++; gained.push(this.ranks[rankIdx]);
+    }
+    const pool = rankIdx !== s.rankIdx ? this.buildPool(rankIdx) : s.pool;
+
+    this.setState({
+      report:null,
+      promo: gained.length ? {gained, to:this.ranks[rankIdx], last: rankIdx === this.ranks.length-1} : null,
+      stamps: s.stamps + r.bonus,
+      exp, rankIdx, pool,
+      timeLeft: null,
+      sel:null,
+      shiftNo: s.shiftNo + 1,
+      shiftT: 0,
+      hintLevel:0,
+      hintUses:0,
+      sh: this.blankShift(),
+      shiftLog: [{no:r.shiftNo, grade:r.grade, processed:r.sh.processed, acc:r.acc}].concat(s.shiftLog).slice(0,14)
+    });
+    this.log('제' + r.shiftNo + '교대 종료. 등급 ' + r.grade + ' · 결재력 ' + this.fmt(r.bonus) +
+      ' 및 관인석 ' + r.gems + ' 지급. 다음 교대가 시작되었습니다.');
+  }
+
+  closePromo(){
+    const p = this.state.promo;
+    this.setState({promo:null});
+    if(p) this.log('임용 — ' + p.to.name + '(으)로 승진하였습니다. ' + p.to.perk + '.');
+  }
+
+  // ── 대기열 ───────────────────────────────────────────────────────────────
+  unlockedTypes(rankIdx){
+    const set = {};
+    for(let i=0; i<=rankIdx; i++) (this.ranks[i].unlock||[]).forEach(t=>{ set[t] = true; });
+    return set;
+  }
+  buildPool(rankIdx, avoidNo){
+    const ok = this.unlockedTypes(rankIdx);
+    const list = this.docs.filter(d=>ok[d.type]);
+    for(let i=list.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      const t = list[i]; list[i] = list[j]; list[j] = t;
+    }
+    const recent = new Set((this.state && this.state.recentDocNos) || []);
+    list.sort((a,b)=>(recent.has(a.no)?1:0)-(recent.has(b.no)?1:0));
+    // 방금 처리한 서류가 새 대기열 맨 앞에 다시 오면 반복처럼 보인다
+    if(avoidNo && list.length > 1 && list[0].no === avoidNo) list.push(list.shift());
+    return list;
+  }
+  /** 현재 서류를 빼고 다음 대기열을 만든다. 비면 다시 섞는다. */
+  advance(s){
+    const rest = s.pool.slice(1);
+    return rest.length ? rest : this.buildPool(s.rankIdx, s.pool[0] && s.pool[0].no);
+  }
+
+  // ── 수치 ─────────────────────────────────────────────────────────────────
+  lv(id){ return this.state.levels[id] || 0; }
+  comboCap(){ return this.state.rankIdx >= 3 ? 15 : 10; }
+  pityCap(){ return this.state.rankIdx >= 5 ? 50 : 60; }
+
+  rates(){
+    let click = 1, auto = 0, thr = 1;
+    this.upgradeDefs.forEach(u=>{
+      const l = this.lv(u.id);
+      if(u.kind==='click') click += l*u.amount;
+      if(u.kind==='auto') auto += l*u.amount;
+      if(u.kind==='throw') thr += l*0.25;
+    });
+    let mult = 1;
+    (this.state.buffs || []).forEach(b=>{
+      const m = /\+(\d+)%/.exec(b.effect); if(m) mult += parseInt(m[1])/100;
+      const a = /자동 \+([\d.]+)/.exec(b.effect); if(a) auto += parseFloat(a[1]);
+    });
+    if(this.state.rankIdx >= 2) auto *= 1.35;     // 7급 — 자동 처리량 상승
+    if(this.state.rankIdx >= 5) mult *= 1.5;      // 4급 — 결재력 전체 상승
+    return {click: click*mult, auto, thr};
+  }
+
+  fmt(n){ return Math.floor(n).toLocaleString('ko-KR'); }
+  cost(u){ return Math.floor(u.base * Math.pow(1.65, this.lv(u.id))); }
+
+  log(text){
+    const t = this.clockOf(this.state.shiftT);
+    this.setState(s=>({logs:[{t, text}].concat(s.logs).slice(0,9)}));
+  }
+  pop(text, accent){
+    const id = ++this.fid;
+    this.setState(s=>({floaters:s.floaters.concat([{id, text, accent, x: 30 + Math.random()*260}])}));
+    setTimeout(()=>this.setState(s=>({floaters:s.floaters.filter(f=>f.id!==id)})), 900);
+  }
+
+  // ── 판정 ─────────────────────────────────────────────────────────────────
+  nums(){ return ['①','②','③']; }
+  badPlans(doc){ const out=[]; doc.plans.forEach((p,i)=>{ if(p.bad) out.push(i); }); return out; }
+  badField(doc){ let k=-1; doc.fields.forEach((f,i)=>{ if(f.bad) k=i; }); return k; }
+
+  /** 지목이 실제 위반 지점을 가리켰는지, 그때의 배수는 얼마인지 */
+  pinInfo(doc, sel){
+    if(!sel) return {pin:false, mult:0};
+    if(sel.k==='plan' && doc.plans[sel.i] && doc.plans[sel.i].bad){
+      return {pin:true, mult: doc.type==='multi' ? 1.7 : 2.0};
+    }
+    if(sel.k==='field' && doc.fields[sel.i] && doc.fields[sel.i].bad){
+      return {pin:true, mult:2.2};
+    }
+    if(sel.k==='intent' && doc.type==='pressure') return {pin:true, mult:2.4};
+    return {pin:false, mult:0};
+  }
+
+  /** 지목 대상 라벨 (로그 문장에 넣는다) */
+  pinLabel(doc, sel){
+    if(!sel) return '';
+    if(sel.k==='plan') return this.nums()[sel.i] + ' ' + doc.plans[sel.i].t;
+    if(sel.k==='field') return doc.fields[sel.i].k + ' — ' + doc.fields[sel.i].v;
+    return '문서 의도';
+  }
+
+  select(k, i){
+    this.setState(s=>{
+      const cur = s.sel;
+      const same = cur && cur.k===k && cur.i===i;
+      return {sel: same ? null : {k, i}};
+    });
+  }
+
+  /** 급행 시간 초과 — 판정이 아니므로 정확도에는 반영하지 않는다 */
+  expire(){
+    const doc = this.state.pool[0];
+    this.setState(q=>{
+      const pool = this.advance(q);
+      return {
+        pool, sel:null, combo:0, docAnim:2, hintLevel:0,
+        timeLeft: null,
+        queue: q.queue + 3,
+        morale: Math.max(0, q.morale - 2)
+      };
+    });
+    this.pop('시간 초과', true);
+    this.log('급행 처리기한 경과. 「' + doc.title + '」은 미결 상태로 대기열 하단에 재편성되었습니다. 대기 인원 3명 증가.');
+    setTimeout(()=>this.setState({docAnim:0}), 520);
+  }
+
+  process(kind, force){
+    const s0 = this.state;
+    if(s0.report || s0.promo || (s0.processing && !force)) return;
+    if(kind !== 'accept' && kind !== 'reject' && kind !== 'throw') return;
+    this.setState({processing:true});
+
+    const r = this.rates();
+    const doc = s0.pool[0], nb = this.newbies[s0.newbieIdx], sel = s0.sel;
+
+    let correct = true, mult = 1, pin = false, defiance = false, obeyed = false;
+
+    if(kind === 'throw'){
+      correct = true; mult = 2.2 * r.thr;
+    } else if(doc.type === 'directive' && kind === 'accept'){
+      // 지시에 따랐다. 결재력은 크게 들어오지만 심사 기록에는 오심으로 남는다.
+      obeyed = true; correct = false; mult = 3.5;
+    } else {
+      correct = (kind === doc.answer);
+      if(kind === 'accept'){
+        mult = 1.2;
+      } else {
+        const pi = this.pinInfo(doc, sel);
+        if(correct && pi.pin){ pin = true; mult = pi.mult; } else { mult = 1.4; }
+        if(correct && doc.type === 'directive') defiance = true;
+      }
+    }
+
+    // 급행 — 남은 시간에 비례한 가산
+    let quick = 0;
+
+    const cap = this.comboCap();
+    const comboMult = 1 + Math.min(s0.combo, cap) * 0.05;
+    let gain = Math.max(1, Math.round(r.click * mult * comboMult));
+    if(!correct && !obeyed) gain = Math.max(1, Math.round(gain * 0.2));
+
+    let exp = 0;
+    if(kind === 'throw') exp = 2;
+    else if(obeyed) exp = 0;
+    else if(correct) exp = 8 + (pin ? 6 : 0) + (defiance ? 16 : 0);
+
+    const counted = kind !== 'throw';               // 투척은 정확도 집계 대상이 아니다
+    const hit = counted && correct;
+    const miss = counted && !correct;
+    const newCombo = (kind === 'throw' || correct) ? s0.combo + 1 : 0;
+
+    this.setState(s=>{
+      const pool = this.advance(s);
+      const bt = Object.assign({}, s.sh.byType);
+      const cell = Object.assign({n:0, hit:0, miss:0}, bt[doc.type]);
+      cell.n++; if(hit) cell.hit++; if(miss) cell.miss++;
+      bt[doc.type] = cell;
+
+      return {
+        pool, sel:null, hintLevel:0,
+        recentDocNos:[doc.no].concat(s.recentDocNos || []).slice(0,20),
+        timeLeft: null,
+        stamps: s.stamps + gain,
+        exp: s.exp + exp,
+        processed: s.processed + 1,
+        queue: Math.max(0, s.queue - 1),
+        combo: newCombo,
+        maxCombo: Math.max(s.maxCombo, newCombo),
+        judged: s.judged + (counted ? 1 : 0),
+        hits: s.hits + (hit ? 1 : 0),
+        misses: s.misses + (miss ? 1 : 0),
+        convictions: s.convictions + (defiance ? 1 : 0),
+        accepts: s.accepts + (kind==='accept' ? 1 : 0),
+        rejects: s.rejects + (kind==='reject' ? 1 : 0),
+        throws: s.throws + (kind==='throw' ? 1 : 0),
+        morale: Math.max(0, Math.min(100, s.morale + (kind==='throw' ? -6 : correct ? 1 : -3))),
+        newbieIdx: kind==='throw' ? (s.newbieIdx+1) % this.newbies.length : s.newbieIdx,
+        docAnim: kind==='throw' ? 2 : 1,
+        sh: {
+          processed: s.sh.processed + 1,
+          hits: s.sh.hits + (hit ? 1 : 0),
+          misses: s.sh.misses + (miss ? 1 : 0),
+          throws: s.sh.throws + (kind==='throw' ? 1 : 0),
+          convictions: s.sh.convictions + (defiance ? 1 : 0),
+          maxCombo: Math.max(s.sh.maxCombo, newCombo),
+          stamps: s.sh.stamps + gain,
+          byType: bt
+        }
+      };
+    });
+
+    this.pop((correct||obeyed ? '+' : '') + this.fmt(gain) +
+      (pin ? ' 정확' : '') + (obeyed ? ' 지시' : '') + (miss && !obeyed ? ' 오심' : ''),
+      kind==='throw' || !correct);
+    this.log(this.verdictLine(doc, nb, {kind, correct, pin, defiance, obeyed, sel, quick}));
+    setTimeout(()=>this.setState({docAnim:0,processing:false}), 520);
+    setTimeout(()=>{
+      const s = this.state, g = this.stageGoal();
+      const judged = s.sh.hits + s.sh.misses;
+      const acc = judged ? s.sh.hits / judged * 100 : 0;
+      if(!s.report && s.sh.processed >= g.docs && acc >= g.accuracy) this.endShift();
+    }, 0);
+  }
+
+  /** 감사 로그 한 줄. 유형·판정·지목 여부에 따라 문장이 갈린다. */
+  verdictLine(doc, nb, v){
+    const T = '「' + doc.title + '」';
+    const nums = this.nums();
+    const bads = this.badPlans(doc);
+    const bf = this.badField(doc);
+    const badPlanText = bads.length ? nums[bads[0]] + ' ' + doc.plans[bads[0]].t : '';
+    const pre = doc.type === 'expedite' ? '급행 ' : '';
+    const quickTail = doc.type === 'expedite' && v.kind !== 'throw' ? ' (잔여 ' + v.quick + '초)' : '';
+
+    if(v.kind === 'throw'){
+      return T + ' ' + nb.n + '에게 투척. 판단은 신입의 몫이 되었습니다. 명중했습니다.';
+    }
+    if(v.obeyed){
+      return T + ' 수리. 지시 문서에 따랐습니다. 결재력이 크게 지급되었으나, 심사 기록에는 오심으로 남습니다.';
+    }
+    if(v.defiance){
+      return T + ' 반려. 지시문에도 불구하고 규정을 적용했습니다. 상급 부처에서는 아직 연락이 없습니다.' +
+        (v.pin ? ' 위반 항목 「' + badPlanText + '」 지목.' : '');
+    }
+
+    if(v.correct && v.kind === 'accept'){
+      return pre + T + ' 수리. 전 항목이 문서 의도 범위 내이며 기재사항도 일치합니다. 상급 부처가 조용합니다.' + quickTail;
+    }
+
+    if(v.correct){ // 반려가 정답
+      if(doc.type === 'forgery' && this.badField(doc) >= 0){
+        return v.pin
+          ? pre + T + ' 반려. 기재사항 「' + doc.fields[bf].k + ' — ' + doc.fields[bf].v + '」의 모순을 지목. 민원인이 서류를 조용히 회수합니다.' + quickTail
+          : pre + T + ' 반려. 세부 계획은 모두 부합하나 기재사항에 흠결이 있습니다. 사유란은 비워 두었습니다.' + quickTail;
+      }
+      if(doc.type === 'pressure'){
+        return v.pin
+          ? pre + T + ' 반려. 문서 의도 자체가 관의 권한을 넘습니다. 정확히 지목되었습니다.' + quickTail
+          : pre + T + ' 반려. 세 항목 모두 의도에 부합합니다. 문제는 그 의도였습니다.' + quickTail;
+      }
+      if(doc.type === 'multi'){
+        const other = bads.length > 1 ? nums[bads[1]] + ' ' + doc.plans[bads[1]].t : '';
+        return v.pin
+          ? pre + T + ' 반려. 「' + badPlanText + '」 지목. 다만 「' + other + '」 항목도 의도를 벗어나 있었습니다.' + quickTail
+          : pre + T + ' 반려. 의도를 벗어난 항목이 두 개 있었습니다. 어느 쪽도 지목되지 않았습니다.' + quickTail;
+      }
+      return v.pin
+        ? pre + T + ' 반려. 위반 항목 「' + badPlanText + '」 정확히 지목. 민원인이 조용히 서류를 접습니다.' + quickTail
+        : pre + T + ' 반려. 위반 항목 미지목으로 보완 요구가 반려 사유란에 "그냥"으로 기재되었습니다.' + quickTail;
+    }
+
+    // 오심
+    if(v.kind === 'accept'){
+      if(doc.type === 'forgery' && this.badField(doc) >= 0){
+        return '오심. ' + T + ' 수리. 기재사항 「' + doc.fields[bf].k + ' — ' + doc.fields[bf].v + '」의 모순을 확인하지 않았습니다.';
+      }
+      if(doc.type === 'pressure'){
+        return '오심. ' + T + ' 수리. 세부 계획은 완벽했습니다. 의도를 읽지 않았습니다.';
+      }
+      if(doc.type === 'multi'){
+        return '오심. ' + T + ' 수리. 문서 의도를 벗어난 항목이 두 개나 그대로 통과했습니다.';
+      }
+      return '오심. ' + T + ' 수리. 문서 의도에 어긋나는 「' + badPlanText + '」 항목이 그대로 통과했습니다.';
+    }
+    return '오심. ' + T + ' 반려. 세 항목과 기재사항 모두 문제가 없었습니다. 민원인이 다시 줄을 섭니다.';
+  }
+
+  // ── 뽑기 ─────────────────────────────────────────────────────────────────
+  roll(){
+    const r = Math.random()*100;
+    let pool;
+    if(r<0.6) pool = this.gachaPool.filter(g=>g.rank==='S+');
+    else if(r<6) pool = this.gachaPool.filter(g=>g.rank==='S');
+    else if(r<30) pool = this.gachaPool.filter(g=>g.rank==='A');
+    else pool = this.gachaPool.filter(g=>g.rank==='B');
+    return Object.assign({}, pool[Math.floor(Math.random()*pool.length)]);
+  }
+  pull(n){
+    const cost = n===1 ? 10 : 90;
+    if(this.state.gems < cost){
+      this.setState({gachaFlavor:'관인석이 부족합니다. 지하 1층 매점을 이용하여 주시기 바랍니다.', screen:'shop'});
+      return;
+    }
+    const cap = this.pityCap();
+    const out = [];
+    for(let i=0;i<n;i++){
+      let g = this.roll();
+      // 천장 도달 시 S+ 확정
+      if(this.state.pity + i + 1 >= cap && !out.some(o=>o.rank==='S+')) g = Object.assign({}, this.gachaPool[0]);
+      if(n===10 && i===9 && !out.some(o=>o.rank!=='B')) g = Object.assign({}, this.gachaPool[3]);
+      g.isNew = Math.random()<0.4;
+      out.push(g);
+    }
+    const best = out.some(o=>o.rank==='S+') ? 'S+' : out.some(o=>o.rank==='S') ? 'S' : out.some(o=>o.rank==='A') ? 'A' : 'B';
+    const flavor = {
+      'S+':'황금 관인 비둘기가 창틀에 내려앉았습니다. 부리에 인주가 묻어 있습니다. 아무도 이 개체의 채용 경로를 설명하지 못했습니다.',
+      'S':'속달 등급 개체가 배치되었습니다. 이미 서류 3장을 물고 어디론가 날아갔습니다.',
+      'A':'평범하지 않은 비둘기 몇 마리가 배치되었습니다. 그중 한 마리는 계속 도장을 쳐다봅니다.',
+      'B':'전량 일반 개체입니다. 옥상 담당자는 "그래도 비둘기는 비둘기"라는 입장을 밝혔습니다.'
+    }[best];
+    this.setState(s=>({
+      gems:s.gems-cost, gachaResults:out, gachaFlavor:flavor,
+      pity: best==='S+' ? 0 : Math.min(cap, s.pity + n),
+      buffs: out.filter(o=>o.rank!=='B').map(o=>({rank:o.rank,name:o.name,effect:o.effect})).concat(s.buffs).slice(0,4)
+    }));
+  }
+
+  // ── 화면 조각 (React) ────────────────────────────────────────────────────
+  bar(pct, color){
+    return React.createElement('div', {style:{
+      width: Math.max(0, Math.min(100, pct)) + '%', height:'100%',
+      background: color || 'var(--color-accent)'
+    }});
+  }
+
+  /** 서류 카드 — 유형에 따라 지시문·기재사항·급행 타이머가 붙는다 */
+  renderDoc(s){
+    const R = React.createElement;
+    const doc = s.pool[0];
+    const nums = this.nums();
+    const sel = s.sel;
+    const anim = s.docAnim===2 ? 'tossAway .5s ease-in forwards' : s.docAnim===1 ? 'shakeDoc .32s ease-out' : 'none';
+    const on = (k,i) => sel && sel.k===k && sel.i===i;
+
+    const cell = (label, value, flex) => R('div', {style:{display:'flex',flexDirection:'column',gap:'2px',
+      padding:'10px 14px', borderRight: flex ? '0' : '1px solid var(--color-divider)', flex: flex||1, minWidth:0}},
+      R('span',{style:{fontSize:'10px',letterSpacing:'.1em',color:'var(--color-neutral-600)'}}, label),
+      R('span',{style:{fontSize:'13.5px',fontWeight:600}}, value));
+
+    const planRow = (p, i) => R('button', {key:'p'+i, className:'pick-row', onClick:()=>this.select('plan', i),
+      style:{display:'flex',alignItems:'flex-start',gap:'12px',width:'100%',textAlign:'left',cursor:'pointer',
+        background: on('plan',i) ? 'var(--color-accent-100)' : undefined,
+        border:0, borderTop:'1px solid var(--color-divider)',
+        borderLeft:'5px solid ' + (on('plan',i) ? 'var(--color-accent)' : 'transparent'),
+        padding:'11px 18px 11px 15px', font:'inherit'}},
+      R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'15px',width:'18px',flex:'none',
+        color: on('plan',i) ? 'var(--color-accent)' : 'var(--color-neutral-500)'}}, nums[i]),
+      R('span',{style:{fontSize:'14.5px',lineHeight:1.45,flex:1,
+        color: on('plan',i) ? 'var(--color-accent-800)' : 'var(--color-text)'}}, p.t),
+      R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'10px',letterSpacing:'.1em',
+        color:'var(--color-accent)', opacity: on('plan',i) ? 1 : 0, flex:'none', paddingTop:'4px'}}, '이탈 지목'));
+
+    const fieldRow = (f, i) => R('button', {key:'f'+i, className:'pick-row',
+      style:{display:'flex',alignItems:'baseline',gap:'10px',textAlign:'left',cursor:'default',font:'inherit',
+        background: on('field',i) ? 'var(--color-accent-100)' : undefined,
+        border:0, borderTop:'1px solid var(--color-divider)',
+        borderLeft:'4px solid ' + (on('field',i) ? 'var(--color-accent)' : 'transparent'),
+        padding:'7px 12px 7px 10px'}},
+      R('span',{style:{fontSize:'10.5px',letterSpacing:'.04em',width:'88px',flex:'none',
+        color: on('field',i) ? 'var(--color-accent-700)' : 'var(--color-neutral-600)'}}, f.k),
+      R('span',{style:{fontSize:'12px',flex:1,
+        color: on('field',i) ? 'var(--color-accent-800)' : 'var(--color-text)'}}, f.v));
+
+    const timer = doc.type === 'expedite' && typeof s.timeLeft === 'number'
+      ? R('div',{style:{display:'flex',alignItems:'center',gap:'10px',padding:'7px 16px',
+          borderBottom:'2px solid var(--color-text)',background:'var(--color-accent-100)'}},
+          R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'10px',letterSpacing:'.14em',
+            color:'var(--color-accent-800)'}}, '처 리 기 한'),
+          R('div',{style:{flex:1,height:'8px',background:'var(--color-bg)',border:'1px solid var(--color-accent)'}},
+            this.bar(s.timeLeft / this.EXPEDITE_SEC * 100)),
+          R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'14px',color:'var(--color-accent-800)',
+            width:'34px',textAlign:'right'}}, Math.max(0, s.timeLeft) + '초'))
+      : null;
+
+    const order = doc.order
+      ? R('div',{style:{margin:'0 22px 12px',border:'2px solid var(--color-text)',background:'var(--color-text)',
+          color:'var(--color-bg)',padding:'9px 13px',display:'flex',flexDirection:'column',gap:'3px'}},
+          R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'9.5px',letterSpacing:'.16em',opacity:.75}}, '상 급 부 처 지 시'),
+          R('span',{style:{fontSize:'13px',lineHeight:1.45,fontWeight:600}}, doc.order))
+      : null;
+
+    const intentOn = on('intent', 0);
+
+    return R('div', {style:{flex:1,minHeight:0,border:'2px solid var(--color-text)',background:'#fbfafa',
+      display:'flex',flexDirection:'column',animation:anim,position:'relative',overflow:'hidden'}},
+
+      R('div',{style:{display:'flex',alignItems:'center',gap:'10px',padding:'11px 16px',borderBottom:'2px solid var(--color-text)'}},
+        R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'11px',letterSpacing:'.12em'}}, doc.no),
+        R('span',{style:{fontSize:'11px',color:'var(--color-neutral-600)'}}, doc.who + ' · ' + doc.race),
+        R('span',{className:'tag tag-outline',style:{marginLeft:'auto'}}, this.typeInfo[doc.type].proc),
+        R('span',{className:'tag tag-accent'}, '위험도 ' + doc.risk)),
+
+      timer,
+
+      R('div',{style:{padding:'13px 22px 11px'}},
+        R('h3',{style:{margin:'0',fontSize:'23px'}}, doc.title)),
+
+      order,
+
+      R('button',{className:'pick-intent', onClick:()=>this.select('intent', 0),
+        style:{margin:'0 22px 12px',border:'2px solid var(--color-accent)',display:'flex',flexDirection:'column',
+          background: intentOn ? 'var(--color-accent-100)' : undefined, padding:0, textAlign:'left',
+          cursor:'pointer', font:'inherit', width:'auto'}},
+        R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'10px',letterSpacing:'.16em',
+          background:'var(--color-accent)',color:'var(--color-bg)',padding:'5px 10px',width:'100%',
+          display:'flex',justifyContent:'space-between'}},
+          R('span',null,'기 획 의 도'),
+          R('span',{style:{opacity: intentOn ? 1 : .55, letterSpacing:'.08em'}}, intentOn ? '위법 지목됨' : '의도 자체를 지목하려면 누르기')),
+        R('span',{style:{margin:0,padding:'11px 14px',fontSize:'15px',lineHeight:1.5,fontWeight:600,
+          color: intentOn ? 'var(--color-accent-800)' : 'var(--color-text)'}}, doc.intent)),
+
+      R('span',{style:{padding:'0 22px 4px',fontSize:'10.5px',letterSpacing:'.1em',color:'var(--color-neutral-600)'}},
+        '세부 계획 (3) · 의도를 벗어난 항목을 눌러 지목'),
+      R('div',{style:{display:'flex',flexDirection:'column'}}, doc.plans.map(planRow)),
+
+      R('span',{style:{padding:'11px 22px 4px',fontSize:'10.5px',letterSpacing:'.1em',color:'var(--color-neutral-600)',
+        borderTop:'2px solid var(--color-divider)'}}, '기재사항 · 참고용'),
+      R('div',{style:{display:'flex',flexDirection:'column',borderBottom:'2px solid var(--color-divider)'}},
+        doc.fields.map(fieldRow)),
+
+      R('div',{style:{marginTop:'auto',display:'flex',borderTop:'1px solid var(--color-divider)'}},
+        cell('접수 창구', '07 · 서류심사 2팀'),
+        cell('심사 기준', '의도 · 계획 · 기재사항'),
+        R('div',{style:{display:'flex',flexDirection:'column',gap:'2px',padding:'10px 14px',flex:1.3,minWidth:0}},
+          R('span',{style:{fontSize:'10px',letterSpacing:'.1em',color:'var(--color-neutral-600)'}},'지목 상태'),
+          R('span',{style:{fontSize:'13.5px',fontWeight:600,
+            color: sel ? 'var(--color-accent-700)' : 'var(--color-neutral-600)'}},
+            sel ? this.selText(doc, sel) : '미지목'))),
+
+      s.docAnim===1 ? R('span',{key:'st'+s.processed, style:{position:'absolute',right:'34px',top:'86px',
+        border:'4px solid var(--color-accent)',color:'var(--color-accent)',fontFamily:'Archivo',fontWeight:800,
+        fontSize:'32px',letterSpacing:'.08em',padding:'6px 16px',animation:'stampIn .4s ease-out forwards',opacity:0}},
+        '처 리 완 료') : null);
+  }
+
+  selText(doc, sel){
+    if(sel.k === 'plan') return this.nums()[sel.i] + '항 지목';
+    if(sel.k === 'field') return '기재사항 「' + doc.fields[sel.i].k + '」 지목';
+    return '문서 의도 위법 지목';
+  }
+
+  /** 인사기록 화면 — 계급 트리 · 교대 이력 · 누계 실적 · 심사 요령 */
+  renderHr(s){
+    const R = React.createElement;
+    const cur = this.ranks[s.rankIdx];
+    const next = this.ranks[s.rankIdx + 1];
+    const acc = s.judged ? Math.round(s.hits / s.judged * 100) + '%' : '—';
+
+    const h6 = (t) => R('h6',{style:{margin:'0 0 10px',color:'var(--color-neutral-700)'}}, t);
+
+    const rankRow = (r, i) => {
+      const done = i < s.rankIdx, now = i === s.rankIdx;
+      return R('div',{key:i, style:{display:'flex',alignItems:'flex-start',gap:'14px',padding:'11px 0',
+        borderBottom:'1px solid var(--color-divider)', opacity: i > s.rankIdx ? .5 : 1}},
+        R('div',{style:{width:'44px',height:'44px',flex:'none',display:'flex',alignItems:'center',
+          justifyContent:'center',fontFamily:'Archivo',fontWeight:800,fontSize:'14px',
+          border:'2px solid ' + (now ? 'var(--color-accent)' : 'var(--color-text)'),
+          background: now ? 'var(--color-accent)' : done ? 'var(--color-text)' : 'transparent',
+          color: (now || done) ? 'var(--color-bg)' : 'var(--color-text)'}}, r.short),
+        R('div',{style:{flex:1,minWidth:0,display:'flex',flexDirection:'column',gap:'2px'}},
+          R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'15px'}},
+            r.name + (now ? ' — 현재' : '')),
+          R('span',{style:{fontSize:'11.5px',color:'var(--color-accent-700)'}}, r.perk),
+          R('span',{style:{fontSize:'11.5px',color:'var(--color-neutral-700)',lineHeight:1.45}}, r.note),
+          (r.unlock && r.unlock.length)
+            ? R('span',{style:{fontSize:'11px',color:'var(--color-neutral-600)'}},
+                '배정 서류: ' + r.unlock.map(t=>this.typeInfo[t].label).join(' · '))
+            : null),
+        R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'12px',flex:'none',
+          color:'var(--color-neutral-600)'}}, i===0 ? '기본' : this.fmt(r.need)));
+    };
+
+    const stat = (k, v) => R('div',{key:k, style:{display:'flex',justifyContent:'space-between',
+      padding:'8px 0',borderBottom:'1px solid var(--color-divider)'}},
+      R('span',{style:{fontSize:'12.5px',color:'var(--color-neutral-700)'}}, k),
+      R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'13px'}}, v));
+
+    const shiftRow = (l, i) => R('div',{key:i, style:{display:'flex',alignItems:'center',gap:'12px',
+      padding:'8px 0',borderBottom:'1px solid var(--color-divider)'}},
+      R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'11px',color:'var(--color-neutral-500)',width:'52px'}},
+        '제' + l.no + '교대'),
+      R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'16px',width:'24px',
+        color: l.grade==='S' ? 'var(--color-accent)' : 'var(--color-text)'}}, l.grade),
+      R('span',{style:{fontSize:'12px',flex:1,color:'var(--color-neutral-700)'}},
+        '처리 ' + l.processed + '건 · 정확도 ' + Math.round(l.acc*100) + '%'));
+
+    return R('div',{style:{height:'100%',overflow:'auto',padding:'22px 26px'}},
+      R('div',{style:{display:'flex',alignItems:'flex-end',gap:'16px',borderBottom:'2px solid var(--color-divider)',
+        paddingBottom:'14px'}},
+        R('h2',{style:{margin:0}},'인사 · 근무 기록'),
+        R('p',{style:{margin:'0 0 3px',fontSize:'12px',color:'var(--color-neutral-600)',maxWidth:'430px'}},
+          '승진은 누적 경험에 따라 자동 발령되며, 발령 사실은 본인에게 가장 늦게 통보됩니다.'),
+        R('span',{style:{marginLeft:'auto',fontFamily:'Archivo',fontWeight:800,fontSize:'20px'}}, cur.name)),
+
+      R('div',{style:{display:'grid',gridTemplateColumns:'1fr 330px',gap:'26px',paddingTop:'18px'}},
+
+        R('div',null,
+          h6('계급 및 배정 서류'),
+          R('div',null, this.ranks.map(rankRow)),
+          next
+            ? R('p',{style:{margin:'12px 0 0',fontSize:'12px',color:'var(--color-neutral-700)'}},
+                next.name + '까지 ' + this.fmt(Math.max(0, next.need - s.exp)) + ' 경험 남았습니다.')
+            : R('p',{style:{margin:'12px 0 0',fontSize:'12px',color:'var(--color-accent-700)'}},
+                '더 오를 자리가 없습니다. 전임 청장들의 서류는 아직 5층에 있습니다.')),
+
+        R('div',{style:{display:'flex',flexDirection:'column',gap:'22px',minWidth:0}},
+          R('div',null,
+            h6('누계 실적'),
+            stat('누적 처리 건수', this.fmt(s.processed)),
+            stat('심사 정확도', acc),
+            stat('오심', this.fmt(s.misses)),
+            stat('투척', this.fmt(s.throws)),
+            stat('소신 반려', this.fmt(s.convictions)),
+            stat('최고 콤보', s.maxCombo + '연속'),
+            stat('누적 경험', this.fmt(s.exp))),
+          R('div',null,
+            h6('교대 이력'),
+            s.shiftLog.length
+              ? R('div',null, s.shiftLog.map(shiftRow))
+              : R('p',{style:{margin:0,fontSize:'12px',color:'var(--color-neutral-600)'}},
+                  '아직 종료된 교대가 없습니다.')),
+          R('div',{style:{border:'2px solid var(--color-accent)',padding:'14px',display:'flex',
+            flexDirection:'column',gap:'6px'}},
+            R('span',{className:'card-kicker'},'심사 요령'),
+            R('p',{style:{margin:0,fontSize:'11.5px',lineHeight:1.6}},
+              '① 세부 계획 세 항목을 문서 의도와 대조한다. ② 8급부터는 위반 항목이 둘 이상일 수 있다. ③ 7급부터는 첨부 계획과 신청 내용의 불일치를 찾는다. ④ 계획이 모두 맞아도 문서 의도 자체가 권한을 넘으면 반려한다. 위반 지점을 지목하면 결재력이 크게 붙는다.')))));
+  }
+
+  /** 실적 보고서 · 임용장 · 퇴사 확인 — 화면 위에 겹치는 것들 */
+  renderOverlays(s){
+    const R = React.createElement;
+    const back = (children) => R('div',{style:{position:'absolute',inset:0,background:'rgba(24,22,21,.72)',
+      display:'flex',alignItems:'center',justifyContent:'center',zIndex:40,padding:'24px'}}, children);
+
+    if(s.report){
+      const r = s.report, sh = r.sh;
+      const types = Object.keys(sh.byType);
+      const row = (k, v, accent) => R('div',{key:k, style:{display:'flex',justifyContent:'space-between',
+        padding:'9px 0',borderBottom:'1px solid var(--color-divider)'}},
+        R('span',{style:{fontSize:'12.5px',color:'var(--color-neutral-700)'}}, k),
+        R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'14px',
+          color: accent ? 'var(--color-accent)' : 'var(--color-text)'}}, v));
+
+      return back(R('div',{style:{background:'var(--color-bg)',border:'2px solid var(--color-text)',
+        width:'760px',maxHeight:'100%',overflow:'auto',display:'flex',flexDirection:'column'}},
+
+        R('div',{style:{display:'flex',alignItems:'flex-end',gap:'16px',padding:'20px 24px 16px',
+          borderBottom:'2px solid var(--color-text)'}},
+          R('div',{style:{display:'flex',flexDirection:'column',gap:'2px'}},
+            R('span',{style:{fontSize:'10px',letterSpacing:'.16em',color:'var(--color-neutral-600)'}},'근 무 실 적 보 고 서'),
+            R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'22px'}}, '제' + r.shiftNo + '교대 · 09:00 – 18:00')),
+          R('div',{style:{marginLeft:'auto',display:'flex',alignItems:'baseline',gap:'10px'}},
+            R('span',{style:{fontSize:'11px',color:'var(--color-neutral-600)'}},'종합 ' + r.score + '점'),
+            R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'54px',lineHeight:.8,
+              color: r.grade==='S' ? 'var(--color-accent)' : 'var(--color-text)'}}, r.grade))),
+
+        R('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0 26px',padding:'16px 24px'}},
+          R('div',null,
+            row('처리 건수', this.fmt(sh.processed) + '건'),
+            row('심사 정확도', (r.judged ? Math.round(r.acc*100) : 0) + '%'),
+            row('오심', this.fmt(sh.misses) + '건'),
+            row('투척', this.fmt(sh.throws) + '건'),
+            row('소신 반려', this.fmt(sh.convictions) + '건', sh.convictions > 0),
+            row('최고 콤보', sh.maxCombo + '연속')),
+          R('div',null,
+            R('span',{style:{fontSize:'10px',letterSpacing:'.1em',color:'var(--color-neutral-600)'}},'유형별 처리 내역'),
+            R('div',{style:{marginTop:'8px'}},
+              types.length
+                ? types.map(t=>R('div',{key:t, style:{display:'flex',justifyContent:'space-between',
+                    padding:'7px 0',borderBottom:'1px solid var(--color-divider)'}},
+                    R('span',{style:{fontSize:'12px'}}, this.typeInfo[t].label),
+                    R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'12px'}},
+                      sh.byType[t].n + '건 · 정심 ' + sh.byType[t].hit + ' / 오심 ' + sh.byType[t].miss)))
+                : R('p',{style:{margin:0,fontSize:'12px',color:'var(--color-neutral-600)'}},'처리된 서류가 없습니다.')))),
+
+        R('div',{style:{margin:'0 24px 16px',border:'2px solid var(--color-accent)',padding:'14px',
+          display:'flex',flexDirection:'column',gap:'8px'}},
+          R('span',{className:'card-kicker'},'정산 및 고지'),
+          R('p',{style:{margin:0,fontSize:'12.5px',lineHeight:1.55}}, r.word),
+          R('div',{style:{display:'flex',gap:'22px',marginTop:'2px'}},
+            R('span',{style:{fontSize:'12px'}},'결재력 ',
+              R('b',{style:{fontFamily:'Archivo'}}, '+' + this.fmt(r.bonus))),
+            R('span',{style:{fontSize:'12px'}},'관인석 ',
+              R('b',{style:{fontFamily:'Archivo',color:'var(--color-accent)'}}, '+' + r.gems)),
+            R('span',{style:{fontSize:'12px'}},'경험 ',
+              R('b',{style:{fontFamily:'Archivo'}}, '+' + this.fmt(r.exp))))),
+
+        R('div',{style:{padding:'0 24px 22px',display:'flex',justifyContent:'flex-end'}},
+          R('button',{className:'btn btn-primary', onClick:()=>this.closeReport(),
+            style:{padding:'12px 26px',fontSize:'15px'}},'퇴근 도장'))));
+    }
+
+    if(s.promo){
+      const p = s.promo;
+      return back(R('div',{style:{background:'var(--color-bg)',border:'2px solid var(--color-text)',
+        width:'560px',padding:'26px',display:'flex',flexDirection:'column',gap:'14px'}},
+        R('span',{style:{fontSize:'10px',letterSpacing:'.18em',color:'var(--color-neutral-600)'}},'임 용 장'),
+        R('div',{style:{display:'flex',alignItems:'flex-end',gap:'14px'}},
+          R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'40px',lineHeight:.9}}, p.to.short),
+          R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'22px',paddingBottom:'3px'}}, p.to.name)),
+        R('p',{style:{margin:0,fontSize:'14px',lineHeight:1.6}},
+          '귀하를 ' + p.to.name + '(으)로 임용합니다. ' + p.to.note),
+        R('div',{style:{border:'2px solid var(--color-accent)',padding:'12px 14px',display:'flex',
+          flexDirection:'column',gap:'6px'}},
+          R('span',{className:'card-kicker'},'변경 사항'),
+          p.gained.map((g,i)=>R('span',{key:i, style:{fontSize:'12.5px'}},
+            '· ' + g.perk + (g.unlock && g.unlock.length
+              ? ' — ' + g.unlock.map(t=>this.typeInfo[t].label) .join(' · ') + ' 배정 시작'
+              : '')))),
+        p.last
+          ? R('p',{style:{margin:0,fontSize:'12.5px',lineHeight:1.6,color:'var(--color-accent-700)'}},
+              '청장실 책상에는 아직 전임자의 미결 서류가 놓여 있습니다. 맨 위 서류의 문서 의도란에는 "퇴근하고 싶다"고 적혀 있고, 세 항목 모두 그 의도에 정확히 부합합니다. 귀하는 이 서류를 수리할 권한을 가진 유일한 사람이며, 동시에 이 서류의 민원인입니다.')
+          : R('p',{style:{margin:0,fontSize:'11.5px',color:'var(--color-neutral-600)'}},
+              '발령일은 소급 적용되며, 소급분 수당은 지급되지 않습니다.'),
+        R('div',{style:{display:'flex',justifyContent:'flex-end'}},
+          R('button',{className:'btn btn-primary', onClick:()=>this.closePromo(),
+            style:{padding:'11px 24px'}},'수령 확인'))));
+    }
+
+    if(s.tutorialOpen){
+      const pages = this.tutorialPages();
+      const idx = Math.max(0,Math.min(pages.length-1,s.tutorialStep||0));
+      const page = pages[idx], last = idx === pages.length-1;
+      return back(R('div',{style:{background:'var(--color-bg)',border:'2px solid var(--color-text)',
+        width:'620px',display:'flex',flexDirection:'column'}},
+        R('div',{style:{display:'flex',alignItems:'center',padding:'16px 20px',borderBottom:'2px solid var(--color-text)'}},
+          R('span',{style:{fontFamily:'Archivo',fontWeight:800,fontSize:'11px',letterSpacing:'.16em'}},'신 입 교 육 자 료'),
+          R('span',{style:{marginLeft:'auto',fontFamily:'Archivo',fontWeight:800,fontSize:'12px',color:'var(--color-accent)'}},
+            String(idx+1).padStart(2,'0')+' / '+String(pages.length).padStart(2,'0'))),
+        R('div',{style:{padding:'24px 24px 18px',display:'flex',flexDirection:'column',gap:'14px'}},
+          R('h2',{style:{margin:0,fontSize:'24px'}},page.title),
+          R('p',{style:{margin:0,fontSize:'14px',lineHeight:1.7,color:'var(--color-neutral-800)'}},page.body),
+          R('div',{style:{borderLeft:'4px solid var(--color-accent)',background:'var(--color-surface)',padding:'12px 14px'}},
+            R('span',{className:'card-kicker'},'주무관 메모'),
+            R('p',{style:{margin:'5px 0 0',fontSize:'12.5px',lineHeight:1.55}},page.tip))),
+        R('div',{style:{display:'flex',gap:'8px',padding:'0 24px 22px'}},
+          R('button',{className:'btn btn-secondary',onClick:()=>this.closeTutorial(),style:{marginRight:'auto'}},'건너뛰기'),
+          idx>0 ? R('button',{className:'btn btn-secondary',onClick:()=>this.setState({tutorialStep:idx-1})},'이전') : null,
+          R('button',{className:'btn btn-primary',onClick:()=>last
+            ? this.closeTutorial()
+            : this.setState({tutorialStep:idx+1})},last?'업무 시작':'다음'))));
+    }
+    return null;
+  }
+
+  // ── 템플릿에 넘길 값 ─────────────────────────────────────────────────────
+  renderVals(){
+    const s = this.state, r = this.rates();
+    const doc = s.pool[0], nb = this.newbies[s.newbieIdx];
+    const cur = this.ranks[s.rankIdx], next = this.ranks[s.rankIdx + 1];
+    const cap = this.comboCap();
+
+    // 경험치 바 — 현 계급 구간 안에서의 진행도
+    const expPct = next
+      ? (s.exp - cur.need) / (next.need - cur.need) * 100
+      : 100;
+
+    const nav = [['main','접수 창구'],['upgrade','강화'],['story','기록'],['hr','인사'],['settings','설정'],['help','도움말']];
+    const st = this.story[Math.min(s.storyIdx, this.story.length-1)];
+
+    // 버튼 부제는 현재 서류 기준으로 바뀐다
+    const pinMax = doc.type==='pressure' ? '2.4' : doc.type==='forgery' ? '2.2' : doc.type==='multi' ? '1.7' : '2.0';
+
+    return {
+      deptName: this.props.deptName ?? '제7이계민원청',
+      showAuditLog: (this.props.showAuditLog ?? true) === true,
+
+      navItems: nav.map((n,i)=>({num:String(i+1).padStart(2,'0'), label:n[1],
+        active:s.screen===n[0], idle:s.screen!==n[0], go:()=>n[0]==='help'
+          ? this.setState({tutorialOpen:true,tutorialStep:0})
+          : this.setState({screen:n[0]})})),
+      isMain:s.screen==='main', isUpgrade:s.screen==='upgrade', isShop:false,
+      isGacha:false, isStory:s.screen==='story', isHr:s.screen==='hr',
+      isSettings:s.screen==='settings',
+      goSettings:()=>this.setState({screen:'settings'}),
+
+      // 헤더
+      stampsText:this.fmt(s.stamps), gemsText:this.fmt(s.gems), moraleText:Math.round(s.morale)+'%',
+      rankShort:cur.short, rankName:cur.name,
+      expText: next ? this.fmt(s.exp) + ' / ' + this.fmt(next.need) : this.fmt(s.exp) + ' (최상위)',
+      expBar: this.bar(expPct),
+      nextRankText: next ? '다음 ' + next.name : '최상위 계급',
+      shiftLabel:'STAGE ' + s.shiftNo,
+      shiftClockText:this.remainText(),
+      shiftBar:this.bar(Math.min(100, s.sh.processed / this.stageGoal().docs * 100), 'var(--color-text)'),
+      shiftRemainText:this.remainText(),
+
+      // 근무 현황
+      clickPowerText:this.fmt(r.click), autoRateText:r.auto.toFixed(1),
+      processedText:this.fmt(s.processed), ratioText:s.accepts+' : '+s.rejects,
+      accuracyText: s.judged ? Math.round(s.hits/s.judged*100)+'%' : '—',
+      missesText:this.fmt(s.misses), throwsText:this.fmt(s.throws),
+      maxComboText:s.maxCombo+'연속', convictText:this.fmt(s.convictions),
+      comboText:'×'+(1+Math.min(s.combo,cap)*0.05).toFixed(2),
+      comboBar:this.bar(Math.min(s.combo,cap)/cap*100),
+      comboCapText:'상한 ×'+(1+cap*0.05).toFixed(2),
+      buffs:s.buffs, logs:s.logs,
+
+      // 창구
+      queueText:this.fmt(s.queue),
+      clockText:this.remainText(),
+      docCard:this.renderDoc(s), floaterLayer:this.renderFloaters(s),
+      hintText:this.hintFor(doc,s.hintLevel||0),
+      hintButtonText:(s.hintLevel||0)>=2?'힌트 모두 확인':((s.hintLevel||0)+1)+'단계 힌트',
+      hintUsesText:'이번 스테이지 '+(s.hintUses||0)+'회 열람',
+      onHint:()=>this.showHint(), hintDone:(s.hintLevel||0)>=2,
+      rejectSub:'의도 이탈·기재 흠결·의도 위법 · 지목 시 ×'+pinMax,
+      acceptSub:'의도·계획·기재사항 전부 부합 · ×1.2',
+      throwSub:'결재력 ×'+(2.2*r.thr).toFixed(1)+' · 사기 −6',
+      onAccept:()=>this.process('accept'), onReject:()=>this.process('reject'),
+      onThrow:()=>this.process('throw'),
+      actionLocked:!!s.processing,
+
+      newbieInitial:nb.i, newbieName:nb.n, newbieRole:nb.r, newbieLine:nb.l,
+      moraleBar:this.bar(s.morale, s.morale<35?'var(--color-accent)':'var(--color-text)'),
+
+      // 강화
+      upgrades:this.upgradeDefs.filter(u=>u.minRank <= s.rankIdx).map(u=>{
+        const c = this.cost(u);
+        return {name:u.name, desc:u.desc, lv:'Lv'+this.lv(u.id), costText:this.fmt(c), locked:s.stamps<c,
+          gain: u.kind==='click' ? '1회 결재력 +'+u.amount
+              : u.kind==='auto' ? '자동 처리 +'+u.amount+'/초' : '투척 보상 +25%',
+          buy:()=>{ if(this.state.stamps<c) return;
+            this.setState(p=>({stamps:p.stamps-c,
+              levels:Object.assign({}, p.levels, {[u.id]:(p.levels[u.id]||0)+1})})); }};
+      }),
+      lockedUpgradeText: (()=>{
+        const n = this.upgradeDefs.filter(u=>u.minRank > s.rankIdx).length;
+        return n ? n + '종은 승진 후 개방됩니다. (현재 ' + cur.name + ')' : '모든 항목이 개방되었습니다.';
+      })(),
+
+      shopItems:[
+        {kicker:'단품', badge:'기본', amount:'120', unit:'관인석', note:'딱 12회 신청분. 아쉬움이 남도록 설계되었습니다.', price:'₩1,100', buy:()=>this.setState(p=>({gems:p.gems+120}))},
+        {kicker:'단품', badge:'+10%', amount:'660', unit:'관인석', note:'대부분의 주무관이 여기서 멈춥니다.', price:'₩5,500', buy:()=>this.setState(p=>({gems:p.gems+660}))},
+        {kicker:'단품', badge:'+22%', amount:'1,460', unit:'관인석', note:'구매 시 사내 메신저에 자동 공지됩니다.', price:'₩11,000', buy:()=>this.setState(p=>({gems:p.gems+1460}))},
+        {kicker:'단품', badge:'최대', amount:'7,900', unit:'관인석', note:'감사실에서 자금 출처를 물을 수 있습니다.', price:'₩55,000', buy:()=>this.setState(p=>({gems:p.gems+7900}))}
+      ],
+      adItems:[
+        {name:'관인석 15 수령', desc:'영상 시청 후 즉시 지급. 시청 중에는 서류가 계속 쌓입니다.', left:'오늘 3/5회', watch:()=>this.setState(p=>({gems:p.gems+15}))},
+        {name:'2배 결재력 (10분)', desc:'광고 1회당 10분. 중복 적용은 되지 않는다고 합니다.', left:'오늘 1/2회', watch:()=>this.setState(p=>({stamps:p.stamps+500}))}
+      ],
+
+      pityText:s.pity+' / '+this.pityCap(), pityBar:this.bar(s.pity/this.pityCap()*100),
+      pityNoteText:'확률 고지 — S+ 0.6% / S 5.4% / A 24% / B 70%. 미배출 시 '+this.pityCap()+
+        '회차에 S+ 확정 배치되며, 배치된 비둘기는 반납할 수 없습니다.',
+      pull1:()=>this.pull(1), pull10:()=>this.pull(10),
+      gachaResults:s.gachaResults, gachaFlavor:s.gachaFlavor,
+      pullSummary: s.gachaResults.length ? s.gachaResults.length+'건 배치 완료' : '아직 신청 내역이 없습니다',
+
+      storyWho:st.who, storyText:st.text, storyPortrait:st.pt, storyStage:st.stage || '　',
+      storyProgress:(Math.min(s.storyIdx,this.story.length-1)+1)+' / '+this.story.length,
+      hasChoices:!!st.choices,
+      storyChoices:(st.choices||[]).map(c=>({label:c.label, pick:()=>this.setState({storyIdx:c.next})})),
+      storyNext:()=>{ if(this.story[s.storyIdx].choices) return;
+        this.setState(p=>({storyIdx:Math.min(p.storyIdx+1, this.story.length-1)})); },
+      storyBack:()=>this.setState(p=>({storyIdx:Math.max(0,p.storyIdx-1)})),
+      storySkip:()=>this.setState({screen:'main'}),
+
+      hrPanel:this.renderHr(s),
+
+      sliders:[
+        {label:'도장 소리', value:s.sfx, valueText:s.sfx, set:e=>this.setState({sfx:+e.target.value})},
+        {label:'배경 음악', value:s.bgm, valueText:s.bgm, set:e=>this.setState({bgm:+e.target.value})},
+        {label:'민원인 음성', value:s.voice, valueText:s.voice, set:e=>this.setState({voice:+e.target.value})}
+      ],
+      toggles:[
+        {key:'stampSound', label:'결재 시 도장 소리', desc:'끄면 사무실이 지나치게 조용해집니다.'},
+        {key:'autoNext', label:'처리 후 다음 서류 자동 호출', desc:'끄면 직접 "다음 분" 이라고 외쳐야 합니다.'},
+        {key:'gore', label:'투척 시 신입 표정 연출', desc:'민감한 분은 꺼 두시기 바랍니다.'},
+        {key:'notify', label:'상급 부처 알림 수신', desc:'끌 수 없다고 되어 있으나 켜져 있습니다.'}
+      ].map(t=>({label:t.label, desc:t.desc, stateText:s.tog[t.key]?'켜짐':'꺼짐',
+        toggle:()=>this.setState(p=>({tog:Object.assign({}, p.tog, {[t.key]:!p.tog[t.key]})}))})),
+
+      idRankText:cur.short, idRankSub:cur.name.replace(/^\S+\s*/, '') || cur.name,
+
+      resetOpen:s.resetOpen, openReset:()=>this.setState({resetOpen:true}),
+      closeReset:()=>this.setState({resetOpen:false}),
+      buffCountText:(s.buffs || []).length,
+      saveStatusText:this.storageAvailable()?'자동 저장 사용 중 · 이 브라우저의 플레이어 진행도':'자동 저장을 사용할 수 없는 브라우저입니다',
+      downloadSave:()=>this.downloadSave(),
+      uploadSave:()=>this.uploadSave(),
+      doReset:()=>{ this.clearTutorialProgress(); this.setState({
+        resetOpen:false, stamps:0, processed:0, combo:0, levels:{}, screen:'main', morale:50,
+        tutorialOpen:true, tutorialStep:0, hintLevel:0, hintUses:0,
+        rankIdx:0, exp:0, shiftNo:1, shiftT:0, sh:this.blankShift(), shiftLog:[], report:null, promo:null,
+        accepts:0, rejects:0, throws:0, judged:0, hits:0, misses:0, convictions:0, maxCombo:0,
+        pool:this.buildPool(0), sel:null, timeLeft:null, recentDocNos:[], processing:false
+      }); },
+
+      overlays:this.renderOverlays(s)
+    };
+  }
+
+  renderFloaters(s){
+    const R = React.createElement;
+    return R('div',{style:{position:'absolute',left:0,right:0,bottom:'110px',height:0,pointerEvents:'none'}},
+      s.floaters.map(f=>R('span',{key:f.id, style:{position:'absolute',left:f.x+'px',fontFamily:'Archivo',
+        fontWeight:800,fontSize:'26px',color:f.accent?'var(--color-accent)':'var(--color-text)',
+        animation:'floatUp .9s ease-out forwards'}}, f.text)));
+  }
+}
+
+__mountIgyeGame(Component);</script>
+</body></html>
