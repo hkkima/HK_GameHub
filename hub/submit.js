@@ -229,9 +229,30 @@ export async function deleteInstant(fb, slug) {
   await batch.commit();
 }
 
-// 멀티파일: gamehubSubmit 함수로 넘긴다. 함수가 slug 를 발급하고 PR 생성·자동머지한다.
-export async function publishBundle(fb, { meta, files }) {
+// 멀티파일: gamehubSubmit 함수로 넘긴다.
+//   op 없음(신규)   : 함수가 slug 를 새로 발급하고 PR 생성·자동머지한다.
+//   op 'update'    : 기존 slug 의 apps/<slug>/ 를 갱신한다. files 를 안 주면 메타만
+//                    바꾸고, 주면 파일을 통째로 교체한다. 함수가 소유(authorId)를 확인한다.
+export async function publishBundle(fb, { meta, files, op, slug }) {
   const call = fb.fns.httpsCallable(fb.functions, 'gamehubSubmit');
-  const res = await call({ meta, files });
-  return res.data; // { prUrl, prNumber, merged, slug }
+  const payload = { meta, files: files || [] };
+  if (op) payload.op = op;
+  if (slug) payload.slug = slug;
+  const res = await call(payload);
+  return res.data; // { prUrl, prNumber, merged, slug, updated? }
+}
+
+// 멀티파일 게임 삭제. 함수가 apps/<slug>/ 를 지우는 PR 을 만들고 자동머지한다.
+// 소유(authorId) 확인은 함수가 한다. meta.authorId 는 로그인한 참가자다.
+export async function deleteBundle(fb, { slug, meta }) {
+  const call = fb.fns.httpsCallable(fb.functions, 'gamehubSubmit');
+  const res = await call({ op: 'delete', slug, meta });
+  return res.data; // { prUrl, prNumber, merged, slug, deleted }
+}
+
+// 단일 자체완결 HTML 을 번들 형식(파일 배열)으로 감싼다. 여러 파일 게임을 수정할 때
+// 사용자가 단일 HTML 하나만 새로 고른 경우 index.html 로 넣는다.
+export function htmlToBundleFiles(html) {
+  const b64 = btoa(unescape(encodeURIComponent(html)));
+  return [{ path: 'index.html', dataUrl: `data:text/html;base64,${b64}` }];
 }
