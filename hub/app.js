@@ -4,7 +4,8 @@ import {
 } from './auth.js';
 import { createAdminPanel } from './admin.js';
 import {
-  classify, collectDrop, newGameId, publishInstant, publishBundle, deleteInstant, makeThumb, SubmitError,
+  classify, collectDrop, newGameId, publishInstant, publishBundle, deleteInstant,
+  deleteBundle, htmlToBundleFiles, makeThumb, SubmitError,
 } from './submit.js';
 
 // 지급 함수(gamehubPayout)가 있는 리전. 로그인은 이제 함수를 쓰지 않지만
@@ -267,9 +268,10 @@ function cardHtml(g) {
     .map((t) => `<button class="tag${state.tag === t ? ' is-on' : ''}" data-tag="${esc(t)}">${esc(t)}</button>`)
     .join('');
 
-  // 내가(로그인한 참가자가) 올린 즉시 게시 게임에만 수정·삭제 버튼을 보인다.
+  // 내가(로그인한 참가자가) 올린 게임에 수정·삭제 버튼을 보인다. 즉시 게시(단일
+  // HTML)뿐 아니라 여러 파일 게임도 대상이다 — 후자는 함수를 거쳐 재빌드된다.
   // 소유 판정은 participantId(authorId) 기준이라 기기·재로그인과 무관하다.
-  const owned = g.instant && state.user && g.authorId && g.authorId === state.user.userId;
+  const owned = state.user && g.authorId && g.authorId === state.user.userId;
   const ownerTools = owned
     ? `<div class="card-owner">
          <button class="linkish" data-edit="${esc(g.slug)}">수정</button>
@@ -654,7 +656,9 @@ function openUpload(game = null) {
       el.upThumbPreview.hidden = false;
       el.upThumbClear.hidden = false;
     }
-    el.uploadWho.textContent = '수정 중 — 파일을 새로 고르지 않으면 기존 게임이 그대로 유지됩니다.';
+    el.uploadWho.textContent = game.instant === true
+      ? '수정 중 — 파일을 새로 고르지 않으면 기존 게임이 그대로 유지됩니다.'
+      : '수정 중 (여러 파일 게임) — 제목·소개·태그만 바꾸려면 파일은 그대로 두세요. 반영까지 몇 분 걸립니다.';
     el.uploadSubmit.textContent = '수정';
   } else {
     el.uploadWho.textContent = `${state.user.name} 님의 게임으로 올라갑니다.`;
@@ -668,18 +672,32 @@ function openUpload(game = null) {
 async function deleteGame(slug) {
   const g = state.games.find((x) => x.slug === slug);
   if (!g) return;
-  if (!g.instant || g.authorId !== state.user?.userId) { toast('삭제 권한이 없습니다.'); return; }
-  if (!confirm(`"${g.title}" 를 삭제할까요? 되돌릴 수 없습니다.`)) return;
+  if (!g.authorId || g.authorId !== state.user?.userId) { toast('삭제 권한이 없습니다.'); return; }
+
+  const bundle = g.instant !== true;
+  const warn = bundle
+    ? `"${g.title}" 를 삭제할까요? 되돌릴 수 없고, 갤러리에서 사라지기까지 몇 분 걸립니다.`
+    : `"${g.title}" 를 삭제할까요? 되돌릴 수 없습니다.`;
+  if (!confirm(warn)) return;
+
   try {
     if (!await ensureFirebase()) throw new Error('unavailable');
-    await deleteInstant(fb, slug);
-    toast('삭제되었습니다.');
-    await loadInstant();
+    if (bundle) {
+      await deleteBundle(fb, { slug, meta: { authorId: state.user.userId } });
+      // 정식 반영은 재빌드 후다. 지금 화면에서는 낙관적으로 지워 준다.
+      cloudflareGames = cloudflareGames.filter((x) => x.slug !== slug);
+      state.games = state.games.filter((x) => x.slug !== slug);
+      toast('삭제 요청됨 — 몇 분 뒤 갤러리에서 사라집니다.');
+    } else {
+      await deleteInstant(fb, slug);
+      toast('삭제되었습니다.');
+      await loadInstant();
+    }
     renderTagbar();
     render();
   } catch (err) {
     console.error('[HK GameHub] 삭제 실패', err);
-    toast('삭제하지 못했습니다.');
+    toast(mapFunctionError(err) || '삭제하지 못했습니다.');
   }
 }
 
@@ -720,9 +738,13 @@ async function submitUpload(event) {
   if (!state.user) { openLogin(); return; }
   // 신규는 파일 필수. 수정은 파일을 안 고르면 기존 게임을 유지한다.
   if (!picked && !editing) { el.uploadMsg.textContent = '게임 파일을 선택하세요.'; el.uploadMsg.hidden = false; return; }
-  // 멀티파일 게임은 즉시 게시(수정) 대상이 아니다. 수정 버튼은 즉시 게시 게임에만 뜬다.
-  if (editing && picked && picked.kind === 'bundle') {
-    el.uploadMsg.textContent = '여러 파일 게임은 이 화면에서 수정할 수 없습니다. 새로 올려 주세요.';
+
+  // 수정 라우팅은 "원래 게임 종류" 를 따른다. 즉시 게시(단일 HTML)는 Firestore,
+  // 여러 파일 게임은 함수(재빌드) 경로다. 즉시 게시 게임을 여러 파일로 바꾸는 것은
+  // 저장 위치가 달라 허용하지 않는다(새로 올리게 안내).
+  const editingBundle = editing && editing.instant !== true;
+  if (editing && editing.instant === true && picked && picked.kind === 'bundle') {
+    el.uploadMsg.textContent = '즉시 게시 게임을 여러 파일 게임으로는 바꿀 수 없습니다. 새로 올려 주세요.';
     el.uploadMsg.hidden = false;
     return;
   }
@@ -736,8 +758,9 @@ async function submitUpload(event) {
     tags: el.upTags.value.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 6),
     thumb: thumbUri || '',
   };
-  const isBundle = picked && picked.kind === 'bundle';
-  const label = editing ? '수정' : (isBundle ? '올리기' : '게시');
+  // 번들 경로로 갈지 판정. 수정이면 원래 게임 종류를, 신규면 고른 파일 종류를 따른다.
+  const goBundle = editingBundle || (!editing && picked && picked.kind === 'bundle');
+  const label = editing ? '수정' : (goBundle ? '올리기' : '게시');
 
   el.uploadSubmit.disabled = true;
   el.uploadSubmit.textContent = `${label} 중…`;
@@ -745,14 +768,31 @@ async function submitUpload(event) {
   try {
     if (!await ensureFirebase()) throw new SubmitError('지금은 올릴 수 없습니다. 잠시 후 다시 시도해 주세요.');
 
-    if (isBundle) {
+    if (goBundle) {
       // 멀티파일: 함수가 GitHub PR 을 만들고 자동 머지한다. 빌드를 거쳐 배포되므로
-      // 갤러리에 뜨기까지 몇 분 걸린다(즉시 게시가 아니다).
-      const res = await publishBundle(fb, { meta, files: picked.files });
-      el.uploadDialog.close();
-      toast(res.merged
-        ? '올렸습니다. 빌드를 거쳐 몇 분 뒤 갤러리에 올라옵니다.'
-        : '올렸습니다. 자동 반영에 실패해 검토 후 반영됩니다.');
+      // 갤러리에 반영되기까지 몇 분 걸린다(즉시 게시가 아니다).
+      //   파일 준비 — 폴더면 그대로, 단일 HTML 하나만 골랐으면 index.html 로 감싼다.
+      //   수정 시 파일을 안 골랐으면 메타만 바꾼다(files 빈 배열).
+      let files = [];
+      if (picked && picked.kind === 'bundle') files = picked.files;
+      else if (picked && picked.kind === 'instant') files = htmlToBundleFiles(picked.html);
+
+      if (editingBundle) {
+        const res = await publishBundle(fb, { meta, files, op: 'update', slug: editing.slug });
+        el.uploadDialog.close();
+        toast(res.merged
+          ? '수정했습니다. 빌드를 거쳐 몇 분 뒤 갤러리에 반영됩니다.'
+          : '수정 요청됨 — 자동 반영에 실패해 검토 후 반영됩니다.');
+        // 재빌드 전까지 화면 카드 메타를 낙관적으로 갱신한다.
+        const g = state.games.find((x) => x.slug === editing.slug);
+        if (g) { g.title = meta.title; g.description = meta.description; g.tags = meta.tags; renderTagbar(); render(); }
+      } else {
+        const res = await publishBundle(fb, { meta, files });
+        el.uploadDialog.close();
+        toast(res.merged
+          ? '올렸습니다. 빌드를 거쳐 몇 분 뒤 갤러리에 올라옵니다.'
+          : '올렸습니다. 자동 반영에 실패해 검토 후 반영됩니다.');
+      }
     } else {
       await publishInstant(fb, {
         slug: editing ? editing.slug : newGameId(),
