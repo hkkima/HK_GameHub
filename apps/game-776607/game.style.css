@@ -1,0 +1,26 @@
+html,body{margin:0;background:#8f8b88}
+body,h1,h2,h3,h4,h5,h6,.btn,.card-title,.dialog-title{font-family:"Archivo","IBM Plex Sans KR",system-ui,sans-serif}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-64px) scale(1.15)}}
+@keyframes stampIn{0%{opacity:0;transform:rotate(-18deg) scale(2.4)}45%{opacity:1;transform:rotate(-11deg) scale(1)}100%{opacity:1;transform:rotate(-11deg) scale(1)}}
+@keyframes shakeDoc{0%,100%{transform:translate(0,0)}20%{transform:translate(-7px,3px) rotate(-.6deg)}45%{transform:translate(6px,-4px) rotate(.5deg)}70%{transform:translate(-4px,2px)}}
+@keyframes tossAway{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(360px,-120px) rotate(38deg)}}
+
+/* — 실제 동작하는 호버 규칙 —
+   원본은 디자인 툴 전용 style-hover="..." 속성을 곳곳에 썼지만 이 dc-runtime 에는
+   해당 처리기가 없어(문자열 검색 결과 0건) 아무 효과가 없었다. 아래는 그 자리를
+   대신하는 진짜 CSS :hover다. 인라인 style 이 배경/테두리/글자색을 이미 고정값으로
+   박아 두면 클래스 기반 :hover 는 항상 인라인에 진다 — 그래서 해당 값들은
+   커스텀 프로퍼티(var(--x, 기본값)) 형태로 인라인에 넣고, 여기서 :hover 시에만
+   그 프로퍼티를 채워 넣는 방식을 쓴다. */
+.nav-btn:hover{--nav-bg:var(--color-neutral-200)}
+.story-choice:hover{--story-border:var(--color-accent);--story-color:var(--color-accent-400)}
+.btn-accent-outline:hover{background:var(--color-accent-100)}
+
+/* 서류 카드의 선택형 행(계획·기재사항·문서 의도) — 미선택 상태는 인라인 배경을
+   비워 두므로(undefined) 여기 :hover 가 정상적으로 먹는다. 선택 상태는 인라인
+   accent-100 이 그대로 이겨서 선택 표시가 호버에 묻히지 않는다. */
+.pick-row:hover{background:var(--color-neutral-200)}
+.pick-intent:hover{background:var(--color-neutral-200)}
+
+@keyframes overlayIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
