@@ -382,10 +382,14 @@ button { font: inherit; cursor: pointer; }
   z-index: 2;
   display: flex;
   gap: 6px;
-  opacity: 0;
+  opacity: 1;               /* 기본은 보임 — 터치 기기엔 hover 가 없다 */
   transition: opacity .15s;
 }
-.card:hover .card-owner, .card:focus-within .card-owner { opacity: 1; }
+/* 마우스가 있는 기기에서만 hover 로 숨겼다 보인다. 터치 기기는 항상 보인다. */
+@media (hover: hover) and (pointer: fine) {
+  .card-owner { opacity: 0; }
+  .card:hover .card-owner, .card:focus-within .card-owner { opacity: 1; }
+}
 .card-owner .linkish {
   padding: 4px 9px;
   border-radius: 7px;
