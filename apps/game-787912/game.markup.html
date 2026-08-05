@@ -1,0 +1,402 @@
+<div style="width:1440px;height:900px;display:flex;flex-direction:column;background:var(--color-bg);color:var(--color-text);overflow:hidden;font-size:14px">
+
+  <header style="display:flex;align-items:center;gap:20px;height:66px;flex:none;padding:0 24px;border-bottom:2px solid var(--color-divider)">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-right:auto">
+      <span style="font-family:Archivo;font-weight:800;font-size:19px;letter-spacing:-.02em">{{ deptName }}</span>
+      <span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-600)">이계민원 접수과 · 서류심사 2팀</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:150px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-family:Archivo;font-weight:800;font-size:12px">{{ rankShort }} · {{ rankName }}</span>
+        <span style="font-size:9.5px;color:var(--color-neutral-600)">{{ expText }}</span>
+      </div>
+      <div style="height:5px;background:var(--color-neutral-200);border:1px solid var(--color-divider)">{{ expBar }}</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:150px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-family:Archivo;font-weight:800;font-size:12px">{{ shiftLabel }}</span>
+        <span style="font-size:9.5px;color:var(--color-neutral-600)">{{ shiftClockText }}</span>
+      </div>
+      <div style="height:5px;background:var(--color-neutral-200);border:1px solid var(--color-divider)">{{ shiftBar }}</div>
+    </div>
+
+    <div style="display:flex;align-items:stretch;gap:0;border:1px solid var(--color-divider)">
+      <div style="display:flex;flex-direction:column;gap:1px;padding:6px 14px;min-width:118px">
+        <span style="font-size:10px;letter-spacing:.1em;color:var(--color-neutral-600)">결재력 (도장)</span>
+        <span style="font-family:Archivo;font-weight:800;font-size:17px;line-height:1.1">{{ stampsText }}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1px;padding:6px 14px;min-width:104px;border-left:1px solid var(--color-divider)">
+        <span style="font-size:10px;letter-spacing:.1em;color:var(--color-neutral-600)">신입 사기</span>
+        <span style="font-family:Archivo;font-weight:800;font-size:17px;line-height:1.1">{{ moraleText }}</span>
+      </div>
+    </div>
+    <button class="btn btn-secondary" sc-camel-on-click="{{ goSettings }}" style="letter-spacing:.04em">설정</button>
+  </header>
+
+  <div style="flex:1;display:flex;min-height:0">
+    <nav style="width:196px;flex:none;border-right:2px solid var(--color-divider);display:flex;flex-direction:column;padding:14px 0">
+      <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="7">
+        <button class="nav-btn" sc-camel-on-click="{{ item.go }}" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px 11px 0;background:var(--nav-bg,transparent);border:0;border-bottom:1px solid var(--color-neutral-300);cursor:pointer;text-align:left;font-family:Archivo;font-size:14px;font-weight:600;color:var(--color-text)">
+          <sc-if value="{{ item.active }}" hint-placeholder-val="{{ true }}">
+            <span style="width:5px;height:26px;background:var(--color-accent);flex:none"></span>
+          </sc-if>
+          <sc-if value="{{ item.idle }}">
+            <span style="width:5px;height:26px;background:transparent;flex:none"></span>
+          </sc-if>
+          <span style="font-family:Archivo;font-size:10px;letter-spacing:.1em;color:var(--color-neutral-500);width:18px">{{ item.num }}</span>
+          <span style="font-family:'IBM Plex Sans KR',sans-serif;font-weight:600">{{ item.label }}</span>
+        </button>
+      </sc-for>
+      <div style="margin-top:auto;padding:14px;font-size:10px;line-height:1.6;color:var(--color-neutral-600);letter-spacing:.02em">민원 처리 실적은<br>매 정각 상급 부처로<br>자동 보고됩니다.</div>
+    </nav>
+
+    <main style="flex:1;min-width:0;overflow:hidden;position:relative">
+
+      <sc-if value="{{ isMain }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:266px 1fr 300px;height:834px">
+
+          <section style="border-right:1px solid var(--color-divider);padding:18px 18px 0;display:flex;flex-direction:column;gap:14px;overflow:hidden">
+            <h6 style="margin:0;color:var(--color-neutral-700)">근무 현황</h6>
+            <sc-raw-table class="table">
+              <sc-raw-tbody>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">1회 결재력</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ clickPowerText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">자동 처리 / 초</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ autoRateText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">누적 처리 건수</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ processedText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">심사 정확도</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ accuracyText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">오심 / 투척</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ missesText }} / {{ throwsText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">승인 : 반려</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ ratioText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">최고 콤보</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ maxComboText }}</sc-raw-td></sc-raw-tr>
+                <sc-raw-tr><sc-raw-td style="padding-left:0;color:var(--color-neutral-700)">소신 반려</sc-raw-td><sc-raw-td style="text-align:right;padding-right:0;font-family:Archivo;font-weight:800">{{ convictText }}</sc-raw-td></sc-raw-tr>
+              </sc-raw-tbody>
+            </sc-raw-table>
+
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <h6 style="margin:0;color:var(--color-neutral-700)">연속 결재 콤보</h6>
+                <span style="font-family:Archivo;font-weight:800;font-size:15px;color:var(--color-accent)">{{ comboText }}</span>
+              </div>
+              <div style="height:10px;background:var(--color-neutral-200);border:1px solid var(--color-divider)">{{ comboBar }}</div>
+              <p style="margin:0;font-size:11px;color:var(--color-neutral-600)">정심(正審)이 이어질수록 배수가 오릅니다({{ comboCapText }}). 오심 1회로 콤보는 즉시 소멸합니다.</p>
+            </div>
+
+            <div style="padding:12px;border:2px solid var(--color-accent);font-size:11.5px;line-height:1.55">
+              <strong>평가 기준</strong><br>스테이지 목표 건수와 정확도를 모두 달성하면 통과합니다. 오판은 콤보를 즉시 끊습니다.
+            </div>
+          </section>
+
+          <section style="padding:18px 22px;display:flex;flex-direction:column;gap:14px;position:relative;min-width:0">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="tag tag-accent">대기 {{ queueText }}건</span>
+              <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-600)">금일 접수 · 창구 07</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-600)">{{ clockText }}</span>
+            </div>
+
+            {{ docCard }}
+
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--color-divider);background:var(--color-surface)">
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                <span class="card-kicker">심사 힌트 · {{ hintUsesText }}</span>
+                <span style="font-size:12px;line-height:1.45;color:var(--color-neutral-700)">{{ hintText }}</span>
+              </div>
+              <button class="btn btn-secondary" sc-camel-on-click="{{ onHint }}" disabled="{{ hintDone }}" style="border-width:2px;flex:none">{{ hintButtonText }}</button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+              <button class="btn btn-secondary" sc-camel-on-click="{{ onReject }}" disabled="{{ actionLocked }}" style="justify-content:flex-start;padding:14px;flex-direction:column;align-items:flex-start;gap:3px;border-width:2px">
+                <span style="font-size:15px">반려 (REJECT)</span>
+                <span style="font-family:'IBM Plex Sans KR';font-weight:400;font-size:11px;color:var(--color-neutral-600)">{{ rejectSub }}</span>
+              </button>
+              <button class="btn btn-primary" sc-camel-on-click="{{ onAccept }}" disabled="{{ actionLocked }}" style="justify-content:flex-start;padding:14px;flex-direction:column;align-items:flex-start;gap:3px;border-width:2px">
+                <span style="font-size:15px">수락 (APPROVE)</span>
+                <span style="font-family:'IBM Plex Sans KR';font-weight:400;font-size:11px;opacity:.85">{{ acceptSub }}</span>
+              </button>
+              <button class="btn btn-accent-outline" sc-camel-on-click="{{ onThrow }}" disabled="{{ actionLocked }}" style="justify-content:flex-start;padding:14px;flex-direction:column;align-items:flex-start;gap:3px;border:2px solid var(--color-accent);color:var(--color-accent)">
+                <span style="font-size:15px">신입에게 투척</span>
+                <span style="font-family:'IBM Plex Sans KR';font-weight:400;font-size:11px;color:var(--color-accent-700)">{{ throwSub }}</span>
+              </button>
+            </div>
+            {{ floaterLayer }}
+          </section>
+
+          <section style="border-left:1px solid var(--color-divider);display:flex;flex-direction:column;min-width:0">
+            <div style="padding:18px 18px 14px;border-bottom:2px solid var(--color-divider);display:flex;flex-direction:column;gap:12px">
+              <h6 style="margin:0;color:var(--color-neutral-700)">창구 앞 신입</h6>
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <div style="width:64px;height:80px;flex:none;background:var(--color-text);color:var(--color-bg);display:flex;align-items:flex-end;justify-content:flex-start;padding:6px;font-family:Archivo;font-weight:800;font-size:34px;line-height:.8">{{ newbieInitial }}</div>
+                <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                  <span style="font-family:Archivo;font-weight:800;font-size:17px">{{ newbieName }}</span>
+                  <span style="font-size:11px;color:var(--color-neutral-600)">{{ newbieRole }}</span>
+                  <span style="font-size:12px;line-height:1.45;margin-top:4px">{{ newbieLine }}</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--color-neutral-700)"><span>사기</span><span>{{ moraleText }}</span></div>
+                <div style="height:8px;background:var(--color-neutral-200);border:1px solid var(--color-divider)">{{ moraleBar }}</div>
+              </div>
+            </div>
+            <div style="padding:16px 18px 8px;display:flex;justify-content:space-between;align-items:baseline">
+              <h6 style="margin:0;color:var(--color-neutral-700)">감사 로그</h6>
+              <span style="font-size:10px;color:var(--color-neutral-500)">최근 순</span>
+            </div>
+            <sc-if value="{{ showAuditLog }}" hint-placeholder-val="{{ true }}">
+              <div style="flex:1;overflow:hidden;padding:0 18px 18px;display:flex;flex-direction:column;gap:7px">
+                <sc-for list="{{ logs }}" as="l" hint-placeholder-count="7">
+                  <div style="display:flex;gap:9px;font-size:11.5px;line-height:1.4;padding-bottom:7px;border-bottom:1px solid var(--color-neutral-300)">
+                    <span style="font-family:Archivo;color:var(--color-neutral-500);flex:none">{{ l.t }}</span>
+                    <span style="flex:1">{{ l.text }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isUpgrade }}">
+        <div style="height:834px;overflow:auto;padding:22px 26px">
+          <div style="display:flex;align-items:flex-end;gap:16px;border-bottom:2px solid var(--color-divider);padding-bottom:14px">
+            <h2 style="margin:0">강화 · 결재 역량 개발</h2>
+            <p style="margin:0 0 3px;font-size:12px;color:var(--color-neutral-600);max-width:420px">인사혁신 지침 제4조에 의거, 예산 범위 내에서 본인의 손목과 부서의 설비를 자율적으로 개선할 수 있습니다.</p>
+            <span style="margin-left:auto;font-family:Archivo;font-weight:800;font-size:20px">보유 {{ stampsText }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 26px">
+            <sc-for list="{{ upgrades }}" as="u" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--color-divider)">
+                <div style="width:52px;height:52px;flex:none;border:2px solid var(--color-text);display:flex;align-items:center;justify-content:center;font-family:Archivo;font-weight:800;font-size:19px">{{ u.lv }}</div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-family:Archivo;font-weight:800;font-size:16px">{{ u.name }}</span>
+                  <span style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.4">{{ u.desc }}</span>
+                  <span style="font-size:11px;color:var(--color-accent-700)">{{ u.gain }}</span>
+                </div>
+                <button class="btn btn-primary" sc-camel-on-click="{{ u.buy }}" disabled="{{ u.locked }}" style="flex-direction:column;align-items:flex-start;gap:1px;padding:9px 14px;min-width:118px">
+                  <span style="font-size:10px;opacity:.8;letter-spacing:.08em">결재 상신</span>
+                  <span style="font-size:15px">{{ u.costText }}</span>
+                </button>
+              </div>
+            </sc-for>
+          </div>
+          <p style="margin:18px 0 0;font-size:11.5px;color:var(--color-neutral-600)">{{ lockedUpgradeText }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isShop }}">
+        <div style="height:834px;overflow:auto;padding:22px 26px">
+          <div style="display:flex;align-items:flex-end;gap:16px;border-bottom:2px solid var(--color-divider);padding-bottom:14px">
+            <h2 style="margin:0">상점 · 관인석 매점</h2>
+            <p style="margin:0 0 3px;font-size:12px;color:var(--color-neutral-600);max-width:460px">본 매점은 청사 지하 1층에 실재하며, 결제 후 환불은 「이계 전자상거래법」 제17조에 따라 7일 이내 가능합니다.</p>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:20px 0 28px">
+            <sc-for list="{{ shopItems }}" as="s" hint-placeholder-count="4">
+              <div class="card" style="border:2px solid var(--color-divider);background:var(--color-surface);padding:0;gap:0">
+                <div style="padding:14px 14px 10px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-start">
+                  <span class="card-kicker">{{ s.kicker }}</span>
+                  <span class="tag tag-outline">{{ s.badge }}</span>
+                </div>
+                <div style="padding:16px 14px;display:flex;flex-direction:column;gap:4px">
+                  <span style="font-family:Archivo;font-weight:800;font-size:30px;line-height:1">{{ s.amount }}</span>
+                  <span style="font-size:11px;color:var(--color-neutral-700)">{{ s.unit }}</span>
+                  <span style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.45;margin-top:6px;min-height:34px">{{ s.note }}</span>
+                </div>
+                <button class="btn btn-primary btn-block" sc-camel-on-click="{{ s.buy }}" style="margin:0;padding:12px 14px">{{ s.price }}</button>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 320px;gap:26px">
+            <div>
+              <h6 style="color:var(--color-neutral-700)">무상 지원 (광고 시청)</h6>
+              <sc-for list="{{ adItems }}" as="a" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--color-divider)">
+                  <div style="width:46px;height:46px;flex:none;background:var(--color-text);color:var(--color-bg);display:flex;align-items:center;justify-content:center;font-family:Archivo;font-weight:800;font-size:11px">AD</div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+                    <span style="font-family:Archivo;font-weight:800;font-size:15px">{{ a.name }}</span>
+                    <span style="font-size:11.5px;color:var(--color-neutral-700)">{{ a.desc }}</span>
+                  </div>
+                  <span style="font-size:11px;color:var(--color-neutral-600)">{{ a.left }}</span>
+                  <button class="btn btn-secondary" sc-camel-on-click="{{ a.watch }}" style="border-width:2px">30초 시청</button>
+                </div>
+              </sc-for>
+            </div>
+            <div style="border:2px solid var(--color-accent);padding:16px;display:flex;flex-direction:column;gap:8px;align-self:start">
+              <span class="card-kicker">고지 사항</span>
+              <p style="margin:0;font-size:12px;line-height:1.55">유료 재화 「관인석」은 청사 밖에서 사용할 수 없으며, 퇴사 시 소멸됩니다. 이의가 있는 분은 4층 감사실 앞 대기표를 뽑아 주시기 바랍니다. (평균 대기 시간 6,200년)</p>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isGacha }}">
+        <div style="height:834px;overflow:auto;padding:22px 26px">
+          <div style="display:flex;align-items:flex-end;gap:16px;border-bottom:2px solid var(--color-divider);padding-bottom:14px">
+            <h2 style="margin:0">뽑기 · 전서비둘기 배치 신청</h2>
+            <p style="margin:0 0 3px;font-size:12px;color:var(--color-neutral-600);max-width:430px">비둘기는 물품이 아닌 「임시 공무 보조원」입니다. 개체 지정 신청은 접수되지 않습니다.</p>
+            <span style="margin-left:auto;font-family:Archivo;font-weight:800;font-size:20px;color:var(--color-accent)">관인석 {{ gemsText }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:340px 1fr;gap:26px;padding-top:20px">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="border:2px solid var(--color-text);padding:18px;display:flex;flex-direction:column;gap:10px">
+                <span style="font-family:Archivo;font-weight:800;font-size:60px;line-height:.85">S+</span>
+                <span style="font-family:Archivo;font-weight:800;font-size:19px">황금 관인 비둘기</span>
+                <span style="font-size:12px;line-height:1.5;color:var(--color-neutral-700)">픽업 개체. 부리에 인주가 묻어 있어 도장 없이도 결재가 가능하다는 소문이 있으나 공식 확인된 바 없습니다.</span>
+                <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px">
+                  <div style="display:flex;justify-content:space-between;font-size:11px"><span>천장까지</span><span style="font-family:Archivo;font-weight:800">{{ pityText }}</span></div>
+                  <div style="height:10px;background:var(--color-neutral-200);border:1px solid var(--color-divider)">{{ pityBar }}</div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <button class="btn btn-secondary" sc-camel-on-click="{{ pull1 }}" style="flex-direction:column;align-items:flex-start;padding:13px;border-width:2px"><span style="font-size:15px">1회 신청</span><span style="font-family:'IBM Plex Sans KR';font-weight:400;font-size:11px;color:var(--color-neutral-600)">관인석 10</span></button>
+                <button class="btn btn-primary" sc-camel-on-click="{{ pull10 }}" style="flex-direction:column;align-items:flex-start;padding:13px"><span style="font-size:15px">10회 일괄</span><span style="font-family:'IBM Plex Sans KR';font-weight:400;font-size:11px;opacity:.85">관인석 90 · A등급 확정</span></button>
+              </div>
+              <p style="margin:0;font-size:11px;line-height:1.6;color:var(--color-neutral-600)">{{ pityNoteText }}</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--color-divider);padding-bottom:8px">
+                <h6 style="margin:0;color:var(--color-neutral-700)">배치 결과</h6>
+                <span style="font-size:11px;color:var(--color-neutral-600)">{{ pullSummary }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+                <sc-for list="{{ gachaResults }}" as="g" hint-placeholder-count="10">
+                  <div style="border:2px solid var(--color-divider);background:var(--color-surface);display:flex;flex-direction:column;min-height:132px">
+                    <div style="padding:6px 8px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:center">
+                      <span style="font-family:Archivo;font-weight:800;font-size:13px">{{ g.rank }}</span>
+                      <sc-if value="{{ g.isNew }}"><span style="font-family:Archivo;font-weight:800;font-size:9px;letter-spacing:.1em;color:var(--color-accent)">NEW</span></sc-if>
+                    </div>
+                    <div style="flex:1;display:flex;align-items:center;justify-content:center;font-family:Archivo;font-weight:800;font-size:26px;color:var(--color-neutral-400)">{{ g.mark }}</div>
+                    <div style="padding:7px 8px;border-top:1px solid var(--color-divider);display:flex;flex-direction:column;gap:1px">
+                      <span style="font-size:11px;line-height:1.25">{{ g.name }}</span>
+                      <span style="font-size:10px;color:var(--color-accent-700)">{{ g.effect }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <p style="margin:6px 0 0;font-size:12px;color:var(--color-neutral-700)">{{ gachaFlavor }}</p>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStory }}">
+        <div style="height:834px;display:flex;flex-direction:column;background:var(--color-neutral-900);color:var(--color-neutral-100)">
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 26px;border-bottom:2px solid var(--color-neutral-700)">
+            <span style="font-family:Archivo;font-weight:800;font-size:15px">제1화 · 첫 출근</span>
+            <span style="font-size:11px;color:var(--color-neutral-400)">{{ storyProgress }}</span>
+            <div style="margin-left:auto;display:flex;gap:8px">
+              <button class="btn" sc-camel-on-click="{{ storyBack }}" style="border:1px solid var(--color-neutral-600);color:var(--color-neutral-100)">이전</button>
+              <button class="btn" sc-camel-on-click="{{ storySkip }}" style="border:1px solid var(--color-neutral-600);color:var(--color-neutral-100)">스킵</button>
+            </div>
+          </div>
+          <div sc-camel-on-click="{{ storyNext }}" style="flex:1;display:grid;grid-template-columns:1fr 420px;cursor:pointer;min-height:0">
+            <div style="padding:36px 40px;display:flex;flex-direction:column;justify-content:flex-end;gap:18px;min-width:0">
+              <span style="font-family:Archivo;font-weight:800;font-size:13px;letter-spacing:.16em;color:var(--color-accent-400)">{{ storyWho }}</span>
+              <p style="margin:0;font-size:27px;line-height:1.5;max-width:640px;text-wrap:pretty;font-weight:500">{{ storyText }}</p>
+              <sc-if value="{{ hasChoices }}">
+                <div style="display:flex;flex-direction:column;gap:8px;max-width:520px">
+                  <sc-for list="{{ storyChoices }}" as="c" hint-placeholder-count="2">
+                    <button class="story-choice" sc-camel-on-click="{{ c.pick }}" style="text-align:left;padding:13px 16px;background:transparent;border:2px solid var(--story-border,var(--color-neutral-600));color:var(--story-color,var(--color-neutral-100));font-family:'IBM Plex Sans KR';font-size:15px;cursor:pointer">{{ c.label }}</button>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <span style="font-size:11px;color:var(--color-neutral-500)">화면을 클릭하면 다음으로 넘어갑니다.</span>
+            </div>
+            <div style="border-left:2px solid var(--color-neutral-700);display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 0 0;overflow:hidden">
+              <div style="flex:1;display:flex;align-items:flex-end;justify-content:center;padding:24px">
+                <div style="width:100%;aspect-ratio:3/4;border:2px solid var(--color-neutral-600);display:flex;align-items:flex-end;padding:16px;font-family:Archivo;font-weight:800;font-size:110px;line-height:.78;color:var(--color-neutral-700)">{{ storyPortrait }}</div>
+              </div>
+              <div style="padding:14px 20px;border-top:1px solid var(--color-neutral-700);font-size:11.5px;color:var(--color-neutral-400);line-height:1.5">{{ storyStage }}</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isHr }}">
+        {{ hrPanel }}
+      </sc-if>
+
+      <sc-if value="{{ isSettings }}">
+        <div style="height:834px;overflow:auto;padding:22px 26px">
+          <div style="border-bottom:2px solid var(--color-divider);padding-bottom:14px">
+            <h2 style="margin:0">설정 · 근무 환경</h2>
+            <p style="margin:4px 0 0;font-size:12px;color:var(--color-neutral-600)">변경 사항은 즉시 적용되며, 별도의 결재를 요하지 않습니다.</p>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 40px;padding-top:6px">
+            <div>
+              <div style="padding:18px 0;border-bottom:1px solid var(--color-divider)">
+                <h6 style="color:var(--color-neutral-700)">음향</h6>
+                <div style="display:flex;flex-direction:column;gap:14px;margin-top:10px">
+                  <sc-for list="{{ sliders }}" as="s" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;gap:14px">
+                      <span style="width:120px;font-size:13px">{{ s.label }}</span>
+                      <input type="range" min="0" max="100" value="{{ s.value }}" sc-camel-on-change="{{ s.set }}" style="flex:1;accent-color:var(--color-accent)">
+                      <span style="width:38px;text-align:right;font-family:Archivo;font-weight:800;font-size:13px">{{ s.valueText }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="padding:18px 0;border-bottom:1px solid var(--color-divider)">
+                <h6 style="color:var(--color-neutral-700)">동작</h6>
+                <div style="display:flex;flex-direction:column;gap:2px;margin-top:6px">
+                  <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="4">
+                    <button sc-camel-on-click="{{ t.toggle }}" style="display:flex;align-items:center;gap:14px;padding:11px 0;background:transparent;border:0;border-bottom:1px solid var(--color-neutral-300);cursor:pointer;text-align:left;width:100%">
+                      <span style="display:flex;flex-direction:column;gap:1px;flex:1">
+                        <span style="font-size:13.5px;font-family:'IBM Plex Sans KR';font-weight:600">{{ t.label }}</span>
+                        <span style="font-size:11px;color:var(--color-neutral-600)">{{ t.desc }}</span>
+                      </span>
+                      <span style="font-family:Archivo;font-weight:800;font-size:11px;letter-spacing:.1em;padding:5px 12px;border:2px solid var(--color-divider)">{{ t.stateText }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style="padding:18px 0;border-bottom:1px solid var(--color-divider)">
+                <h6 style="color:var(--color-neutral-700)">화면 밀도</h6>
+                <div class="seg" style="margin-top:10px;border-width:2px">
+                  <label class="seg-opt"><input type="radio" name="dens" checked="">보통</label>
+                  <label class="seg-opt"><input type="radio" name="dens">촘촘하게</label>
+                  <label class="seg-opt"><input type="radio" name="dens">서류 더미</label>
+                </div>
+              </div>
+              <div style="padding:18px 0;border-bottom:1px solid var(--color-divider)">
+                <h6 style="color:var(--color-neutral-700)">공무원증</h6>
+                <div style="display:flex;gap:14px;margin-top:10px;align-items:flex-start">
+                  <div style="width:78px;height:98px;background:var(--color-text);color:var(--color-bg);display:flex;align-items:flex-end;padding:8px;font-family:Archivo;font-weight:800;font-size:15px;line-height:1">{{ idRankText }}<br>{{ idRankSub }}</div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+                    <div class="field"><label>표시 이름</label><input class="input" value="이 름 없 는 주 무 관"></div>
+                    <div class="field"><label>소속</label><input class="input" value="이계민원 접수과 서류심사 2팀"></div>
+                  </div>
+                </div>
+              </div>
+              <div style="padding:18px 0">
+                <h6 style="color:var(--color-neutral-700)">위험 구역</h6>
+                <p style="margin:8px 0 12px;font-size:12px;color:var(--color-neutral-700);max-width:400px">퇴사 처리 시 누적 결재력·비둘기·미결 서류가 전부 소각되며, 소각된 서류는 복원되지 않습니다.</p>
+                <div style="display:flex;gap:10px">
+                  <button class="btn btn-secondary" sc-camel-on-click="{{ downloadSave }}" style="border-width:2px">저장 데이터 내려받기</button>
+                  <button class="btn btn-secondary" sc-camel-on-click="{{ uploadSave }}" style="border-width:2px">저장 데이터 불러오기</button>
+                  <button class="btn btn-accent-outline" sc-camel-on-click="{{ openReset }}" style="border:2px solid var(--color-accent);color:var(--color-accent)">퇴사 (전체 초기화)</button>
+                </div>
+                <p style="margin:10px 0 0;font-size:11px;color:var(--color-neutral-600)">{{ saveStatusText }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ resetOpen }}">
+        <div class="dialog-backdrop" style="position:absolute">
+          <div class="dialog" style="border:2px solid var(--color-text)">
+            <span class="dialog-title">퇴사원을 제출하시겠습니까?</span>
+            <p class="dialog-body" style="margin:0">본 신청은 취소할 수 없습니다. 제출 즉시 귀하의 도장은 회수되며, 비둘기 {{ buffCountText }}수는 옥상으로 방생됩니다. 신입은 아무 말 없이 서류 더미를 바라볼 것입니다.</p>
+            <div class="dialog-actions">
+              <button class="btn btn-secondary" sc-camel-on-click="{{ closeReset }}" style="border-width:2px">조금 더 다니겠습니다</button>
+              <button class="btn btn-primary" sc-camel-on-click="{{ doReset }}">제출</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      {{ overlays }}
+
+    </main>
+  </div>
+</div>
