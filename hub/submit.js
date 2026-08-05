@@ -28,6 +28,44 @@ export function newGameId() {
 
 const readText = (file) => file.text();
 
+// 드롭한 항목에서 파일을 모은다. 폴더를 드롭하면 dataTransfer.files 는 비어 있고,
+// webkitGetAsEntry() 로 디렉터리를 재귀적으로 읽어야 파일이 나온다. 각 파일에는
+// 폴더 구조를 담은 상대경로를 _path 로 심어 둔다(webkitRelativePath 는 읽기 전용).
+export async function collectDrop(dataTransfer) {
+  const items = [...(dataTransfer.items || [])].filter((i) => i.kind === 'file');
+  const entries = items.map((i) => (i.webkitGetAsEntry ? i.webkitGetAsEntry() : null)).filter(Boolean);
+
+  // 폴더 진입이 불가능한 브라우저는 평평한 파일 목록으로 폴백
+  if (!entries.length) return [...(dataTransfer.files || [])];
+
+  const out = [];
+  for (const entry of entries) await walkEntry(entry, '', out);
+  return out;
+}
+
+function readAllEntries(reader) {
+  // readEntries 는 한 번에 최대 100개만 준다. 빌 때까지 반복해야 한다.
+  return new Promise((resolve, reject) => {
+    const acc = [];
+    const step = () => reader.readEntries((batch) => {
+      if (!batch.length) resolve(acc);
+      else { acc.push(...batch); step(); }
+    }, reject);
+    step();
+  });
+}
+
+async function walkEntry(entry, prefix, out) {
+  if (entry.isFile) {
+    const file = await new Promise((res, rej) => entry.file(res, rej));
+    try { Object.defineProperty(file, '_path', { value: prefix + entry.name }); } catch { /* 무시 */ }
+    out.push(file);
+  } else if (entry.isDirectory) {
+    const children = await readAllEntries(entry.createReader());
+    for (const child of children) await walkEntry(child, `${prefix}${entry.name}/`, out);
+  }
+}
+
 // 썸네일 이미지를 작은 JPEG data URI 로 줄인다. 갤러리 메타 문서에 함께 담기므로
 // 작아야 한다(규칙 상한 80KB). 긴 변을 max 로 맞추고 품질을 낮춰 재시도한다.
 export async function makeThumb(file, max = 320) {
@@ -91,28 +129,38 @@ function isSelfContained(html) {
   });
 }
 
-// 업로드된 파일 목록을 분류한다.
-//   { kind: 'instant', html }                  단일 자체완결 HTML
-//   { kind: 'bundle', files: [{path, dataUrl}] } 여러 파일
-export async function classify(fileList) {
-  const files = [...fileList].filter((f) => {
-    // 폴더 업로드 시 딸려오는 노이즈 제외
-    const p = (f.webkitRelativePath || f.name);
-    return !/(^|\/)(node_modules|\.git|\.DS_Store|dist|build|out)(\/|$)/.test(p);
-  });
+// 파일 하나에서 상대경로를 얻는다. 여러 소스를 받는다:
+//   - 폴더 선택(input webkitdirectory): file.webkitRelativePath = "폴더/a/b.js"
+//   - 폴더 드롭(webkitGetAsEntry): 수집 단계에서 file._path 를 심어둔다
+//   - 파일 하나: file.name
+function filePath(f) {
+  return f._path || f.webkitRelativePath || f.name;
+}
+
+// 최상위 폴더 한 겹을 벗긴다. "olympus/data/x.js" → "data/x.js", "index.html" → 그대로
+function stripTop(p) {
+  return p.includes('/') ? p.replace(/^[^/]+\//, '') : p;
+}
+
+const NOISE_RE = /(^|\/)(node_modules|\.git|\.DS_Store|Thumbs\.db|dist|build|out|\.next|\.cache|__MACOSX)(\/|$)/;
+
+// 업로드된 파일들을 분류한다. 입력은 File[] (각 File 에 상대경로 정보가 실려 있음).
+//   { kind: 'instant', html }                    단일 자체완결 HTML
+//   { kind: 'bundle', files: [{path, dataUrl}] }  여러 파일
+export async function classify(fileArray) {
+  const files = [...fileArray].filter((f) => !NOISE_RE.test(filePath(f)));
 
   if (!files.length) throw new SubmitError('올릴 파일을 선택하세요.');
 
   const htmls = files.filter((f) => /\.html?$/i.test(f.name));
 
-  // 단일 HTML 하나뿐이면 즉시 게시 후보
+  // 파일이 딱 하나이고 그게 HTML 이면 즉시 게시 후보
   if (files.length === 1 && htmls.length === 1) {
     if (files[0].size >= INSTANT_MAX) {
       throw new SubmitError('파일이 너무 큽니다(0.9MB 초과). 이미지를 줄이거나 여러 파일로 나눠 올려 주세요.');
     }
     const html = await readText(files[0]);
     if (isSelfContained(html)) return { kind: 'instant', html };
-    // 외부 파일을 참조하는데 그 파일이 없으므로 멀티파일로 보내도 깨진다.
     throw new SubmitError('이 HTML 이 다른 파일(이미지·스크립트)을 참조하고 있습니다. 참조하는 파일들을 함께 선택해 폴더째 올려 주세요.');
   }
 
@@ -122,8 +170,7 @@ export async function classify(fileList) {
     throw new SubmitError(`파일 합계가 너무 큽니다(${(total / 1048576).toFixed(1)}MB > 8MB). node_modules 를 제외했는지 확인하세요.`);
   }
 
-  const rel = (f) => (f.webkitRelativePath || f.name).replace(/^[^/]+\//, ''); // 최상위 폴더 한 겹 제거
-  const paths = files.map(rel);
+  const paths = files.map((f) => stripTop(filePath(f)));
   const hasIndex = paths.some((p) => p === 'index.html' || p.endsWith('/index.html'));
   const hasPkg = paths.some((p) => p === 'package.json' || p.endsWith('/package.json'));
   if (!hasIndex && !hasPkg) {
@@ -132,7 +179,7 @@ export async function classify(fileList) {
 
   const out = [];
   for (const f of files) {
-    out.push({ path: rel(f), dataUrl: await readDataUrl(f) });
+    out.push({ path: stripTop(filePath(f)), dataUrl: await readDataUrl(f) });
   }
   return { kind: 'bundle', files: out };
 }
