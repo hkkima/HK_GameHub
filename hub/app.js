@@ -4,7 +4,7 @@ import {
 } from './auth.js';
 import { createAdminPanel } from './admin.js';
 import {
-  classify, newGameId, publishInstant, publishBundle, deleteInstant, makeThumb, SubmitError,
+  classify, collectDrop, newGameId, publishInstant, publishBundle, deleteInstant, makeThumb, SubmitError,
 } from './submit.js';
 
 // 지급 함수(gamehubPayout)가 있는 리전. 로그인은 이제 함수를 쓰지 않지만
@@ -90,6 +90,7 @@ const el = {
   upTags: $('#up-tags'),
   upDesc: $('#up-desc'),
   upFiles: $('#up-files'),
+  upFolder: $('#up-folder'),
   dropzone: $('#dropzone'),
   upPicked: $('#up-picked'),
   upThumb: $('#up-thumb'),
@@ -682,12 +683,13 @@ async function deleteGame(slug) {
   }
 }
 
-async function handleFiles(fileList) {
+// files 는 File 배열이다(폴더 드롭·폴더 선택·파일 선택 모두 여기로 모인다).
+async function handleFiles(files) {
   el.uploadMsg.hidden = true;
   picked = null;
   el.upPicked.className = 'up-picked';
   try {
-    picked = await classify(fileList);
+    picked = await classify(files);
     if (picked.kind === 'instant') {
       el.upPicked.textContent = '단일 HTML — 게시하면 바로 갤러리에 올라갑니다.';
       el.upPicked.classList.add('instant');
@@ -958,23 +960,39 @@ $('#btn-admin-out').addEventListener('click', adminLogout);
 el.uploadBtn.addEventListener('click', () => openUpload());
 el.uploadForm.addEventListener('submit', submitUpload);
 $('#upload-cancel').addEventListener('click', () => el.uploadDialog.close());
+// 드롭존 클릭·엔터 = 파일 선택(단일 HTML 흐름). 폴더는 아래 "폴더 선택" 버튼으로.
 el.dropzone.addEventListener('click', () => el.upFiles.click());
 el.dropzone.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.upFiles.click(); }
 });
-el.upFiles.addEventListener('change', () => { if (el.upFiles.files.length) handleFiles(el.upFiles.files); });
+$('#up-pick-file').addEventListener('click', (e) => { e.stopPropagation(); el.upFiles.click(); });
+$('#up-pick-folder').addEventListener('click', (e) => { e.stopPropagation(); el.upFolder.click(); });
+
+el.upFiles.addEventListener('change', () => { if (el.upFiles.files.length) handleFiles([...el.upFiles.files]); });
+el.upFolder.addEventListener('change', () => { if (el.upFolder.files.length) handleFiles([...el.upFolder.files]); });
+
 el.upThumbBtn.addEventListener('click', () => el.upThumb.click());
 el.upThumb.addEventListener('change', () => { if (el.upThumb.files[0]) handleThumb(el.upThumb.files[0]); });
 el.upThumbClear.addEventListener('click', clearThumb);
+
 ['dragenter', 'dragover'].forEach((ev) => el.dropzone.addEventListener(ev, (e) => {
   e.preventDefault(); el.dropzone.classList.add('drag');
 }));
 ['dragleave', 'drop'].forEach((ev) => el.dropzone.addEventListener(ev, (e) => {
   e.preventDefault(); el.dropzone.classList.remove('drag');
 }));
-el.dropzone.addEventListener('drop', (e) => {
-  const files = e.dataTransfer?.files;
-  if (files && files.length) handleFiles(files);
+// 폴더를 드롭하면 dataTransfer.files 는 비어 있으므로 collectDrop 이 디렉터리를
+// 재귀로 읽어 파일을 모은다. 파일만 드롭한 경우도 같은 경로로 처리된다.
+el.dropzone.addEventListener('drop', async (e) => {
+  try {
+    const files = await collectDrop(e.dataTransfer);
+    if (files.length) handleFiles(files);
+    else { el.uploadMsg.textContent = '읽을 파일이 없습니다.'; el.uploadMsg.hidden = false; }
+  } catch (err) {
+    console.error('[HK GameHub] 드롭 읽기 실패', err);
+    el.uploadMsg.textContent = '파일을 읽지 못했습니다. 폴더 선택 버튼을 써 보세요.';
+    el.uploadMsg.hidden = false;
+  }
 });
 
 // ---------------------------------------------------------------------------
