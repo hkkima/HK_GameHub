@@ -1,5 +1,10 @@
 # HK GameHub
 
+> ★크로스-리포 기준·규칙·배포 절차의 정본 = **HK_Hub `docs/GOVERNANCE.md` · `docs/CONVENTIONS.md`**★
+> 이 리포 문서와 충돌하면 Hub 문서가 이긴다. Firestore 규칙 배포는 반드시 Hub 3단계 절차
+> (`HK_Hub/tools/rules/`: check-live → merge → deploy)로만 — ★이 리포의 `firestore.rules` 도
+> 통합본이 아니다(카지노 6블록 없음). 2026-08-04 07:50 사고가 정확히 이 파일 직배포였다★.
+
 기획 수강생들이 만든 웹 게임을 전시하고, 브라우저에서 바로 플레이하고, 좋아요를 누르는 허브입니다.
 
 | | 주소 |
